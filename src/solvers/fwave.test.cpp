@@ -20,7 +20,14 @@ TEST_CASE( "Testing The Flux Function ", "[Flux]" ) {
   REQUIRE( o_inverse[0] == -1 );
   REQUIRE( o_inverse[1] == Approx(-157.39846));
 
+  tsunami_lab::solvers::fwave::flux( 2,4,3,16,o_inverse);
+  REQUIRE( o_inverse[0] == 13 );
+  REQUIRE( o_inverse[1] == Approx(118.3399));
+
 }
+
+
+
 
 TEST_CASE( "Testing The eigencoefficient", "[AlphaVector]" ) {
 
