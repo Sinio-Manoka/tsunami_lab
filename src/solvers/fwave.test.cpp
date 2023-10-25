@@ -34,10 +34,20 @@ TEST_CASE( "Testing The eigencoefficient", "[AlphaVector]" ) {
   
 }
 
-TEST_CASE( "Testing The Eigenvalues ", "[EigenValues]" ) {
+TEST_CASE( "Testing The Eigenvalues 1 ", "[EigenValues]" ) {
 
   float eigenVal1 = 0;
   float eigenVal2 = 0;
+  tsunami_lab::solvers::fwave::eigenwerte( 5.3,
+                                         2.6,
+                                         -6.5660377358491,
+                                         12.3846153846154,
+                                         eigenVal1,
+                                         eigenVal2 );
+
+  REQUIRE( eigenVal1 == Approx( -4.9840244 ) );
+  REQUIRE( eigenVal2 == Approx(  7.463668864 ) );
+
   tsunami_lab::solvers::fwave::eigenwerte( 10,
                                          9,
                                          -3,
@@ -47,7 +57,10 @@ TEST_CASE( "Testing The Eigenvalues ", "[EigenValues]" ) {
 
   REQUIRE( eigenVal1 == Approx( -9.7311093998375095 ) );
   REQUIRE( eigenVal2 == Approx(  9.5731051658991654 ) );
+
+
 }
+
 
 TEST_CASE( "Test the derivation of the Fwave net-updates ", "[Zp - Vectors]" ) {
   float i_alphas[] = {17,39};
