@@ -120,7 +120,7 @@ TEST_CASE( "Testing The Decomposition ", "[Zp - Vectors]" ) {
   REQUIRE( l_netUpdatesR[1] == -Approx(88.25985)    );
 
 
-tsunami_lab::solvers::fwave::netUpdates( 10,
+  tsunami_lab::solvers::fwave::netUpdates( 10,
                                          9,
                                          -30,
                                          27,
@@ -132,5 +132,6 @@ tsunami_lab::solvers::fwave::netUpdates( 10,
 
   REQUIRE( l_netUpdatesR[0] == Approx( 23.4409982985738561366777 ) );
   REQUIRE( l_netUpdatesR[1] == Approx( 224.403141905910928927533 ) );
+
 
 }
