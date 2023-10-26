@@ -32,9 +32,9 @@ TEST_CASE( "Testing The Flux Function ", "[Flux]" ) {
 TEST_CASE( "Testing The eigencoefficient", "[AlphaVector]" ) {
 
   float i_inverse[4] = {1,2,3,4};
-  float i_spalte[2] = {5,6};
+  float i_delta_f[2] = {5,6};
   float o_eigencoefficients[2];
-  tsunami_lab::solvers::fwave::eigencoefficientAlpha( i_inverse,i_spalte,o_eigencoefficients);
+  tsunami_lab::solvers::fwave::eigencoefficientAlpha( i_inverse,i_delta_f,o_eigencoefficients);
   REQUIRE( o_eigencoefficients[0] == 17 );
   REQUIRE( o_eigencoefficients[1] == 39);
   //60.129925
@@ -120,7 +120,7 @@ TEST_CASE( "Testing The Decomposition ", "[Zp - Vectors]" ) {
   REQUIRE( l_netUpdatesR[1] == -Approx(88.25985)    );
 
 
-  tsunami_lab::solvers::fwave::netUpdates( 10,
+tsunami_lab::solvers::fwave::netUpdates( 10,
                                          9,
                                          -30,
                                          27,
@@ -133,5 +133,17 @@ TEST_CASE( "Testing The Decomposition ", "[Zp - Vectors]" ) {
   REQUIRE( l_netUpdatesR[0] == Approx( 23.4409982985738561366777 ) );
   REQUIRE( l_netUpdatesR[1] == Approx( 224.403141905910928927533 ) );
 
+  tsunami_lab::solvers::fwave::netUpdates( 2,
+                                         9.4,
+                                         22.8,
+                                         53.3,
+                                         l_netUpdatesL,
+                                         l_netUpdatesR ); 
+
+  REQUIRE( l_netUpdatesL[0] == Approx(0) );
+  REQUIRE( l_netUpdatesL[1] == Approx(0) );
+
+  REQUIRE( l_netUpdatesR[0] == Approx(  30.487));
+  REQUIRE( l_netUpdatesR[1] == Approx( 455.946));
 
 }
