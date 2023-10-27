@@ -56,19 +56,43 @@ void tsunami_lab::solvers::fwave::flux( t_real i_hL,
 } 
  
 void tsunami_lab::solvers::fwave::decompose(t_real i_alphas[2],
-                                             t_real i_eigens[2],
-                                             t_real o_minus_A_deltaQ[2],
-                                             t_real o_plus_A_deltaQ[2]){
-    //Negative speed of wave propagation
+                                            t_real i_eigens[2],
+                                            t_real o_minus_A_deltaQ[2], 
+                                            t_real o_plus_A_deltaQ[2]){
 
-    o_minus_A_deltaQ[0] = i_alphas[0];
-    o_minus_A_deltaQ[1] = i_alphas[0] * i_eigens[0]; 
 
+    //Negative speed of wave propagation                                    
+    if( i_eigens[0] < 0){
+        o_minus_A_deltaQ[0] =  i_alphas[0];
+        o_minus_A_deltaQ[1] = (i_alphas[0] * i_eigens[0]);
+        o_plus_A_deltaQ[0] = 0;
+        o_plus_A_deltaQ[1] = 0;
+    }else{
+        o_plus_A_deltaQ[0] =   i_alphas[0];
+        o_plus_A_deltaQ[1] =  (i_alphas[0] * i_eigens[0]);
+        o_minus_A_deltaQ[0] =  0;
+        o_minus_A_deltaQ[1] = 0;
+    }
     //Positive speed of wave propagation
+    if(i_eigens[1] < 0){
+        o_minus_A_deltaQ[0] = o_minus_A_deltaQ[0] + (i_alphas[1]);
+        o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
+        
+    }else{
+        o_plus_A_deltaQ[0] = o_plus_A_deltaQ[0] + (i_alphas[1]);
+        o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
+    }
+    
 
-    o_plus_A_deltaQ[0] = i_alphas[1];
-    o_plus_A_deltaQ[1] = i_alphas[1] * i_eigens[1]; 
-}
+
+    }
+    
+
+
+    
+
+
+
 void tsunami_lab::solvers::fwave::inverseMatrix(t_real i_eigen1,
                                                 t_real i_eigen2,
                                                 t_real o_inverse[4]){
@@ -122,4 +146,8 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
 
     t_real l_eigens[2] = {l_sL,l_sR};
     decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
+
+    
+
+
 }

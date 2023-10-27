@@ -71,7 +71,7 @@ TEST_CASE( "Testing The Eigenvalues 1 ", "[EigenValues]" ) {
 
 TEST_CASE( "Test the derivation of the Fwave net-updates ", "[Zp - Vectors]" ) {
   float i_alphas[] = {17,39};
-  float i_eigens[] = {-9.7311093998375095,9.5731051658991654};
+  float i_eigens[] = {-9.73,9.57};
   float o_minus_A_deltaQ[2];
   float o_plus_A_deltaQ[2];
   tsunami_lab::solvers::fwave::decompose(i_alphas,
@@ -80,10 +80,12 @@ TEST_CASE( "Test the derivation of the Fwave net-updates ", "[Zp - Vectors]" ) {
                                          o_plus_A_deltaQ );
 
   REQUIRE( o_minus_A_deltaQ[0] == 17 );
-  REQUIRE( o_minus_A_deltaQ[1] == Approx(  -165.428859797 ) );
+  REQUIRE( o_minus_A_deltaQ[1] == Approx(  -165.41) );
 
   REQUIRE( o_plus_A_deltaQ[0] == 39 );
-  REQUIRE( o_plus_A_deltaQ[1] ==  Approx(  373.35110147 ) );
+  
+
+  REQUIRE( o_plus_A_deltaQ[1] ==  Approx(  373.23 ) );
 }
 
 
@@ -133,17 +135,17 @@ tsunami_lab::solvers::fwave::netUpdates( 10,
   REQUIRE( l_netUpdatesR[0] == Approx( 23.4409982985738561366777 ) );
   REQUIRE( l_netUpdatesR[1] == Approx( 224.403141905910928927533 ) );
 
-  tsunami_lab::solvers::fwave::netUpdates( 2,
-                                         9.4,
-                                         22.8,
-                                         53.3,
+  tsunami_lab::solvers::fwave::netUpdates( 2.8,
+                                         9.6,
+                                         41.9,
+                                         37.7,
                                          l_netUpdatesL,
                                          l_netUpdatesR ); 
 
   REQUIRE( l_netUpdatesL[0] == Approx(0) );
   REQUIRE( l_netUpdatesL[1] == Approx(0) );
 
-  REQUIRE( l_netUpdatesR[0] == Approx(  30.487));
-  REQUIRE( l_netUpdatesR[1] == Approx( 455.946));
+  REQUIRE( l_netUpdatesR[0] == Approx(  -4.2));
+  REQUIRE( l_netUpdatesR[1] == Approx( -65.504));
 
 }
