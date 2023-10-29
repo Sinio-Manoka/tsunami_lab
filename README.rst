@@ -8,7 +8,7 @@ Further information is available from: https://scalable.uni-jena.de/opt/tsunami/
 
 -----------------------------------------------------------------------------
 Important Links:
-`User Documentation ("Projektbericht") <https://userdoc-3d769.web.app/index.html>`_ 
-`Doxygen Documentation <https://tsunami-99843.web.app/>`_ 
+User Documentation ("Projektbericht") : https://userdoc-3d769.web.app/index.html
+Doxygen Documentation                 : https://tsunami-99843.web.app/ 
 
 ------------------------------------------------------------------------------
