@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Introduction &mdash; Tsunami Project 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2. Riemann" href="riemann.html" />
+    <link rel="prev" title="Overview" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Tsunami Project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">1.1. Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">1.2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">1.3. Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">1.4. Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="riemann.html">2. Riemann</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tsunami Project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">1. </span>Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/setup.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction">
+<span id="ch-setup"></span><h1><span class="section-number">1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h1>
+<p><strong>Today, we will explore the process of setting up our tsunami project.</strong></p>
+<section id="getting-started">
+<h2><span class="section-number">1.1. </span>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline"></a></h2>
+<p>Before you begin, make sure you have the following prerequisites:</p>
+<ul class="simple">
+<li><p><strong>A C++ compiler (e.g., g++).</strong></p></li>
+<li><p><strong>Scons (for building).</strong></p></li>
+<li><p><strong>Git (for cloning the repository).</strong></p></li>
+</ul>
+</section>
+<section id="installation">
+<span id="id1"></span><h2><span class="section-number">1.2. </span>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p><strong>1. Clone the repository from our</strong> <a class="reference external" href="https://github.com/Sinio-Manoka/tsunami_lab">GitHub Page</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git clone https://github.com/Sinio-Manoka/tsunami_lab.git</span>
+</pre></div>
+</div>
+<p><strong>2. Install</strong> <a class="reference external" href="https://scons.org/doc/2.2.0/HTML/scons-user/x121.html#:~:text=If%20your%20Linux%20distribution%20does,%2Fusr%2Flib%2Fscons.&amp;text=Or%2C%20you%20can%20use%20a%20graphical%20RPM%20package%20manager.">Scons</a> <strong>on Linux :</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># apt-get install scons</span>
+</pre></div>
+</div>
+<p><strong>3. Include Catch2:</strong></p>
+<blockquote>
+<div><p>3.1. Navigate to the project directory:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cd tsunami_lab/</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>3.2. initialize the submodules:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git submodule init</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>3.3. update the submodules within a Git repository:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># git submodule update</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<p><strong>4. How build the project:</strong></p>
+<blockquote>
+<div><p>4.1. Navigate to the project directory:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cd tsunami_lab/</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>4.2. Build the project with Scons:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># scons</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>4.3. You will find the compiled binary in the build directory.</p>
+</div></blockquote>
+</section>
+<section id="usage">
+<h2><span class="section-number">1.3. </span>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
+<p><strong>To use the Riemann solver, follow these steps:</strong></p>
+<p><strong>1. Navigate to the build directory:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#  cd build</span>
+</pre></div>
+</div>
+<p><strong>2. To run the Riemann solver, use the following command:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#  ./tsunami_lab &lt;specific_number&gt;</span>
+</pre></div>
+</div>
+<p>Replace &lt;specific_number&gt; with the specific input parameter or numerical value required for your Riemann solver.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Example</span><span class="p">:</span> <span class="c1"># ./tsunami_lab 300.</span>
+</pre></div>
+</div>
+<p><strong>For every 10 input, there will be 1 corresponding CSV files generated in the build directory.!!</strong></p>
+</section>
+<section id="documentation">
+<h2><span class="section-number">1.4. </span>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline"></a></h2>
+<p><strong>The Project Documentation can be found</strong> <a class="reference external" href="https://tsunami-99843.web.app/">Here</a> .</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="riemann.html" class="btn btn-neutral float-right" title="2. Riemann" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Minawe,Tammaa,Schicker.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
