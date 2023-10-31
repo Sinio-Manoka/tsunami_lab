@@ -20,14 +20,16 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     //! current step which indicates the active values in the arrays below
     unsigned short m_step = 0;
 
+    bool m_choice = true;
     //! number of cells discretizing the computational domain
     t_idx m_nCells = 0;
-
+    
     //! water heights for the current and next time step for all cells
     t_real * m_h[2] = { nullptr, nullptr };
 
     //! momenta for the current and next time step for all cells
     t_real * m_hu[2] = { nullptr, nullptr };
+
 
   public:
     /**
@@ -35,7 +37,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
      *
      * @param i_nCells number of cells.
      **/
-    WavePropagation1d( t_idx i_nCells );
+    WavePropagation1d( t_idx i_nCellsm, bool i_choice );
 
     /**
      * Destructor which frees all allocated memory.

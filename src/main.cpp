@@ -12,6 +12,7 @@
 #include <cmath>
 #include <fstream>
 #include <limits>
+#include <string>
 
 int main( int   i_argc,
           char *i_argv[] ) {
@@ -28,10 +29,11 @@ int main( int   i_argc,
   std::cout << "### https://scalable.uni-jena.de ###" << std::endl;
   std::cout << "####################################" << std::endl;
 
-  if( i_argc != 2 ) {
+  if( i_argc < 2 ) {
     std::cerr << "invalid number of arguments, usage:" << std::endl;
     std::cerr << "  ./build/tsunami_lab N_CELLS_X" << std::endl;
     std::cerr << "where N_CELLS_X is the number of cells in x-direction." << std::endl;
+    std::cerr << "Solver Choice is field so please make an Input by adding ROE or FWAVE !!" << std::endl;
     return EXIT_FAILURE;
   }
   else {
@@ -54,7 +56,23 @@ int main( int   i_argc,
                                                  5 );
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
-  l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx );
+  if (i_argc > 2) {
+      for (char* ptr = i_argv[2]; *ptr; ++ptr) {
+          *ptr = std::tolower(static_cast<unsigned char>(*ptr));
+      }
+      if (std::strstr(i_argv[2], "roe") != nullptr) {
+          std::cout << "ROE Will be Used" << std::endl;
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true );
+      } else {
+          std::cout << "FWAVE Will be Used" << std::endl;
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false );
+      }
+  }else{
+    std::cout << "FWAVE Will be Used" << std::endl;
+    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false );
+  }  
+
+
 
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();

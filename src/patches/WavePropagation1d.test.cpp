@@ -26,7 +26,14 @@ TEST_CASE( "Test the 1d wave propagation solver.", "[WaveProp1d]" ) {
    */
 
   // construct solver and setup a dambreak problem
-  tsunami_lab::patches::WavePropagation1d m_waveProp( 100 );
+
+  /*
+    SET it to True  -> Roe will be used
+    SET it to False -> Fwave will be used
+    Default ist always FWAVE
+  */
+
+  tsunami_lab::patches::WavePropagation1d m_waveProp( 100 , true );
 
   for( std::size_t l_ce = 0; l_ce < 50; l_ce++ ) {
     m_waveProp.setHeight( l_ce,
