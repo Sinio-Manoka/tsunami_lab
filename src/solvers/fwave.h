@@ -11,7 +11,7 @@ namespace tsunami_lab {
 
 
 class tsunami_lab::solvers::fwave {
-  public:
+  private:
     static t_real constexpr m_gSqrt = 3.131557121;
     static t_real constexpr g = 9.80665;
     /**
@@ -24,7 +24,7 @@ class tsunami_lab::solvers::fwave {
      * @param o_waveSpeedL will be set to the speed of the wave propagating to the left.
      * @param o_waveSpeedR will be set to the speed of the wave propagating to the right.
      **/
-    static void eigenwerte( t_real   i_hL,
+    static void eigenvalues(t_real   i_hL,
                             t_real   i_hR,
                             t_real   i_uL,
                             t_real   i_uR,
@@ -77,7 +77,7 @@ class tsunami_lab::solvers::fwave {
                                       t_real i_delta_f[2],
                                       t_real o_eigencoefficients[2]);
   
-  
+  public:
   /**
      * @brief Computes both deltaQ.
      *

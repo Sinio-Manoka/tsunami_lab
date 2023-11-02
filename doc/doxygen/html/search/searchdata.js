@@ -1,10 +1,11 @@
 var indexSectionsWithContent =
 {
-  0: "cdefginrstw~",
+  0: "cdefgimnrstw~",
   1: "cdfrsw",
   2: "t",
-  3: "defginstw~",
-  4: "t"
+  3: "defginrstw~",
+  4: "m",
+  5: "t"
 };
 
 var indexSectionNames =
@@ -13,7 +14,8 @@ var indexSectionNames =
   1: "classes",
   2: "namespaces",
   3: "functions",
-  4: "typedefs"
+  4: "variables",
+  5: "typedefs"
 };
 
 var indexSectionLabels =
@@ -22,6 +24,7 @@ var indexSectionLabels =
   1: "Classes",
   2: "Namespaces",
   3: "Functions",
-  4: "Typedefs"
+  4: "Variables",
+  5: "Typedefs"
 };
 

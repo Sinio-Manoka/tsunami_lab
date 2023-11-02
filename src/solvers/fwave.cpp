@@ -1,7 +1,7 @@
 #include "fwave.h"
 #include <cmath>
 
-void tsunami_lab::solvers::fwave::eigenwerte( t_real   i_hL,
+void tsunami_lab::solvers::fwave::eigenvalues( t_real   i_hL,
                                 t_real   i_hR,
                                 t_real   i_uL,
                                 t_real   i_uR,
@@ -122,7 +122,7 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
     t_real l_sL = 0;
     t_real l_sR = 0;
 
-    eigenwerte(i_hL,i_hR,l_uL,l_uR,l_sL,l_sR);
+    eigenvalues(i_hL,i_hR,l_uL,l_uR,l_sL,l_sR);
 
     t_real l_inverse[4];
 

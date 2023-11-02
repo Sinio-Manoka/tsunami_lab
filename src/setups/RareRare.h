@@ -1,3 +1,10 @@
+/**
+ * @author Ward Tammaa 
+ *
+ * @section DESCRIPTION
+ * The Rare Rare problem.
+ **/
+
 #ifndef TSUNAMI_LAB_SETUPS_Rare_Rare_H
 #define TSUNAMI_LAB_SETUPS_Rare_Rare_H
 
@@ -9,7 +16,9 @@ namespace tsunami_lab {
   }
 }
 
-
+/**
+ * Rare Rare setup.
+ **/
 class tsunami_lab::setups::RareRare: public Setup {
   private:
     //! height  
@@ -36,8 +45,6 @@ class tsunami_lab::setups::RareRare: public Setup {
 
     /**
      * Gets the water height at a given point.
-     *
-     * @param i_x x-coordinate of the queried point.
      * @return height at the given point.
      **/
     t_real getHeight( t_real ,
@@ -46,7 +53,7 @@ class tsunami_lab::setups::RareRare: public Setup {
 
     /**
      * Gets the momentum in x-direction.
-     *
+     * @param i_x x-coordinate of the queried point.
      * @return momentum in x-direction.
      **/
     t_real getMomentumX( t_real i_x,
@@ -54,7 +61,6 @@ class tsunami_lab::setups::RareRare: public Setup {
 
     /**
      * Gets the momentum in y-direction.
-     *
      * @return momentum in y-direction.
      **/
     t_real getMomentumY( t_real,

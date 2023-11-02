@@ -1,3 +1,9 @@
+/**
+ * @author Ward Tammaa 
+ *
+ * @section DESCRIPTION
+ * Tests the Rare Rare setup.
+ **/
 
 #include <catch2/catch.hpp>
 #include "RareRare.h"

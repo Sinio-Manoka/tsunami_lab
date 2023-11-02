@@ -1,3 +1,9 @@
+/**
+ * @author Ward Tammaa 
+ *
+ * @section DESCRIPTION
+ * The Shock Shock problem.
+ **/
 #include "ShockShock.h"
 
 

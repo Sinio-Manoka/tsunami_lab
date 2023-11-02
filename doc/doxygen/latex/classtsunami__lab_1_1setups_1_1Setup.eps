@@ -5,7 +5,7 @@
 %%For: 
 %Magnification: 1.00
 %%Orientation: Portrait
-%%BoundingBox: 0 0 500 194.174759
+%%BoundingBox: 0 0 500 64.724922
 %%Pages: 0
 %%BeginSetup
 %%EndSetup
@@ -19,13 +19,13 @@
 /marginwidth 10 def
 /distx 20 def
 /disty 40 def
-/boundaspect 2.575000 def  % aspect ratio of the BoundingBox (width/height)
+/boundaspect 7.725000 def  % aspect ratio of the BoundingBox (width/height)
 /boundx 500 def
 /boundy boundx boundaspect div def
 /xspacing 0 def
 /yspacing 0 def
 /rows 2 def
-/cols 1 def
+/cols 3 def
 /scalefactor 0 def
 /boxfont /Times-Roman findfont fontheight scalefont def
 
@@ -175,6 +175,8 @@ boxfont setfont
 1 boundaspect scale
 (tsunami_lab::setups::Setup) cw
 (tsunami_lab::setups::DamBreak1d) cw
+(tsunami_lab::setups::RareRare) cw
+(tsunami_lab::setups::ShockShock) cw
 /boxwidth boxwidth marginwidth 2 mul add def
 /xspacing boxwidth distx add def
 /yspacing boxheight disty add def
@@ -186,12 +188,20 @@ boundx scalefactor div boundy scalefactor div scale
 
 % ----- classes -----
 
- (tsunami_lab::setups::Setup) 0.000000 1.000000 box
+ (tsunami_lab::setups::Setup) 1.000000 1.000000 box
  (tsunami_lab::setups::DamBreak1d) 0.000000 0.000000 box
+ (tsunami_lab::setups::RareRare) 1.000000 0.000000 box
+ (tsunami_lab::setups::ShockShock) 2.000000 0.000000 box
 
 % ----- relations -----
 
 solid
-1 0.000000 0.250000 out
+1 1.000000 0.250000 out
+solid
+0.000000 2.000000 1.000000 conn
 solid
 0 0.000000 0.750000 in
+solid
+0 1.000000 0.750000 in
+solid
+0 2.000000 0.750000 in

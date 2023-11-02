@@ -1,4 +1,9 @@
-
+/**
+ * @author Ward Tammaa 
+ *
+ * @section DESCRIPTION
+ * Tests the Shock Shock setup.
+ **/
 #include <catch2/catch.hpp>
 #include "ShockShock.h"
 

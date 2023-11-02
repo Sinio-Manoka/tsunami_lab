@@ -60,7 +60,6 @@ class tsunami_lab::setups::DamBreak1d: public Setup {
 
     /**
      * Gets the momentum in y-direction.
-     *
      * @return momentum in y-direction.
      **/
     t_real getMomentumY( t_real,

@@ -56,6 +56,13 @@ int main( int   i_argc,
                                                  5 );
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
+
+  /*
+   * if we get an arg then it checks what it is:
+   *    if it is the word ROE written in any form (Roe, RoE, etc...) then it uses the Roe Solver
+   *    else it uses the Fwave solver
+   * if there is no arg given then it uses the Fwave solver. 
+   */
   if (i_argc > 2) {
       for (char* ptr = i_argv[2]; *ptr; ++ptr) {
           *ptr = std::tolower(static_cast<unsigned char>(*ptr));

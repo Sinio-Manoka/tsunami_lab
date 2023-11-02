@@ -20,7 +20,9 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     //! current step which indicates the active values in the arrays below
     unsigned short m_step = 0;
 
+    //! boolean to which solver will be used
     bool m_choice = true;
+
     //! number of cells discretizing the computational domain
     t_idx m_nCells = 0;
     
@@ -34,7 +36,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
   public:
     /**
      * Constructs the 1d wave propagation solver.
-     *
+     * @param i_choice which solver to choice from (true means Roe and false means our Fwave).
      * @param i_nCells number of cells.
      **/
     WavePropagation1d( t_idx i_nCellsm, bool i_choice );
