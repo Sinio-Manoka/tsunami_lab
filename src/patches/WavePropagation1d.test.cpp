@@ -76,4 +76,48 @@ TEST_CASE( "Test the 1d wave propagation solver.", "[WaveProp1d]" ) {
     REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx(8) );
     REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx(0) );
   }
+
+
+//test steady state from middle stat_stsates.csv
+tsunami_lab::patches::WavePropagation1d m_waveProp1( 100 , true );
+
+
+  for( std::size_t l_ce = 0; l_ce < 50; l_ce++ ) {
+    m_waveProp.setHeight( l_ce,
+                          0,
+                          8899.326826472694 );
+    m_waveProp.setMomentumX( l_ce,
+                             0,
+                             122.0337839252433 );
+  }
+  for( std::size_t l_ce = 50; l_ce < 100; l_ce++ ) {
+    m_waveProp.setHeight( l_ce,
+                          0,
+                          8899.326826472694 );
+    m_waveProp.setMomentumX( l_ce,
+                             0,
+                             -122.0337839252433 );
+  }
+
+  // set outflow boundary condition
+  m_waveProp.setGhostOutflow();
+
+  // perform a time step
+  for (int i = 0; i < 17 ; i++)
+  {
+      m_waveProp.timeStep(0.001);
+  }
+  
+
+ 
+  // dam-break
+  REQUIRE( m_waveProp.getHeight()[49]   == Approx(8899.74) );
+
+  REQUIRE( m_waveProp.getHeight()[50]   == Approx(8899.74) );
+ 
+
+
 }
+
+
+
