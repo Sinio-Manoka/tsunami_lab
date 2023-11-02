@@ -3,11 +3,7 @@
 #include "ShockShock.h"
 
 TEST_CASE( "Test the shock-shock setup.", "[ShockShock]" ) {
-  tsunami_lab::setups::ShockShock l_shockShock( 25,
-                                                25,
-                                                55,
-                                                -55,
-                                                3 );
+  tsunami_lab::setups::ShockShock l_shockShock( 25, 55, 3 );
 
   // left side
   REQUIRE( l_shockShock.getHeight(    2, 0 ) == 25 );

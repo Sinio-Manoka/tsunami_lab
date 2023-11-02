@@ -12,17 +12,11 @@ namespace tsunami_lab {
 
 class tsunami_lab::setups::RareRare: public Setup {
   private:
-    //! height on the left side 
-    t_real m_heightLeft = 0;
+    //! height  
+    t_real m_height = 0;
     
-    //! height on the right side
-    t_real m_heightRight = 0;
-
-    //! impulse on the right side
-    t_real m_huRight = 0;
-
-    //! impulse on the left side
-    t_real m_huLeft = 0;
+    //! impulse
+    t_real m_hu = 0;
 
     //! location of the dam
     t_real m_locationDam = 0;
@@ -31,18 +25,14 @@ class tsunami_lab::setups::RareRare: public Setup {
     /**
      * Constructor.
      *
-     * @param i_heightLeft water height on the left side of the dam.
-     * @param i_heightRight water height on the right side of the dam.
-     * @param i_huLeft water impulse on the left side of the dam.
-     * @param i_huRight water impulse on the right side of the dam.
+     * @param i_height water height 
+     * @param i_hu water impulse 
      * @param i_locationDam location (x-coordinate) of the dam.    
      **/
 
-    RareRare( t_real i_heightLeft,
-                t_real i_heightRight,
-                t_real i_huLeft,
-                t_real i_huRight,
-                t_real i_locationDam);
+    RareRare( t_real i_height,
+              t_real i_hu,
+              t_real i_locationDam);
 
     /**
      * Gets the water height at a given point.
@@ -50,8 +40,8 @@ class tsunami_lab::setups::RareRare: public Setup {
      * @param i_x x-coordinate of the queried point.
      * @return height at the given point.
      **/
-    t_real getHeight( t_real i_x,
-                      t_real      ) const;
+    t_real getHeight( t_real ,
+                      t_real ) const;
 
 
     /**
