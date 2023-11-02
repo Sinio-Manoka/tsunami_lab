@@ -41,19 +41,23 @@ jobs:
           scons mode=debug+san
           ./build/tests
           ./build/tsunami_lab 25 ROE
+          ./build/tsunami_lab 25 FWAVE
           scons mode=release+san
           ./build/tests
           ./build/tsunami_lab 500 ROE
+          ./build/tsunami_lab 500 FWAVE
 
       - name: Valgrind
         run: |
           scons mode=debug
           valgrind ./build/tests
           valgrind ./build/tsunami_lab 25 ROE
+          valgrind ./build/tsunami_lab 25 FWAVE
 
       - name: Release
         run: |
           scons
           ./build/tests
           ./build/tsunami_lab 500 ROE
+          ./build/tsunami_lab 500 FWAVE
 
