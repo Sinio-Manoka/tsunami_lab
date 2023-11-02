@@ -40,7 +40,7 @@ Installation
 
 .. code-block:: 
 
-   # git clone https://github.com/Sinio-Manoka/tsunami_lab.git 
+    git clone https://github.com/Sinio-Manoka/tsunami_lab.git 
 
 
 **2. Install** `Scons`_ **on Linux :**
@@ -50,7 +50,7 @@ Installation
 
 .. code-block:: 
 
-   # apt-get install scons 
+      pip3 install Scons
 
 
 
@@ -61,7 +61,7 @@ Installation
 
       .. code-block:: 
 
-         # cd tsunami_lab/
+          cd tsunami_lab/
 
 
 
@@ -70,7 +70,7 @@ Installation
 
       .. code-block:: 
 
-       # git submodule init 
+        git submodule init 
 
 
 
@@ -78,7 +78,7 @@ Installation
 
       .. code-block:: 
 
-         # git submodule update 
+          git submodule update 
 
 
 
@@ -93,7 +93,7 @@ Installation
 
       .. code-block:: 
 
-         # cd tsunami_lab/
+          cd tsunami_lab/
 
    
   
@@ -102,7 +102,7 @@ Installation
 
       .. code-block:: 
 
-         # scons
+          scons
 
    4.3. You will find the compiled binary in the build directory.
 
@@ -117,20 +117,20 @@ Usage
 
 .. code-block:: 
 
-   #  cd build
+     cd build
 
 
 **2. To run the Riemann solver, use the following command:**
 
 .. code-block:: 
 
-   #  ./tsunami_lab <specific_number>
+    ./tsunami_lab <specific_number>
 
 Replace <specific_number> with the specific input parameter or numerical value required for your Riemann solver.
 
 .. code-block:: 
 
-   Example: # ./tsunami_lab 300.
+   Example:  ./tsunami_lab 300.
 
 
 

@@ -14,5 +14,6 @@ Overview
    self
    setup.rst
    riemann.rst
+   Finite Volume Discretization.rst
 .. include:: overview.rst
 

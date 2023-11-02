@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Finite Volume Discretization" href="Finite%20Volume%20Discretization.html" />
     <link rel="prev" title="1. Introduction" href="setup.html" /> 
 </head>
 
@@ -61,6 +62,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#personal-contribution">2.4. Personal Contribution</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Finite%20Volume%20Discretization.html">3. Finite Volume Discretization</a></li>
 </ul>
 
         </div>
@@ -89,10 +91,11 @@
              
   <section id="riemann">
 <span id="ch-riemann-solver"></span><h1><span class="section-number">2. </span>Riemann<a class="headerlink" href="#riemann" title="Permalink to this headline"></a></h1>
-<p>Welcome to the documentation for our Riemann solver in C++. This solver is designed to help
-you solve the Riemann problem for various hyperbolic partial differential equations.
+<p>Welcome to the documentation for our the integration of a Riemann solver in a Finite Volume scheme.
+in C++. This solver is designed to help
+you only to slove for do 1D shallow water equations..
 This documentation will guide you through the functions we implemented to compile the Riemann
-solver. The solver produces CSV files as output, which can be visualized through <a class="reference external" href="https://www.paraview.org/download">ParaView</a> .</p>
+solver. numerical solver which uses the Riemann solver produces CSV files as output, which can be visualized through <a class="reference external" href="https://www.paraview.org/download">ParaView</a> .</p>
 <section id="important-links">
 <h2><span class="section-number">2.1. </span>Important Links<a class="headerlink" href="#important-links" title="Permalink to this headline"></a></h2>
 <p><a class="reference internal" href="setup.html#installation"><span class="std std-ref">Installation</span></a></p>
@@ -167,14 +170,14 @@ using the following formula:  <span class="math notranslate nohighlight">\(f := 
 <span class="cm"> */</span><span class="w"></span>
 <span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">pow2HuL</span><span class="o">=</span><span class="w"> </span><span class="n">pow</span><span class="p">(</span><span class="n">i_huL</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">i_hL</span><span class="p">;</span><span class="w"></span>
 <span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">gPowHL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">pow</span><span class="p">(</span><span class="n">i_hL</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
-<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">gesammtL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pow2HuL</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gPowHL</span><span class="p">;</span><span class="w"></span>
-<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">fql</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">i_huL</span><span class="p">,</span><span class="w"> </span><span class="n">gesammtL</span><span class="p">};</span><span class="w"></span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">totalL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pow2HuL</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gPowHL</span><span class="p">;</span><span class="w"></span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">fql</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">i_huL</span><span class="p">,</span><span class="w"> </span><span class="n">totalL</span><span class="p">};</span><span class="w"></span>
 
 <span class="w"> </span><span class="c1">//compute f(q_right)</span>
 <span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">pow2HuR</span><span class="o">=</span><span class="w"> </span><span class="n">pow</span><span class="p">(</span><span class="n">i_huR</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">i_hR</span><span class="p">;</span><span class="w"></span>
 <span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">gPowHR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">pow</span><span class="p">(</span><span class="n">i_hR</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
-<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">gesammtR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pow2HuR</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gPowHR</span><span class="p">;</span><span class="w"></span>
-<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">fqr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">i_huR</span><span class="p">,</span><span class="w"> </span><span class="n">gesammtR</span><span class="p">};</span><span class="w"></span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">totalR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pow2HuR</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gPowHR</span><span class="p">;</span><span class="w"></span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">fqr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">i_huR</span><span class="p">,</span><span class="w"> </span><span class="n">totalR</span><span class="p">};</span><span class="w"></span>
 
 <span class="w"> </span><span class="c1">//compute Δf</span>
 <span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">o_fdelta</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -357,7 +360,7 @@ you can proceed to export them as either images or animations.</p>
 </div>
 <section id="conclusion">
 <h3><span class="section-number">2.3.1. </span>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline"></a></h3>
-<p>Congratulations! You’ve successfully learned how to use our Riemann solver in C++.
+<p>Congratulations! You’ve successfully learned how to use our numerical solver which uses the Riemann solver.in C++.
 We hope this documentation helps you integrate the solver into your projects effectively.
 If you have any questions or feedback, please don’t hesitate to contact us.</p>
 </section>
@@ -380,6 +383,7 @@ If you have any questions or feedback, please don’t hesitate to contact us.</p
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="setup.html" class="btn btn-neutral float-left" title="1. Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Finite%20Volume%20Discretization.html" class="btn btn-neutral float-right" title="3. Finite Volume Discretization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

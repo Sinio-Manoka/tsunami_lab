@@ -8,10 +8,11 @@
 Riemann
 ===========================================
 
-Welcome to the documentation for our Riemann solver in C++. This solver is designed to help
-you solve the Riemann problem for various hyperbolic partial differential equations.
+Welcome to the documentation for our the integration of a Riemann solver in a Finite Volume scheme.
+in C++. This solver is designed to help 
+you only to slove for do 1D shallow water equations..
 This documentation will guide you through the functions we implemented to compile the Riemann
-solver. The solver produces CSV files as output, which can be visualized through `ParaView <https://www.paraview.org/download>`_ .
+solver. numerical solver which uses the Riemann solver produces CSV files as output, which can be visualized through `ParaView <https://www.paraview.org/download>`_ .
 
 
 
@@ -108,14 +109,14 @@ The Equivalent C++ Code for that is:
     */
     t_real pow2HuL= pow(i_huL, 2)/i_hL;
     t_real gPowHL = g * pow(i_hL, 2);
-    t_real gesammtL = pow2HuL + 0.5 * gPowHL;
-    t_real fql[2] = {i_huL, gesammtL};
+    t_real totalL = pow2HuL + 0.5 * gPowHL;
+    t_real fql[2] = {i_huL, totalL};
 
     //compute f(q_right)
     t_real pow2HuR= pow(i_huR, 2)/i_hR;
     t_real gPowHR = g * pow(i_hR, 2);
-    t_real gesammtR = pow2HuR + 0.5 * gPowHR;
-    t_real fqr[2] = {i_huR, gesammtR};
+    t_real totalR = pow2HuR + 0.5 * gPowHR;
+    t_real fqr[2] = {i_huR, totalR};
 
     //compute Δf
     if (o_fdelta == nullptr) {
@@ -332,7 +333,7 @@ Here is an example where we used 200 as the input.
 
 Conclusion
 ...........
-Congratulations! You've successfully learned how to use our Riemann solver in C++.
+Congratulations! You've successfully learned how to use our numerical solver which uses the Riemann solver.in C++.
 We hope this documentation helps you integrate the solver into your projects effectively. 
 If you have any questions or feedback, please don't hesitate to contact us.
 

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. Finite Volume Discretization &mdash; Tsunami Project 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="2. Riemann" href="riemann.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Tsunami Project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="riemann.html">2. Riemann</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Finite Volume Discretization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#integrating-our-f-wave-solver-into-the-one-dimensional-implementation-of-a-wave-propagation">3.1. Integrating our f-wave solver into the one-dimensional implementation of a wave propagation</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Tsunami Project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3. </span>Finite Volume Discretization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Finite Volume Discretization.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="finite-volume-discretization">
+<h1><span class="section-number">3. </span>Finite Volume Discretization<a class="headerlink" href="#finite-volume-discretization" title="Permalink to this headline"></a></h1>
+<p>Finite Volume Discretization is a powerful and widely used numerical technique in the field of computational fluid dynamics (CFD)
+and other scientific and engineering disciplines. It plays a crucial role in the simulation and analysis of physical processes, particularly those governed by partial differential equations (PDEs)</p>
+<section id="integrating-our-f-wave-solver-into-the-one-dimensional-implementation-of-a-wave-propagation">
+<h2><span class="section-number">3.1. </span>Integrating our f-wave solver into the one-dimensional implementation of a wave propagation<a class="headerlink" href="#integrating-our-f-wave-solver-into-the-one-dimensional-implementation-of-a-wave-propagation" title="Permalink to this headline"></a></h2>
+<p>There are several ways to integrate our F-wave solver into the one-dimensional wave propagation implementation, including the following options:</p>
+<ul class="simple">
+<li><p>Using the command prompt.</p></li>
+<li><p>Utilizing a configuration file, and so on.</p></li>
+</ul>
+<p>Today, we will focus on using the command prompt to integrate our solver with the following files: <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.h</span></code>, <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.test.cpp</span></code>. Let’s proceed step by step:</p>
+<ol class="arabic simple">
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.h</span></code> ile, we will define a boolean variable. Update the code in “WavePropagation1d.h” as follows:</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">WavePropagation</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">m_choice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>We will modify the constructor in the <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.cpp</span></code> file to include the boolean variable. This change enables us to select between the Roe solver and our F-wave solver within the test files and the command prompt.</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="p">(</span><span class="w"> </span><span class="n">t_idx</span><span class="w"> </span><span class="n">i_nCells</span><span class="p">,</span><span class="kt">bool</span><span class="w"> </span><span class="n">i_choice</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">m_choice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_choice</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">m_nCells</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_nCells</span><span class="p">;</span><span class="w"></span>
+
+<span class="c1">// allocate memory including a single ghost cell on each side</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">l_st</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">l_st</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">l_st</span><span class="o">++</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">m_h</span><span class="p">[</span><span class="n">l_st</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">t_real</span><span class="p">[</span><span class="w">  </span><span class="n">m_nCells</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="n">m_hu</span><span class="p">[</span><span class="n">l_st</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">t_real</span><span class="p">[</span><span class="w"> </span><span class="n">m_nCells</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">];</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="c1">// init to zero</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">l_st</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">l_st</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">l_st</span><span class="o">++</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">       </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="n">t_idx</span><span class="w"> </span><span class="n">l_ce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">l_ce</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m_nCells</span><span class="p">;</span><span class="w"> </span><span class="n">l_ce</span><span class="o">++</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">m_h</span><span class="p">[</span><span class="n">l_st</span><span class="p">][</span><span class="n">l_ce</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">          </span><span class="n">m_hu</span><span class="p">[</span><span class="n">l_st</span><span class="p">][</span><span class="n">l_ce</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">       </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>In the same file, we will navigate to the <code class="docutils literal notranslate"><span class="pre">timeStep</span></code> function and add a call to <code class="docutils literal notranslate"><span class="pre">netupdates</span></code> based on the user’s choice..</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">tsunami_lab::patches::WavePropagation1d::timeStep</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_scaling</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="k">if</span><span class="p">(</span><span class="n">m_choice</span><span class="p">){</span><span class="w"></span>
+<span class="w">   </span><span class="n">solvers</span><span class="o">::</span><span class="n">Roe</span><span class="o">::</span><span class="n">netUpdates</span><span class="p">(</span><span class="w"> </span><span class="n">l_hOld</span><span class="p">[</span><span class="n">l_ceL</span><span class="p">],</span><span class="w"></span>
+<span class="w">                           </span><span class="n">l_hOld</span><span class="p">[</span><span class="n">l_ceR</span><span class="p">],</span><span class="w"></span>
+<span class="w">                           </span><span class="n">l_huOld</span><span class="p">[</span><span class="n">l_ceL</span><span class="p">],</span><span class="w"></span>
+<span class="w">                           </span><span class="n">l_huOld</span><span class="p">[</span><span class="n">l_ceR</span><span class="p">],</span><span class="w"></span>
+<span class="w">                           </span><span class="n">l_netUpdates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"></span>
+<span class="w">                           </span><span class="n">l_netUpdates</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="n">solvers</span><span class="o">::</span><span class="n">fwave</span><span class="o">::</span><span class="n">netUpdates</span><span class="p">(</span><span class="w"> </span><span class="n">l_hOld</span><span class="p">[</span><span class="n">l_ceL</span><span class="p">],</span><span class="w"></span>
+<span class="w">                               </span><span class="n">l_hOld</span><span class="p">[</span><span class="n">l_ceR</span><span class="p">],</span><span class="w"></span>
+<span class="w">                               </span><span class="n">l_huOld</span><span class="p">[</span><span class="n">l_ceL</span><span class="p">],</span><span class="w"></span>
+<span class="w">                               </span><span class="n">l_huOld</span><span class="p">[</span><span class="n">l_ceR</span><span class="p">],</span><span class="w"></span>
+<span class="w">                               </span><span class="n">l_netUpdates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"></span>
+<span class="w">                               </span><span class="n">l_netUpdates</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>To conclude, we navigate to the “main.cpp” file, where we need to modify the solver constructor to permit the selection between our F-wave and Roe solver options.</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="c1">// construct solver</span>
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation</span><span class="w"> </span><span class="o">*</span><span class="n">l_waveProp</span><span class="p">;</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i_argc</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_argv</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tolower</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">ptr</span><span class="p">));</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">strstr</span><span class="p">(</span><span class="n">i_argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;roe&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;ROE Will be Used&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">l_waveProp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="p">(</span><span class="w"> </span><span class="n">l_nx</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;FWAVE Will be Used&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">l_waveProp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="p">(</span><span class="w"> </span><span class="n">l_nx</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;FWAVE Will be Used&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">l_waveProp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="p">(</span><span class="w"> </span><span class="n">l_nx</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>To select between the F-wave and Roe solver, we execute the following command.</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ./build/tsunami_lab 200 Roe</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>oder</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ./build/tsunami_lab 200 fwave</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>if the user does not choose any solver, the F-wave solver will be executed automatically.</p>
+</div>
+<ol class="arabic" start="5">
+<li><p>To create a unit test for our solvers, we need to include a <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> argument in the constructor of the unit test:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_CASE</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Test the 1d wave propagation solver.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[WaveProp1d]&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="w"> </span><span class="nf">m_waveProp</span><span class="p">(</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><code class="docutils literal notranslate"><span class="pre">true</span></code> will use the <code class="docutils literal notranslate"><span class="pre">Roe</span> <span class="pre">solver</span></code> and <code class="docutils literal notranslate"><span class="pre">flase</span></code> will use the <code class="docutils literal notranslate"><span class="pre">Fwave</span> <span class="pre">solver</span></code></p>
+</div>
+</li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="riemann.html" class="btn btn-neutral float-left" title="2. Riemann" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Minawe,Tammaa,Schicker.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
