@@ -22,9 +22,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - uses: actions/checkout@v4
-    
-      - name: Dependencies
+      - uses: actions/checkout@v4
+      - name: Dependices
         run: |
           sudo apt-get update
           sudo apt-get install scons
