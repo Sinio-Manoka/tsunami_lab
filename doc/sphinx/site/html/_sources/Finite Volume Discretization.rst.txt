@@ -617,7 +617,7 @@ so we do the calculations:
 
 :math:`h_l` = :math:`h_r` , :math:`-(hu_l) =` = :math:`hu_r`
 
-if :math:`h_l` = :math:`h_r` , :math:`hu_l =` = :math:`h_r` then t :math:`u^{\text{Roe}}(q_l, q_r)`  will always equal zero.
+if :math:`h_l` = :math:`h_r` , :math:`hu_l =` = :math:`-(hu_r)` then :math:`u^{\text{Roe}}(q_l, q_r)`  will always equal zero.
 
 This implies that :math:`\lambda_{1/2} =  \mp \sqrt{gh}`
 
@@ -629,3 +629,30 @@ For example, consider the situation illustrated in the picture.
    :scale: 100 %
    :alt: alternate text
    :align: right
+
+
+Dam-Break
+---------
+
+
+evacuation time
+...............
+
+The provided information consists of the following data:
+:math:`q_l=[14, 0]^T` , :math:`q_r=[3.5, 0.7]^T` and :math:`s_{\text{village}}= 25 km`
+
+Now, let's calculate the wave speed using this information.
+
+
+.. image:: _static/picture2.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+so for :math:`\lambda_{1/2}` we get :math:`\lambda_{1}= 8.71 \frac{m}{s}` and  :math:`\lambda_{2}= -7.97 \frac{m}{s}`.You can determine the time it takes for the wave to reach the village by using the formula:  :math:`time= \frac{distance}{wave speed}`.
+
+**so we get :** 
+
+:math:`time_{\text{evacuation}} = \frac{25000 m}{8.71 \frac{m}{s}}  = 2870.26 s = 0.797 h = 47 min`

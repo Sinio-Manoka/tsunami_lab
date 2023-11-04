@@ -56,6 +56,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#u-l-and-h-l-effect-on-the-wave-speed">3.2.3. <span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> effect on the wave speed</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#dam-break">3.3. Dam-Break</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#evacuation-time">3.3.1. evacuation time</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -646,10 +650,23 @@ which demonstrate that only <span class="math notranslate nohighlight">\(h_l\)</
         \end{bmatrix}.\end{split}\]</div>
 <p>so we do the calculations:</p>
 <p><span class="math notranslate nohighlight">\(h_l\)</span> = <span class="math notranslate nohighlight">\(h_r\)</span> , <span class="math notranslate nohighlight">\(-(hu_l) =\)</span> = <span class="math notranslate nohighlight">\(hu_r\)</span></p>
-<p>if <span class="math notranslate nohighlight">\(h_l\)</span> = <span class="math notranslate nohighlight">\(h_r\)</span> , <span class="math notranslate nohighlight">\(hu_l =\)</span> = <span class="math notranslate nohighlight">\(h_r\)</span> then t <span class="math notranslate nohighlight">\(u^{\text{Roe}}(q_l, q_r)\)</span>  will always equal zero.</p>
+<p>if <span class="math notranslate nohighlight">\(h_l\)</span> = <span class="math notranslate nohighlight">\(h_r\)</span> , <span class="math notranslate nohighlight">\(hu_l =\)</span> = <span class="math notranslate nohighlight">\(-(hu_r)\)</span> then <span class="math notranslate nohighlight">\(u^{\text{Roe}}(q_l, q_r)\)</span>  will always equal zero.</p>
 <p>This implies that <span class="math notranslate nohighlight">\(\lambda_{1/2} =  \mp \sqrt{gh}\)</span></p>
 <p>For example, consider the situation illustrated in the picture.</p>
 <a class="reference internal image-reference" href="_images/picture.png"><img alt="alternate text" class="align-right" src="_images/picture.png" style="width: 700.0px; height: 500.0px;" /></a>
+</section>
+</section>
+<section id="dam-break">
+<h2><span class="section-number">3.3. </span>Dam-Break<a class="headerlink" href="#dam-break" title="Permalink to this headline"></a></h2>
+<section id="evacuation-time">
+<h3><span class="section-number">3.3.1. </span>evacuation time<a class="headerlink" href="#evacuation-time" title="Permalink to this headline"></a></h3>
+<p>The provided information consists of the following data:
+<span class="math notranslate nohighlight">\(q_l=[14, 0]^T\)</span> , <span class="math notranslate nohighlight">\(q_r=[3.5, 0.7]^T\)</span> and <span class="math notranslate nohighlight">\(s_{\text{village}}= 25 km\)</span></p>
+<p>Now, let’s calculate the wave speed using this information.</p>
+<a class="reference internal image-reference" href="_images/picture2.png"><img alt="alternate text" class="align-right" src="_images/picture2.png" style="width: 700.0px; height: 500.0px;" /></a>
+<p>so for <span class="math notranslate nohighlight">\(\lambda_{1/2}\)</span> we get <span class="math notranslate nohighlight">\(\lambda_{1}= 8.71 \frac{m}{s}\)</span> and  <span class="math notranslate nohighlight">\(\lambda_{2}= -7.97 \frac{m}{s}\)</span>.You can determine the time it takes for the wave to reach the village by using the formula:  <span class="math notranslate nohighlight">\(time= \frac{distance}{wave speed}\)</span>.</p>
+<p><strong>so we get :</strong></p>
+<p><span class="math notranslate nohighlight">\(time_{\text{evacuation}} = \frac{25000 m}{8.71 \frac{m}{s}}  = 2870.26 s = 0.797 h = 47 min\)</span></p>
 </section>
 </section>
 </section>
