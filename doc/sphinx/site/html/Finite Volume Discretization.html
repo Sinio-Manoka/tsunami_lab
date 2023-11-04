@@ -15,6 +15,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -45,7 +46,16 @@
 <li class="toctree-l1"><a class="reference internal" href="setup.html">1. Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="riemann.html">2. Riemann</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">3. Finite Volume Discretization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#integrating-our-f-wave-solver-into-the-one-dimensional-implementation-of-a-wave-propagation">3.1. Integrating our f-wave solver into the one-dimensional implementation of a wave propagation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integrating-our-f-wave-solver-into-the-one-dimensional-implementation-of-a-wave-propagation">3.1. Integrating our f-wave solver into the one-dimensional implementation of a wave propagation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#constant-middle-states">3.1.1. constant middle states</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#shock-and-rarefaction-waves">3.2. Shock and Rarefaction Waves</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#shock-shock-problem">3.2.1. Shock-Shock problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rare-rare-porblems">3.2.2. Rare Rare Porblems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#u-l-and-h-l-effect-on-the-wave-speed">3.2.3. <span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> effect on the wave speed</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -87,7 +97,7 @@ and other scientific and engineering disciplines. It plays a crucial role in the
 </ul>
 <p>Today, we will focus on using the command prompt to integrate our solver with the following files: <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.h</span></code>, <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.test.cpp</span></code>. Let’s proceed step by step:</p>
 <ol class="arabic simple">
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.h</span></code> ile, we will define a boolean variable. Update the code in “WavePropagation1d.h” as follows:</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.h</span></code>, we will define a boolean member to choose the two solver. Update the code in “WavePropagation1d.h” as follows:</p></li>
 </ol>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">WavePropagation</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="k">private</span><span class="o">:</span><span class="w"></span>
@@ -122,6 +132,7 @@ and other scientific and engineering disciplines. It plays a crucial role in the
 <li><p>In the same file, we will navigate to the <code class="docutils literal notranslate"><span class="pre">timeStep</span></code> function and add a call to <code class="docutils literal notranslate"><span class="pre">netupdates</span></code> based on the user’s choice..</p></li>
 </ol>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">tsunami_lab::patches::WavePropagation1d::timeStep</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_scaling</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="c1">// compute net-updates</span>
 <span class="w">   </span><span class="k">if</span><span class="p">(</span><span class="n">m_choice</span><span class="p">){</span><span class="w"></span>
 <span class="w">   </span><span class="n">solvers</span><span class="o">::</span><span class="n">Roe</span><span class="o">::</span><span class="n">netUpdates</span><span class="p">(</span><span class="w"> </span><span class="n">l_hOld</span><span class="p">[</span><span class="n">l_ceL</span><span class="p">],</span><span class="w"></span>
 <span class="w">                           </span><span class="n">l_hOld</span><span class="p">[</span><span class="n">l_ceR</span><span class="p">],</span><span class="w"></span>
@@ -166,21 +177,22 @@ and other scientific and engineering disciplines. It plays a crucial role in the
 <p class="admonition-title">Important</p>
 <p>To select between the F-wave and Roe solver, we execute the following command.</p>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ./build/tsunami_lab 200 Roe</span>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">build</span><span class="o">/</span><span class="n">tsunami_lab</span> <span class="mi">200</span> <span class="n">Roe</span>
 </pre></div>
 </div>
 </div></blockquote>
-<p>oder</p>
+<p>or</p>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ./build/tsunami_lab 200 fwave</span>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">build</span><span class="o">/</span><span class="n">tsunami_lab</span> <span class="mi">200</span> <span class="n">fwave</span>
 </pre></div>
 </div>
 </div></blockquote>
-<p>if the user does not choose any solver, the F-wave solver will be executed automatically.</p>
+<p>if the user does not choose any solver, the F-wave solver will be choosen automatically.</p>
 </div>
 <ol class="arabic" start="5">
 <li><p>To create a unit test for our solvers, we need to include a <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> argument in the constructor of the unit test:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_CASE</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Test the 1d wave propagation solver.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[WaveProp1d]&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="c1">// constructs the 1d wave propagation solver.</span>
 <span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="w"> </span><span class="nf">m_waveProp</span><span class="p">(</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
 <span class="p">...</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -192,6 +204,453 @@ and other scientific and engineering disciplines. It plays a crucial role in the
 </div>
 </li>
 </ol>
+<section id="constant-middle-states">
+<h3><span class="section-number">3.1.1. </span>constant middle states<a class="headerlink" href="#constant-middle-states" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>Now, we are going to check for some middle states. This file,
+<a class="reference external" href="https://scalable.uni-jena.de/assets/tsunami_lab/middle_states.csv">middle_states.csv</a> , contains a collection of constant middle states that arise immediately in the Riemann solution at the initial discontinuity. We will use it as a sanity test. Let’s implement a unit test for the middle state.”</p>
+<ol class="arabic simple">
+<li><p>We access a CSV file and search for suitable values to use in a unit test. In this example, we will select the initial values from the file.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">hLeft:</span> <span class="pre">8899.326826472694</span></code>, <code class="docutils literal notranslate"><span class="pre">hRight:</span> <span class="pre">8899.326826472694</span></code> , <code class="docutils literal notranslate"><span class="pre">huLeft:</span> <span class="pre">122.0337839252433</span></code> , <code class="docutils literal notranslate"><span class="pre">huRight:</span> <span class="pre">-122.0337839252433</span></code> , <code class="docutils literal notranslate"><span class="pre">hStar:</span> <span class="pre">8899.739847378269</span></code></p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><code class="docutils literal notranslate"><span class="pre">hStar</span></code> represents the height in the middle state.</p>
+</div>
+<ol class="arabic" start="2">
+<li><p>we construct a test unit like that</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_CASE</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Test the 1d wave propagation wave for the middle states.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[middle states]&quot;</span><span class="w"> </span><span class="p">){</span><span class="w"></span>
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">patches</span><span class="o">::</span><span class="n">WavePropagation1d</span><span class="w"> </span><span class="nf">middle_states1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">l_ce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">l_ce</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">50</span><span class="p">;</span><span class="w"> </span><span class="n">l_ce</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="n">middle_states1</span><span class="p">.</span><span class="n">setHeight</span><span class="p">(</span><span class="n">l_ce</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="mf">8899.326826472694</span><span class="p">);</span><span class="w"></span>
+<span class="n">middle_states1</span><span class="p">.</span><span class="n">setMomentumX</span><span class="p">(</span><span class="n">l_ce</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="mf">122.0337839252433</span><span class="p">);</span><span class="w"></span>
+<span class="w">                        </span><span class="p">}</span><span class="w"></span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">l_ce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">;</span><span class="w"> </span><span class="n">l_ce</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="n">l_ce</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="n">middle_states1</span><span class="p">.</span><span class="n">setHeight</span><span class="p">(</span><span class="n">l_ce</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                        </span><span class="mf">8899.326826472694</span><span class="p">);</span><span class="w"></span>
+<span class="n">middle_states1</span><span class="p">.</span><span class="n">setMomentumX</span><span class="p">(</span><span class="n">l_ce</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="mf">-122.0337839252433</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">middle_states1</span><span class="p">.</span><span class="n">setGhostOutflow</span><span class="p">();</span><span class="w"></span>
+
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">17</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="n">middle_states1</span><span class="p">.</span><span class="n">timeStep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+
+<span class="n">REQUIRE</span><span class="p">(</span><span class="n">middle_states1</span><span class="p">.</span><span class="n">getHeight</span><span class="p">()[</span><span class="mi">49</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Approx</span><span class="p">(</span><span class="mf">8899.74</span><span class="p">));</span><span class="w"></span>
+
+<span class="n">REQUIRE</span><span class="p">(</span><span class="n">middle_states1</span><span class="p">.</span><span class="n">getHeight</span><span class="p">()[</span><span class="mi">50</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Approx</span><span class="p">(</span><span class="mf">8899.74</span><span class="p">));</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>We will observe that the height after 17 time steps is
+approaching the initial height of 8899.326826.</p>
+</div>
+</section>
+</section>
+<section id="shock-and-rarefaction-waves">
+<h2><span class="section-number">3.2. </span>Shock and Rarefaction Waves<a class="headerlink" href="#shock-and-rarefaction-waves" title="Permalink to this headline"></a></h2>
+<p>Next, we will delve into the setup implementation of both the <code class="docutils literal notranslate"><span class="pre">shock</span> <span class="pre">shock</span> <span class="pre">problem</span></code> and the <code class="docutils literal notranslate"><span class="pre">rare_reare</span> <span class="pre">problem</span></code>:</p>
+<section id="shock-shock-problem">
+<h3><span class="section-number">3.2.1. </span>Shock-Shock problem<a class="headerlink" href="#shock-shock-problem" title="Permalink to this headline"></a></h3>
+<p>We’ll apply our solver to solve situations where two streams of water move in opposite directions and crash into each other <span class="math notranslate nohighlight">\(x_\text{dis}\)</span> . The situation is defined by the following configuration:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+     Q_i = q_{l} \quad &amp;\text{if } x_i \le x_\text{dis} \\
+     Q_i = q_{r} \quad &amp;\text{if }   x_i &gt; x_\text{dis}
+   \end{cases} \qquad q_l \in \mathbb{R}^+ \times \mathbb{R}^+, \; q_r \in \mathbb{R}^+ \times \mathbb{R}^-,\end{split}\]</div>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Before we begin, let’s navigate to the setup folder and generate three files: <code class="docutils literal notranslate"><span class="pre">ShockShock.cpp</span></code> , <code class="docutils literal notranslate"><span class="pre">ShockShock.h</span></code> and for testing purposes, create <code class="docutils literal notranslate"><span class="pre">ShockShock.test.cpp</span></code> .</p></li>
+<li><p>Now, let’s start implementing each file, beginning with <code class="docutils literal notranslate"><span class="pre">ShockShock.h</span></code>.</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef TSUNAMI_LAB_SETUPS_SHOCK_SHOCK_H</span>
+<span class="cp">#define TSUNAMI_LAB_SETUPS_SHOCK_SHOCK_H</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Setup.h&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">tsunami_lab</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="k">namespace</span><span class="w"> </span><span class="nn">setups</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="k">class</span><span class="w"> </span><span class="nc">ShockShock</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">ShockShock</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Setup</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w"> </span><span class="c1">//! height</span>
+<span class="w">   </span><span class="n">t_real</span><span class="w"> </span><span class="n">m_height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w"> </span><span class="c1">//! impulse</span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">m_hu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w"> </span><span class="c1">//! location of the dam</span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">m_locationDam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+
+<span class="w"> </span><span class="cm">/**</span>
+<span class="cm">  * Constructor.</span>
+<span class="cm">  *</span>
+<span class="cm">  * @param i_height water height</span>
+<span class="cm">  * @param i_hu water impulse</span>
+<span class="cm">  * @param i_locationDam location (x-coordinate) of the dam.</span>
+<span class="cm">  **/</span><span class="w"></span>
+
+<span class="w"> </span><span class="n">ShockShock</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_height</span><span class="p">,</span><span class="w"></span>
+<span class="w">             </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_hu</span><span class="p">,</span><span class="w"></span>
+<span class="w">             </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_locationDam</span><span class="p">);</span><span class="w"></span>
+
+<span class="w"> </span><span class="cm">/**</span>
+<span class="cm">  * Gets the water height at a given point.</span>
+<span class="cm">  *</span>
+<span class="cm">  * @return height at the given point.</span>
+<span class="cm">  **/</span><span class="w"></span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="nf">getHeight</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="p">,</span><span class="w"></span>
+<span class="w">                   </span><span class="n">t_real</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w"></span>
+
+
+<span class="w"> </span><span class="cm">/**</span>
+<span class="cm">  * Gets the momentum in x-direction.</span>
+<span class="cm">  * @param i_x x-coordinate of the queried point.</span>
+<span class="cm">  * @return momentum in x-direction.</span>
+<span class="cm">  **/</span><span class="w"></span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="nf">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_x</span><span class="p">,</span><span class="w"></span>
+<span class="w">                      </span><span class="n">t_real</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w"></span>
+
+<span class="w"> </span><span class="cm">/**</span>
+<span class="cm">  * Gets the momentum in y-direction.</span>
+<span class="cm">  * @return momentum in y-direction.</span>
+<span class="cm">  **/</span><span class="w"></span>
+<span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="nf">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="p">,</span><span class="w"></span>
+<span class="w">                      </span><span class="n">t_real</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w"></span>
+
+<span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>We will implement the configuration for the <code class="docutils literal notranslate"><span class="pre">Shock</span> <span class="pre">Shock</span> <span class="pre">Problem</span></code> in the :</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ShockShock.h&quot;</span><span class="cp"></span>
+
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">ShockShock</span><span class="o">::</span><span class="n">ShockShock</span><span class="p">(</span><span class="n">t_real</span><span class="w"> </span><span class="n">i_height</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                         </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_hu</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                         </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_locationDam</span><span class="p">){</span><span class="w"></span>
+<span class="w">      </span><span class="n">m_height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_height</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">m_hu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_hu</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">m_locationDam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_locationDam</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">t_real</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">ShockShock</span><span class="o">::</span><span class="n">getHeight</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                             </span><span class="n">t_real</span><span class="p">)</span><span class="k">const</span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m_height</span><span class="p">;</span><span class="w"></span>
+
+<span class="p">}</span><span class="w"></span>
+
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">t_real</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">ShockShock</span><span class="o">::</span><span class="n">getMomentumX</span><span class="p">(</span><span class="n">t_real</span><span class="w"> </span><span class="n">i_x</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                               </span><span class="n">t_real</span><span class="p">)</span><span class="k">const</span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="w"> </span><span class="n">i_x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">m_locationDam</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="k">return</span><span class="w"> </span><span class="n">m_hu</span><span class="p">;</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">m_hu</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">t_real</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">ShockShock</span><span class="o">::</span><span class="n">getMomentumY</span><span class="p">(</span><span class="n">t_real</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                               </span><span class="n">t_real</span><span class="p">)</span><span class="k">const</span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Lastly, to verify that the implemented setup functions correctly, we’ll implement the  <code class="docutils literal notranslate"><span class="pre">ShockShock.test.cpp</span></code> file :</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;catch2/catch.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ShockShock.h&quot;</span><span class="cp"></span>
+
+<span class="n">TEST_CASE</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Test the shock-shock setup.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[ShockShock]&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">ShockShock</span><span class="w"> </span><span class="nf">l_shockShock</span><span class="p">(</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="mi">55</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+
+<span class="w">   </span><span class="c1">// left side</span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">    </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+
+
+<span class="w">   </span><span class="c1">// right side</span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">    </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">    </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_shockShock</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="rare-rare-porblems">
+<h3><span class="section-number">3.2.2. </span>Rare Rare Porblems<a class="headerlink" href="#rare-rare-porblems" title="Permalink to this headline"></a></h3>
+<p>We can configure rare-rare Riemann problems with two streams of water moving away from each other at a specific position, denoted as <span class="math notranslate nohighlight">\(x_\text{dis}\)</span> . The scenario is outlined as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+        Q_i = q_{l} \quad &amp;\text{if } x_i \le x_\text{dis} \\
+        Q_i = q_{r} \quad &amp;\text{if }   x_i &gt; x_\text{dis}
+      \end{cases} \qquad q_l \in \mathbb{R}^+ \times \mathbb{R}^+, \; q_r \in \mathbb{R}^+ \times \mathbb{R}^-,\end{split}\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}q_l=
+        \begin{bmatrix}
+          h_l \\ (hu)_l
+        \end{bmatrix}, \quad
+      q_r =
+        \begin{bmatrix}
+          h_r \\ (hu)_r
+        \end{bmatrix} =
+        \begin{bmatrix}
+          h_l \\ -(hu)_l
+        \end{bmatrix}.\end{split}\]</div>
+<ol class="arabic simple">
+<li><p>Before we begin, let’s navigate to the setup folder again and generate three files: <code class="docutils literal notranslate"><span class="pre">RareRare.cpp</span></code> , <code class="docutils literal notranslate"><span class="pre">RareRare.h</span></code> and for testing purposes, create <code class="docutils literal notranslate"><span class="pre">RareRare.test.cpp</span></code> .</p></li>
+<li><p>Now, let’s start implementing each file, beginning with <code class="docutils literal notranslate"><span class="pre">RareRare.h</span></code>:</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="cp">#ifndef TSUNAMI_LAB_SETUPS_Rare_Rare_H</span>
+<span class="w"> </span><span class="cp">#define TSUNAMI_LAB_SETUPS_Rare_Rare_H</span>
+
+<span class="w"> </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Setup.h&quot;</span><span class="cp"></span>
+
+<span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">tsunami_lab</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span><span class="nn">setups</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">       </span><span class="k">class</span><span class="w"> </span><span class="nc">RareRare</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+
+<span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">RareRare</span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Setup</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">private</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1">//! height</span>
+<span class="w">  </span><span class="n">t_real</span><span class="w"> </span><span class="n">m_height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">//! impulse</span>
+<span class="w">  </span><span class="n">t_real</span><span class="w"> </span><span class="n">m_hu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">//! location of the dam</span>
+<span class="w">  </span><span class="n">t_real</span><span class="w"> </span><span class="n">m_locationDam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Constructor.</span>
+<span class="cm">   *</span>
+<span class="cm">   * @param i_height water height</span>
+<span class="cm">   * @param i_hu water impulse</span>
+<span class="cm">   * @param i_locationDam location (x-coordinate) of the dam.</span>
+<span class="cm">   **/</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">RareRare</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_height</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_hu</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_locationDam</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Gets the water height at a given point.</span>
+<span class="cm">   * @return height at the given point.</span>
+<span class="cm">   **/</span><span class="w"></span>
+<span class="w">  </span><span class="n">t_real</span><span class="w"> </span><span class="nf">getHeight</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="n">t_real</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w"></span>
+
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Gets the momentum in x-direction.</span>
+<span class="cm">   * @param i_x x-coordinate of the queried point.</span>
+<span class="cm">   * @return momentum in x-direction.</span>
+<span class="cm">   **/</span><span class="w"></span>
+<span class="w">  </span><span class="n">t_real</span><span class="w"> </span><span class="nf">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_x</span><span class="p">,</span><span class="w"></span>
+<span class="w">                       </span><span class="n">t_real</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Gets the momentum in y-direction.</span>
+<span class="cm">   * @return momentum in y-direction.</span>
+<span class="cm">   **/</span><span class="w"></span>
+<span class="w">  </span><span class="n">t_real</span><span class="w"> </span><span class="nf">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="n">t_real</span><span class="p">,</span><span class="w"></span>
+<span class="w">                       </span><span class="n">t_real</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span><span class="w"></span>
+
+<span class="w"> </span><span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>We will implement the configuration for the <code class="docutils literal notranslate"><span class="pre">Rare</span> <span class="pre">Rare</span> <span class="pre">Problem</span></code> in the :</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;RareRare.h&quot;</span><span class="cp"></span>
+
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">RareRare</span><span class="o">::</span><span class="n">RareRare</span><span class="p">(</span><span class="n">t_real</span><span class="w"> </span><span class="n">i_height</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                     </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_hu</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                     </span><span class="n">t_real</span><span class="w"> </span><span class="n">i_locationDam</span><span class="p">){</span><span class="w"></span>
+<span class="n">m_height</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">i_height</span><span class="p">;</span><span class="w"></span>
+<span class="n">m_hu</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">i_hu</span><span class="p">;</span><span class="w"></span>
+<span class="n">m_locationDam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_locationDam</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">t_real</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">RareRare</span><span class="o">::</span><span class="n">getHeight</span><span class="p">(</span><span class="n">t_real</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                          </span><span class="n">t_real</span><span class="p">)</span><span class="k">const</span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m_height</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">t_real</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">RareRare</span><span class="o">::</span><span class="n">getMomentumX</span><span class="p">(</span><span class="n">t_real</span><span class="w"> </span><span class="n">i_x</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                               </span><span class="n">t_real</span><span class="p">)</span><span class="k">const</span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="w"> </span><span class="n">i_x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">m_locationDam</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">m_hu</span><span class="p">;</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="k">return</span><span class="w"> </span><span class="n">m_hu</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">tsunami_lab</span><span class="o">::</span><span class="n">t_real</span><span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">RareRare</span><span class="o">::</span><span class="n">getMomentumY</span><span class="p">(</span><span class="n">t_real</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                               </span><span class="n">t_real</span><span class="p">)</span><span class="k">const</span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Lastly, to verify that the implemented setup functions correctly, we’ll implement the  <code class="docutils literal notranslate"><span class="pre">RareRare.test.cpp</span></code> file :</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;catch2/catch.hpp&gt;</span><span class="cp"></span>
+<span class="w"> </span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;RareRare.h&quot;</span><span class="cp"></span>
+
+<span class="w"> </span><span class="n">TEST_CASE</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Test the rare-rare setup.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[RareRare]&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="n">tsunami_lab</span><span class="o">::</span><span class="n">setups</span><span class="o">::</span><span class="n">RareRare</span><span class="w"> </span><span class="nf">l_rareRare</span><span class="p">(</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="mi">55</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">// left side</span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">    </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+
+
+<span class="w"> </span><span class="c1">// right side</span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">    </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getHeight</span><span class="p">(</span><span class="w">    </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumX</span><span class="p">(</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">55</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="n">REQUIRE</span><span class="p">(</span><span class="w"> </span><span class="n">l_rareRare</span><span class="p">.</span><span class="n">getMomentumY</span><span class="p">(</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="u-l-and-h-l-effect-on-the-wave-speed">
+<h3><span class="section-number">3.2.3. </span><span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> effect on the wave speed<a class="headerlink" href="#u-l-and-h-l-effect-on-the-wave-speed" title="Permalink to this headline"></a></h3>
+<p>After experimenting with different sets of initial water heights <span class="math notranslate nohighlight">\(h_l\)</span> and particle velocities <span class="math notranslate nohighlight">\(u_l\)</span> . we observed that the primary variable affecting wave velocities is the initial height. Both  <span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> exert an influence on momentum.
+Specifically, as <span class="math notranslate nohighlight">\(h_l\)</span> increase in magnitude, the momentum also increases, leading to higher middle state heights. However, the changes in particle velocities do not affect the wave speed;
+only the initial height has an impact on both <span class="math notranslate nohighlight">\(\lambda_{1}\)</span> and <span class="math notranslate nohighlight">\(\lambda_{2}\)</span>.
+This relationship becomes evident through our Geogebra calculations,
+which demonstrate that only <span class="math notranslate nohighlight">\(h_l\)</span> affect the wave speed. This connection is further illuminated by the following equations.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+      \lambda^{\text{Roe}}_{1}(q_l, q_r) &amp;= u^{\text{Roe}}(q_l, q_r) - \sqrt{gh^{\text{Roe}}(q_l, q_r)}, \\
+      \lambda^{\text{Roe}}_{2}(q_l, q_r) &amp;= u^{\text{Roe}}(q_l, q_r) + \sqrt{gh^{\text{Roe}}(q_l, q_r)},
+\end{aligned}\end{split}\]</div>
+<p>And this relationship is also evident through our generated CSV files.</p>
+<p><strong>1. Shock-Shock setup:</strong></p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 10 , <span class="math notranslate nohighlight">\(u_l\)</span> = 15 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene1.mp4" type="video/mp4"></video></div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 20 , <span class="math notranslate nohighlight">\(u_l\)</span> = 15 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene2.mp4" type="video/mp4"></video></div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 40 , <span class="math notranslate nohighlight">\(u_l\)</span> = 15 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene3.mp4" type="video/mp4"></video></div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 10 , <span class="math notranslate nohighlight">\(u_l\)</span> = 20 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene4.mp4" type="video/mp4"></video></div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 20 , <span class="math notranslate nohighlight">\(u_l\)</span> = 20 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene5.mp4" type="video/mp4"></video></div></blockquote>
+<p><strong>2. Shock-Shock setup:</strong></p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 10 , <span class="math notranslate nohighlight">\(u_l\)</span> = 5 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene6.mp4" type="video/mp4"></video></div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 10 , <span class="math notranslate nohighlight">\(u_l\)</span> = 8 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene7.mp4" type="video/mp4"></video></div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p><span class="math notranslate nohighlight">\(h_l\)</span> = 20 , <span class="math notranslate nohighlight">\(u_l\)</span> = 5 :</p></li>
+</ol>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/scene8.mp4" type="video/mp4"></video></div></blockquote>
+<p>It can be observed that simulations featuring greater initial height will consistently exhibit higher wave speeds for both setups.</p>
+<p><strong>3. Geogebra calculations:</strong></p>
+<p>both setup are outlined as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}q_l=
+        \begin{bmatrix}
+          h_l \\ (hu)_l
+        \end{bmatrix}, \quad
+      q_r =
+        \begin{bmatrix}
+          h_r \\ (hu)_r
+        \end{bmatrix} =
+        \begin{bmatrix}
+          h_l \\ -(hu)_l
+        \end{bmatrix}.\end{split}\]</div>
+<p>so we do the calculations:</p>
+<p><span class="math notranslate nohighlight">\(h_l\)</span> = <span class="math notranslate nohighlight">\(h_r\)</span> , <span class="math notranslate nohighlight">\(-(hu_l) =\)</span> = <span class="math notranslate nohighlight">\(hu_r\)</span></p>
+<p>if <span class="math notranslate nohighlight">\(h_l\)</span> = <span class="math notranslate nohighlight">\(h_r\)</span> , <span class="math notranslate nohighlight">\(hu_l =\)</span> = <span class="math notranslate nohighlight">\(h_r\)</span> then t <span class="math notranslate nohighlight">\(u^{\text{Roe}}(q_l, q_r)\)</span>  will always equal zero.</p>
+<p>This implies that <span class="math notranslate nohighlight">\(\lambda_{1/2} =  \mp \sqrt{gh}\)</span></p>
+<p>For example, consider the situation illustrated in the picture.</p>
+<a class="reference internal image-reference" href="_images/picture.png"><img alt="alternate text" class="align-right" src="_images/picture.png" style="width: 700.0px; height: 500.0px;" /></a>
+</section>
 </section>
 </section>
 

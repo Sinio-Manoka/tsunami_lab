@@ -5,8 +5,8 @@
  * The Rare Rare problem.
  **/
 
-#ifndef TSUNAMI_LAB_SETUPS_Rare_Rare_H
-#define TSUNAMI_LAB_SETUPS_Rare_Rare_H
+#ifndef TSUNAMI_LAB_SETUPS_RARE_RARE_H
+#define TSUNAMI_LAB_SETUPS_RARE_RARE_H
 
 #include "Setup.h"
 

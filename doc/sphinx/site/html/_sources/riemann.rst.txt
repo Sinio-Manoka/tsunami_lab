@@ -8,9 +8,8 @@
 Riemann
 ===========================================
 
-Welcome to the documentation for our the integration of a Riemann solver in a Finite Volume scheme.
-in C++. This solver is designed to help 
-you only to slove for do 1D shallow water equations..
+Welcome to the documentation for our the integration of a Riemann solver in a Finite Volume scheme in C++. This solver is designed to help 
+you only to slove for do 1D shallow water equations.
 This documentation will guide you through the functions we implemented to compile the Riemann
 solver. numerical solver which uses the Riemann solver produces CSV files as output, which can be visualized through `ParaView <https://www.paraview.org/download>`_ .
 

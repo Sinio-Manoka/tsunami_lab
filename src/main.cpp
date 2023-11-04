@@ -6,6 +6,8 @@
  **/
 #include "patches/WavePropagation1d.h"
 #include "setups/DamBreak1d.h"
+#include "setups/RareRare.h"
+#include "setups/ShockShock.h"
 #include "io/Csv.h"
 #include <cstdlib>
 #include <iostream>
@@ -49,11 +51,25 @@ int main( int   i_argc,
   std::cout << "  number of cells in y-direction: " << l_ny << std::endl;
   std::cout << "  cell size:                      " << l_dxy << std::endl;
 
-  // construct setup
+
   tsunami_lab::setups::Setup *l_setup;
-  l_setup = new tsunami_lab::setups::DamBreak1d( 10,
+ /* l_setup = new tsunami_lab::setups::DamBreak1d( 1000,
                                                  5,
+                                                 5 );*/
+
+
+    /*l_setup = new tsunami_lab::setups::RareRare( 50,
+                                                 5,
+                                                 25 );*/
+
+
+    l_setup = new tsunami_lab::setups::RareRare(20,
+                                                 100,
                                                  5 );
+
+
+
+                                                  
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
 
@@ -89,7 +105,10 @@ int main( int   i_argc,
     tsunami_lab::t_real l_y = l_cy * l_dxy; 
 
     for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ) {
-      tsunami_lab::t_real l_x = l_cx * l_dxy; 
+      tsunami_lab::t_real l_x = l_cx * l_dxy ;
+
+      
+
 
       // get initial values of the setup
       tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
@@ -100,6 +119,7 @@ int main( int   i_argc,
                                                         l_y );
       tsunami_lab::t_real l_hv = l_setup->getMomentumY( l_x,
                                                         l_y );
+                                                        
 
       // set initial values in wave propagation solver
       l_waveProp->setHeight( l_cx,
