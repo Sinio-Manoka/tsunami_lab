@@ -27,7 +27,7 @@ class tsunami_lab::setups::ShockShock: public Setup {
     //! impulse 
     t_real m_hu = 0;
 
-    //! location of the dam
+    //! location
     t_real m_locationDam = 0;
 
   public:
@@ -37,7 +37,7 @@ class tsunami_lab::setups::ShockShock: public Setup {
      *
      * @param i_height water height 
      * @param i_hu water impulse 
-     * @param i_locationDam location (x-coordinate) of the dam.    
+     * @param i_locationDam location (x-coordinate) .    
      **/
 
     ShockShock( t_real i_height,

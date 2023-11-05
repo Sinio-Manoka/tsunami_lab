@@ -47,17 +47,20 @@
 <li class="toctree-l1"><a class="reference internal" href="riemann.html">2. Riemann</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">3. Finite Volume Discretization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#integrating-our-f-wave-solver-into-the-one-dimensional-implementation-of-a-wave-propagation">3.1. Integrating our f-wave solver into the one-dimensional implementation of a wave propagation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#constant-middle-states">3.1.1. constant middle states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#integration-of-the-f-wave-solver">3.1.1. Integration of the F-wave solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constant-middle-states">3.1.2. Constant middle states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#github-actions">3.1.3. GitHub Actions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#shock-and-rarefaction-waves">3.2. Shock and Rarefaction Waves</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#shock-shock-problem">3.2.1. Shock-Shock problem</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rare-rare-porblems">3.2.2. Rare Rare Porblems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#u-l-and-h-l-effect-on-the-wave-speed">3.2.3. <span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> effect on the wave speed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-influence-of-u-l-and-h-l-on-the-wave-speed-in-both-shock-shock-and-rare-rare-setup">3.2.3. The influence of <span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> on the wave speed in both shock-shock and rare-rare setup</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#dam-break">3.3. Dam-Break</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#evacuation-time">3.3.1. evacuation time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evaluating-how-various-factors-influence-the-configuration-of-a-dam-break-scenario">3.3.1. Evaluating how various factors influence the configuration of a dam-break scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evacuation-time">3.3.2. Evacuation time</a></li>
 </ul>
 </li>
 </ul>
@@ -100,6 +103,8 @@ and other scientific and engineering disciplines. It plays a crucial role in the
 <li><p>Utilizing a configuration file, and so on.</p></li>
 </ul>
 <p>Today, we will focus on using the command prompt to integrate our solver with the following files: <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.h</span></code>, <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.test.cpp</span></code>. Let’s proceed step by step:</p>
+<section id="integration-of-the-f-wave-solver">
+<h3><span class="section-number">3.1.1. </span>Integration of the F-wave solver<a class="headerlink" href="#integration-of-the-f-wave-solver" title="Permalink to this headline"></a></h3>
 <ol class="arabic simple">
 <li><p>In the <code class="docutils literal notranslate"><span class="pre">WavePropagation1d.h</span></code>, we will define a boolean member to choose the two solver. Update the code in “WavePropagation1d.h” as follows:</p></li>
 </ol>
@@ -208,8 +213,9 @@ and other scientific and engineering disciplines. It plays a crucial role in the
 </div>
 </li>
 </ol>
+</section>
 <section id="constant-middle-states">
-<h3><span class="section-number">3.1.1. </span>constant middle states<a class="headerlink" href="#constant-middle-states" title="Permalink to this headline"></a></h3>
+<h3><span class="section-number">3.1.2. </span>Constant middle states<a class="headerlink" href="#constant-middle-states" title="Permalink to this headline"></a></h3>
 <blockquote>
 <div><p>Now, we are going to check for some middle states. This file,
 <a class="reference external" href="https://scalable.uni-jena.de/assets/tsunami_lab/middle_states.csv">middle_states.csv</a> , contains a collection of constant middle states that arise immediately in the Riemann solution at the initial discontinuity. We will use it as a sanity test. Let’s implement a unit test for the middle state.”</p>
@@ -272,6 +278,10 @@ and other scientific and engineering disciplines. It plays a crucial role in the
 <p>We will observe that the height after 17 time steps is
 approaching the initial height of 8899.326826.</p>
 </div>
+</section>
+<section id="github-actions">
+<h3><span class="section-number">3.1.3. </span>GitHub Actions<a class="headerlink" href="#github-actions" title="Permalink to this headline"></a></h3>
+<p>We’ve established a workflow within GitHub that currently operates as a self-hosted background process. We’ve implemented a “tests-runner.yml” file to automatically test everything following each push and pull request.</p>
 </section>
 </section>
 <section id="shock-and-rarefaction-waves">
@@ -578,8 +588,8 @@ approaching the initial height of 8899.326826.</p>
 </pre></div>
 </div>
 </section>
-<section id="u-l-and-h-l-effect-on-the-wave-speed">
-<h3><span class="section-number">3.2.3. </span><span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> effect on the wave speed<a class="headerlink" href="#u-l-and-h-l-effect-on-the-wave-speed" title="Permalink to this headline"></a></h3>
+<section id="the-influence-of-u-l-and-h-l-on-the-wave-speed-in-both-shock-shock-and-rare-rare-setup">
+<h3><span class="section-number">3.2.3. </span>The influence of <span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> on the wave speed in both shock-shock and rare-rare setup<a class="headerlink" href="#the-influence-of-u-l-and-h-l-on-the-wave-speed-in-both-shock-shock-and-rare-rare-setup" title="Permalink to this headline"></a></h3>
 <p>After experimenting with different sets of initial water heights <span class="math notranslate nohighlight">\(h_l\)</span> and particle velocities <span class="math notranslate nohighlight">\(u_l\)</span> . we observed that the primary variable affecting wave velocities is the initial height. Both  <span class="math notranslate nohighlight">\(u_l\)</span> and <span class="math notranslate nohighlight">\(h_l\)</span> exert an influence on momentum.
 Specifically, as <span class="math notranslate nohighlight">\(h_l\)</span> increase in magnitude, the momentum also increases, leading to higher middle state heights. However, the changes in particle velocities do not affect the wave speed;
 only the initial height has an impact on both <span class="math notranslate nohighlight">\(\lambda_{1}\)</span> and <span class="math notranslate nohighlight">\(\lambda_{2}\)</span>.
@@ -658,8 +668,38 @@ which demonstrate that only <span class="math notranslate nohighlight">\(h_l\)</
 </section>
 <section id="dam-break">
 <h2><span class="section-number">3.3. </span>Dam-Break<a class="headerlink" href="#dam-break" title="Permalink to this headline"></a></h2>
+<section id="evaluating-how-various-factors-influence-the-configuration-of-a-dam-break-scenario">
+<h3><span class="section-number">3.3.1. </span>Evaluating how various factors influence the configuration of a dam-break scenario<a class="headerlink" href="#evaluating-how-various-factors-influence-the-configuration-of-a-dam-break-scenario" title="Permalink to this headline"></a></h3>
+<p>To begin, we will explore a range of initial water height scenarios, aiming to formulate a conclusion based on our experimentation:</p>
+<p><span class="math notranslate nohighlight">\(h_l\)</span> = 14 , <span class="math notranslate nohighlight">\(h_r\)</span> = 4, <span class="math notranslate nohighlight">\(hu\)</span> = 0 :</p>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/h_l=14-h_r=4.mp4" type="video/mp4"></video></div></blockquote>
+<p><span class="math notranslate nohighlight">\(h_l\)</span> = 14 , <span class="math notranslate nohighlight">\(h_r\)</span> = 8, <span class="math notranslate nohighlight">\(hu\)</span> = 0 :</p>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/h_l=14-h_r=8.mp4" type="video/mp4"></video></div></blockquote>
+<p><span class="math notranslate nohighlight">\(h_l\)</span> = 50 , <span class="math notranslate nohighlight">\(h_r\)</span> = 12, <span class="math notranslate nohighlight">\(hu\)</span> = 0 :</p>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/h_l=50-h_r=12.mp4" type="video/mp4"></video></div></blockquote>
+<p><span class="math notranslate nohighlight">\(h_l\)</span> = 50 , <span class="math notranslate nohighlight">\(h_r\)</span> = 18, <span class="math notranslate nohighlight">\(hu\)</span> = 0 :</p>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/h_l=50-h_r=18.mp4" type="video/mp4"></video></div></blockquote>
+<p>To understand the significance of particle velocity, it is necessary to make a temporary modification to the getMomentumX() function.</p>
+<p>Note: <span class="math notranslate nohighlight">\(hu_r = h_r * u_r\)</span>  so we need to modify the getMomentumX to return either <cite>hu_ur</cite> or <cite>hu_ul</cite></p>
+<p>Now, let’s conduct a few tests to further enhance our conclusion.</p>
+<p><span class="math notranslate nohighlight">\(h_l\)</span> = 18 , <span class="math notranslate nohighlight">\(h_r\)</span> = 5, <span class="math notranslate nohighlight">\(hu_l\)</span> = 0, <span class="math notranslate nohighlight">\(hu_r\)</span> = 0.5 :</p>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/hl18-hr5-hul0-hr0,5.mp4" type="video/mp4"></video></div></blockquote>
+<p><span class="math notranslate nohighlight">\(h_l\)</span> = 40 , <span class="math notranslate nohighlight">\(h_r\)</span> = 10, <span class="math notranslate nohighlight">\(hu_l\)</span> = 10, <span class="math notranslate nohighlight">\(hu_r\)</span> = 14 :</p>
+<blockquote>
+<div><video autoplay="True" controls="True" preload="auto" width="700"><source src="_static/hl40-hr10-hul10-hr14.mp4" type="video/mp4"></video></div></blockquote>
+<p>So we noticed these points:</p>
+<p>The greater the initial height difference, the more significant the momentum observed within the middle state.</p>
+<p>The speed of the shock wave seems largely unaffected by variations in the right height, whereas the rarefaction wave demonstrates reduced speed with increasing initial height differences.</p>
+<p>The speed of the shock wave appears to be directly proportional to the square root of the left height.</p>
+<p>Although a higher momentum on the right side does result in a marginal increase in the speed of the shock wave, the effect is generally minor.</p>
+</section>
 <section id="evacuation-time">
-<h3><span class="section-number">3.3.1. </span>evacuation time<a class="headerlink" href="#evacuation-time" title="Permalink to this headline"></a></h3>
+<h3><span class="section-number">3.3.2. </span>Evacuation time<a class="headerlink" href="#evacuation-time" title="Permalink to this headline"></a></h3>
 <p>The provided information consists of the following data:
 <span class="math notranslate nohighlight">\(q_l=[14, 0]^T\)</span> , <span class="math notranslate nohighlight">\(q_r=[3.5, 0.7]^T\)</span> and <span class="math notranslate nohighlight">\(s_{\text{village}}= 25 km\)</span></p>
 <p>Now, let’s calculate the wave speed using this information.</p>

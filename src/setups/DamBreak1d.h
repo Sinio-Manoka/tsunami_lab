@@ -39,7 +39,7 @@ class tsunami_lab::setups::DamBreak1d: public Setup {
      **/
     DamBreak1d( t_real i_heightLeft,
                 t_real i_heightRight,
-                t_real i_locationDam );
+                t_real i_locationDam);
 
     /**
      * Gets the water height at a given point.
@@ -55,7 +55,7 @@ class tsunami_lab::setups::DamBreak1d: public Setup {
      *
      * @return momentum in x-direction.
      **/
-    t_real getMomentumX( t_real,
+    t_real getMomentumX( t_real ,
                          t_real ) const;
 
     /**

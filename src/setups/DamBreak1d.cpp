@@ -8,10 +8,11 @@
 
 tsunami_lab::setups::DamBreak1d::DamBreak1d( t_real i_heightLeft,
                                              t_real i_heightRight,
-                                             t_real i_locationDam ) {
+                                             t_real i_locationDam) {
   m_heightLeft = i_heightLeft;
   m_heightRight = i_heightRight;
   m_locationDam = i_locationDam;
+
 }
 
 tsunami_lab::t_real tsunami_lab::setups::DamBreak1d::getHeight( t_real i_x,

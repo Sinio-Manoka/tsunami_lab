@@ -20,6 +20,9 @@ There are several ways to integrate our F-wave solver into the one-dimensional w
 
 Today, we will focus on using the command prompt to integrate our solver with the following files: ``WavePropagation1d.h``, ``WavePropagation1d.cpp``, ``WavePropagation1d.test.cpp``. Let's proceed step by step:
 
+Integration of the F-wave solver
+.................................
+
 1. In the ``WavePropagation1d.h``, we will define a boolean member to choose the two solver. Update the code in "WavePropagation1d.h" as follows:
 
 .. code-block:: cpp
@@ -127,7 +130,7 @@ Today, we will focus on using the command prompt to integrate our solver with th
       ``true`` will use the ``Roe solver`` and ``flase`` will use the ``Fwave solver``
 
 
-constant middle states
+Constant middle states
 .......................
 
    Now, we are going to check for some middle states. This file,
@@ -190,6 +193,11 @@ constant middle states
    We will observe that the height after 17 time steps is 
    approaching the initial height of 8899.326826.
 
+
+GitHub Actions
+................
+
+We've established a workflow within GitHub that currently operates as a self-hosted background process. We've implemented a "tests-runner.yml" file to automatically test everything following each push and pull request.
 
 Shock and Rarefaction Waves
 ---------------------------
@@ -514,8 +522,8 @@ and
    }
 
 
-:math:`u_l` and :math:`h_l` effect on the wave speed
-.....................................................
+The influence of :math:`u_l` and :math:`h_l` on the wave speed in both shock-shock and rare-rare setup 
+......................................................................................................
 
 After experimenting with different sets of initial water heights :math:`h_l` and particle velocities :math:`u_l` . we observed that the primary variable affecting wave velocities is the initial height. Both  :math:`u_l` and :math:`h_l` exert an influence on momentum.
 Specifically, as :math:`h_l`and :math:`u_l` increase in magnitude, the momentum also increases, leading to higher middle state heights. However, the changes in particle velocities do not affect the wave speed; 
@@ -634,8 +642,68 @@ For example, consider the situation illustrated in the picture.
 Dam-Break
 ---------
 
+Evaluating how various factors influence the configuration of a dam-break scenario
+....................................................................................
 
-evacuation time
+To begin, we will explore a range of initial water height scenarios, aiming to formulate a conclusion based on our experimentation:
+
+:math:`h_l` = 14 , :math:`h_r` = 4, :math:`hu` = 0 : 
+
+ .. video:: _static/h_l=14-h_r=4.mp4
+      :width: 700
+      :autoplay:
+
+:math:`h_l` = 14 , :math:`h_r` = 8, :math:`hu` = 0 : 
+
+ .. video:: _static/h_l=14-h_r=8.mp4
+      :width: 700
+      :autoplay:
+
+:math:`h_l` = 50 , :math:`h_r` = 12, :math:`hu` = 0 : 
+
+ .. video:: _static/h_l=50-h_r=12.mp4
+      :width: 700
+      :autoplay:
+
+:math:`h_l` = 50 , :math:`h_r` = 18, :math:`hu` = 0 : 
+
+ .. video:: _static/h_l=50-h_r=18.mp4
+      :width: 700
+      :autoplay:
+
+To understand the significance of particle velocity, it is necessary to make a temporary modification to the getMomentumX() function.
+
+
+Note: :math:`hu_r = h_r * u_r`  so we need to modify the getMomentumX to return either `hu_ur` or `hu_ul` 
+
+Now, let's conduct a few tests to further enhance our conclusion.
+
+
+:math:`h_l` = 18 , :math:`h_r` = 5, :math:`hu_l` = 0, :math:`hu_r` = 0.5 : 
+
+ .. video:: _static/hl18-hr5-hul0-hr0,5.mp4
+      :width: 700
+      :autoplay:
+
+
+:math:`h_l` = 40 , :math:`h_r` = 10, :math:`hu_l` = 10, :math:`hu_r` = 14 : 
+
+ .. video:: _static/hl40-hr10-hul10-hr14.mp4
+      :width: 700
+      :autoplay:
+
+
+So we noticed these points:
+
+The greater the initial height difference, the more significant the momentum observed within the middle state.
+
+The speed of the shock wave seems largely unaffected by variations in the right height, whereas the rarefaction wave demonstrates reduced speed with increasing initial height differences.
+
+The speed of the shock wave appears to be directly proportional to the square root of the left height.
+
+Although a higher momentum on the right side does result in a marginal increase in the speed of the shock wave, the effect is generally minor.
+
+Evacuation time
 ...............
 
 The provided information consists of the following data:

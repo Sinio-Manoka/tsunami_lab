@@ -53,19 +53,15 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
- /* l_setup = new tsunami_lab::setups::DamBreak1d( 1000,
-                                                 5,
-                                                 5 );*/
+ l_setup = new tsunami_lab::setups::DamBreak1d( 40,
+                                                10,
+                                                5);
 
 
     /*l_setup = new tsunami_lab::setups::RareRare( 50,
                                                  5,
                                                  25 );*/
 
-
-    l_setup = new tsunami_lab::setups::RareRare(20,
-                                                 100,
-                                                 5 );
 
 
 
