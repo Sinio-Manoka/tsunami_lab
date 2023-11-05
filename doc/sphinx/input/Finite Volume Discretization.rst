@@ -724,3 +724,18 @@ so for :math:`\lambda_{1/2}` we get :math:`\lambda_{1}= 8.71 \frac{m}{s}` and  :
 **so we get :** 
 
 :math:`time_{\text{evacuation}} = \frac{25000 m}{8.71 \frac{m}{s}}  = 2870.26 s = 0.797 h = 47 min`
+
+
+
+Personal Contribution
+---------------------
+
+- Ward Tammaa, Daniel Schicker Doxygen Documentation
+- Mohamad Khaled Minawe, Ward Tammaa Sphnix Documentation
+- Daniel Schicker, Mohamad Khaled Minawe , Ward Tammaa functions implementation
+- Mohamad Khaled Minawe, Daniel Schicker, Ward Tammaa Unit Testing
+- Mohamad Khaled Minawe, Daniel Schicker Geogebra Datei(Calculation for the Unit Tests)
+- Ward Tammaa Hosting the code , Action runner
+
+
+    
