@@ -75,7 +75,7 @@ TEST_CASE( "Test the derivation of the Fwave net-updates ", "[Zp - Vectors]" ) {
   float i_minus_A_deltaQ[2];
   float i_plus_A_deltaQ[2];
   tsunami_lab::solvers::fwave::decompose(i_alphas,
-                                          i_eigens,
+                                          i_eigens,0,0,0,0,
                                          i_minus_A_deltaQ,
                                          i_plus_A_deltaQ );
 

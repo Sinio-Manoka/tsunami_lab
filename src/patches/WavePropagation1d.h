@@ -76,6 +76,11 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
       return m_h[m_step]+1;
     }
 
+
+   t_real const * getBathymetry(){
+      return m_b[m_step]+1;
+    }
+
     /**
      * Gets the cells' momenta in x-direction.
      *
@@ -103,6 +108,12 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
                     t_real i_h ) {
       m_h[m_step][i_ix+1] = i_h;
     }
+
+    void setBathymetry(t_idx  i_ix,
+                       t_idx,
+                       t_real i_b){
+                        m_b[m_step][i_ix+1] = i_b;
+                       }
 
     /**
      * Sets the momentum in x-direction to the given value.

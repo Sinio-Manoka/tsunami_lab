@@ -7,7 +7,7 @@
 #include "WavePropagation1d.h"
 #include "../solvers/Roe.h"
 #include "../solvers/fwave.h"
-#include <iostream>
+
 
 
 /*
@@ -53,12 +53,14 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
   m_step = (m_step+1) % 2;
   t_real * l_hNew =  m_h[m_step];
   t_real * l_huNew = m_hu[m_step];
+  t_real * l_bNew  = m_b[m_step]; 
 
 
   // init new cell quantities
   for( t_idx l_ce = 1; l_ce < m_nCells+1; l_ce++ ) {
     l_hNew[l_ce]  = l_hOld[l_ce];
     l_huNew[l_ce] = l_huOld[l_ce];
+    l_bNew[l_ce] = l_bOld[l_ce];
   }
 
   // iterate over edges and update with Riemann solutions
@@ -69,6 +71,7 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
 
     // compute net-updates
     t_real l_netUpdates[2][2];
+    //std:: cout << l_bOld[l_ceR] << std::endl ;
 
     if(m_choice){
       solvers::Roe::netUpdates(l_hOld[l_ceL],
@@ -90,10 +93,14 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
     
     // update the cells' quantities
     l_hNew[l_ceL]  -= i_scaling * l_netUpdates[0][0];
-    l_huNew[l_ceL] -= i_scaling * l_netUpdates[0][1];
+    l_huNew[l_ceL] -= i_scaling * l_netUpdates[0][1] ;
+
 
     l_hNew[l_ceR]  -= i_scaling * l_netUpdates[1][0];
-    l_huNew[l_ceR] -= i_scaling * l_netUpdates[1][1];
+    l_huNew[l_ceR] -= i_scaling * l_netUpdates[1][1] ;
+    
+  
+    
   }
 }
 

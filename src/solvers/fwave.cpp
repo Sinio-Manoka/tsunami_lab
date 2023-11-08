@@ -1,5 +1,6 @@
 #include "fwave.h"
 #include <cmath>
+#include <iostream>
 
 void tsunami_lab::solvers::fwave::eigenvalues( t_real   i_hL,
                                 t_real   i_hR,
@@ -53,41 +54,37 @@ void tsunami_lab::solvers::fwave::flux( t_real i_hL,
     o_fdelta[1] = fqr[1] - fql[1];
 } 
  
-void tsunami_lab::solvers::fwave::effectOfBathymetry(t_real i_bR,
-                                                     t_real i_bL,
-                                                     t_real i_hR,
-                                                     t_real i_hL,
-                                                     t_real & o_effect){
-
-    o_effect = (-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2);
-}
 
 void tsunami_lab::solvers::fwave::decompose(t_real i_alphas[2],
                                             t_real i_eigens[2],
+                                            t_real   i_hL,
+                                            t_real   i_hR,
+                                            t_real   i_bR,
+                                            t_real   i_bL,
                                             t_real o_minus_A_deltaQ[2], 
                                             t_real o_plus_A_deltaQ[2]){
 
-
+    
     //Negative speed of wave propagation                                    
     if( i_eigens[0] < 0){
         o_minus_A_deltaQ[0] =  i_alphas[0];
-        o_minus_A_deltaQ[1] = (i_alphas[0] * i_eigens[0]);
+        o_minus_A_deltaQ[1] = (i_alphas[0] * i_eigens[0])- ((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2));
         o_plus_A_deltaQ[0] = 0;
         o_plus_A_deltaQ[1] = 0;
     }else{
         o_plus_A_deltaQ[0] =   i_alphas[0];
-        o_plus_A_deltaQ[1] =  (i_alphas[0] * i_eigens[0]);
+        o_plus_A_deltaQ[1] =  (i_alphas[0] * i_eigens[0])-((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2));
         o_minus_A_deltaQ[0] =  0;
         o_minus_A_deltaQ[1] = 0;
     }
     //Positive speed of wave propagation
     if(i_eigens[1] < 0){
         o_minus_A_deltaQ[0] = o_minus_A_deltaQ[0] + (i_alphas[1]);
-        o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
+        o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]) - ((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2));
         
     }else{
         o_plus_A_deltaQ[0] = o_plus_A_deltaQ[0] + (i_alphas[1]);
-        o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
+        o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1])- ((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2)) ;
     } 
 
  }
@@ -145,10 +142,11 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
     eigencoefficientAlpha(l_inverse,l_fdelta,l_eigencoefficients);
 
     t_real l_eigens[2] = {l_sL,l_sR};
-    decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
-    t_real l_effect;
-    effectOfBathymetry(i_bR,i_bL,i_hR,i_hL,l_effect);
-    o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] - l_effect;
-    o_plus_A_deltaQ[1]  = o_plus_A_deltaQ[1]  - l_effect;
+    decompose(l_eigencoefficients,l_eigens,i_hL,i_hR,i_bR,i_bL,o_minus_A_deltaQ,o_plus_A_deltaQ);
+    
+
+
+
+    
 
 }

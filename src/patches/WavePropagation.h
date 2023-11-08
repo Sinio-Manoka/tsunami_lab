@@ -62,6 +62,9 @@ class tsunami_lab::patches::WavePropagation {
      **/
     virtual t_real const * getMomentumY() = 0;
 
+
+    virtual t_real const * getBathymetry() = 0;
+
     /**
      * Sets the height of the cell to the given value.
      *
@@ -72,6 +75,11 @@ class tsunami_lab::patches::WavePropagation {
     virtual void setHeight( t_idx  i_ix,
                             t_idx  i_iy,
                             t_real i_h ) = 0;
+
+
+    virtual void setBathymetry(t_idx  i_ix,
+                               t_idx  i_iy,
+                               t_real i_b)=0;
 
     /**
      * Sets the momentum in x-direction to the given value.

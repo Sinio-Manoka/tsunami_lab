@@ -130,6 +130,11 @@ int main( int   i_argc,
                                 l_cy,
                                 l_hv );
 
+      l_waveProp->setBathymetry( l_cx,
+                                 l_cy,
+                                 5);
+          
+
     }
   }
 
