@@ -13,7 +13,7 @@ namespace tsunami_lab {
 class tsunami_lab::solvers::fwave {
   private:
     static t_real constexpr m_gSqrt = 3.131557121;
-    static t_real constexpr g = 9.80665;
+    static t_real constexpr m_g = 9.80665;
     /**
      * @brief Computes the wave speeds.
      *
@@ -77,6 +77,12 @@ class tsunami_lab::solvers::fwave {
                                       t_real i_delta_f[2],
                                       t_real o_eigencoefficients[2]);
   
+    static void effectOfBathymetry(t_real i_bR,
+                                   t_real i_bL,
+                                   t_real i_hR,
+                                   t_real i_hL,
+                                   t_real & o_effect);
+
   public:
   /**
      * @brief Computes both deltaQ.
@@ -92,6 +98,8 @@ class tsunami_lab::solvers::fwave {
                             t_real   i_hR,
                             t_real   i_huL,
                             t_real   i_huR,
+                            t_real   i_bR,
+                            t_real   i_bL,
                             t_real   o_minus_A_deltaQ[2],
                             t_real   o_plus_A_deltaQ[2] );                               
 };

@@ -25,7 +25,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
 
     //! number of cells discretizing the computational domain
     t_idx m_nCells = 0;
-    
+    t_real * m_b[2] = {nullptr,nullptr};
     //! water heights for the current and next time step for all cells
     t_real * m_h[2] = { nullptr, nullptr };
 

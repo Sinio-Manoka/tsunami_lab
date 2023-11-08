@@ -37,13 +37,13 @@ void tsunami_lab::solvers::fwave::flux( t_real i_hL,
      compute hu² = (hu)² / h
     */
     t_real pow2HuL= pow(i_huL, 2)/i_hL;
-    t_real gPowHL = g * pow(i_hL, 2);
+    t_real gPowHL = m_g * pow(i_hL, 2);
     t_real totalL = pow2HuL + 0.5 * gPowHL;
     t_real fql[2] = {i_huL, totalL};
 
     //compute f(q_right)
     t_real pow2HuR= pow(i_huR, 2)/i_hR;
-    t_real gPowHR = g * pow(i_hR, 2);
+    t_real gPowHR = m_g * pow(i_hR, 2);
     t_real totalR = pow2HuR + 0.5 * gPowHR;
     t_real fqr[2] = {i_huR, totalR};
 
@@ -53,6 +53,15 @@ void tsunami_lab::solvers::fwave::flux( t_real i_hL,
     o_fdelta[1] = fqr[1] - fql[1];
 } 
  
+void tsunami_lab::solvers::fwave::effectOfBathymetry(t_real i_bR,
+                                                     t_real i_bL,
+                                                     t_real i_hR,
+                                                     t_real i_hL,
+                                                     t_real & o_effect){
+
+    o_effect = (-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2);
+}
+
 void tsunami_lab::solvers::fwave::decompose(t_real i_alphas[2],
                                             t_real i_eigens[2],
                                             t_real o_minus_A_deltaQ[2], 
@@ -79,8 +88,7 @@ void tsunami_lab::solvers::fwave::decompose(t_real i_alphas[2],
     }else{
         o_plus_A_deltaQ[0] = o_plus_A_deltaQ[0] + (i_alphas[1]);
         o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
-    }
-    
+    } 
 
  }
 
@@ -113,6 +121,8 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
                                              t_real   i_hR,
                                              t_real   i_huL,
                                              t_real   i_huR,
+                                             t_real   i_bR,
+                                             t_real   i_bL,
                                              t_real   o_minus_A_deltaQ[2],
                                              t_real   o_plus_A_deltaQ[2]){
 
@@ -136,8 +146,9 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
 
     t_real l_eigens[2] = {l_sL,l_sR};
     decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
-
-    
-
+    t_real l_effect;
+    effectOfBathymetry(i_bR,i_bL,i_hR,i_hL,l_effect);
+    o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] - l_effect;
+    o_plus_A_deltaQ[1]  = o_plus_A_deltaQ[1]  - l_effect;
 
 }

@@ -22,6 +22,8 @@ tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells,bool 
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
     m_h[l_st] = new t_real[  m_nCells + 2 ];
     m_hu[l_st] = new t_real[ m_nCells + 2 ];
+    m_b[l_st] = new t_real[ m_nCells + 2 ];
+
   }
 
   // init to zero
@@ -29,6 +31,7 @@ tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells,bool 
     for( t_idx l_ce = 0; l_ce < m_nCells; l_ce++ ) {
       m_h[l_st][l_ce] = 0;
       m_hu[l_st][l_ce] = 0;
+      m_b[l_st][l_ce] = 0;
     }
   }
 }
@@ -37,21 +40,24 @@ tsunami_lab::patches::WavePropagation1d::~WavePropagation1d() {
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
     delete[] m_h[l_st];
     delete[] m_hu[l_st];
+    delete[] m_b[l_st];
   }
 }
 
-void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling ) {
+void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
   // pointers to old and new data
-  t_real * l_hOld = m_h[m_step];
+  t_real * l_hOld  = m_h[m_step];
   t_real * l_huOld = m_hu[m_step];
+  t_real * l_bOld  = m_b[m_step]; 
 
   m_step = (m_step+1) % 2;
   t_real * l_hNew =  m_h[m_step];
   t_real * l_huNew = m_hu[m_step];
 
+
   // init new cell quantities
   for( t_idx l_ce = 1; l_ce < m_nCells+1; l_ce++ ) {
-    l_hNew[l_ce] = l_hOld[l_ce];
+    l_hNew[l_ce]  = l_hOld[l_ce];
     l_huNew[l_ce] = l_huOld[l_ce];
   }
 
@@ -76,6 +82,8 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling ) {
                                   l_hOld[l_ceR],
                                   l_huOld[l_ceL],
                                   l_huOld[l_ceR],
+                                  l_bOld[l_ceR],
+                                  l_bOld[l_ceL],
                                   l_netUpdates[0],
                                   l_netUpdates[1]);
     }
@@ -92,12 +100,15 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling ) {
 void tsunami_lab::patches::WavePropagation1d::setGhostOutflow() {
   t_real * l_h = m_h[m_step];
   t_real * l_hu = m_hu[m_step];
+  t_real * l_b = m_b[m_step];
 
   // set left boundary
   l_h[0] = l_h[1];
   l_hu[0] = l_hu[1];
+  l_b[0] = l_b[1];
 
   // set right boundary
-  l_h[m_nCells+1] = l_h[m_nCells];
+  l_h[m_nCells+1]  = l_h[m_nCells];
   l_hu[m_nCells+1] = l_hu[m_nCells];
+  l_b[m_nCells+1]  = l_b[m_nCells];
 }
