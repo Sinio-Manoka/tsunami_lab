@@ -8,6 +8,7 @@
 #include "setups/DamBreak1d.h"
 #include "setups/RareRare.h"
 #include "setups/ShockShock.h"
+#include "setups/subcriticalflow/SubcriticalFlow.h"
 #include "io/Csv.h"
 #include <cstdlib>
 #include <iostream>
@@ -53,7 +54,7 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
- l_setup = new tsunami_lab::setups::DamBreak1d( 40,
+ l_setup = new tsunami_lab::setups::SubcriticalFlow( 40,
                                                 10,
                                                 5);
 
@@ -133,7 +134,7 @@ int main( int   i_argc,
 
       l_waveProp->setBathymetry( l_cx,
                                  l_cy,
-                                 -l_bv);
+                                 l_bv);
           
 
     }
@@ -175,6 +176,7 @@ int main( int   i_argc,
                                    l_waveProp->getHeight(),
                                    l_waveProp->getMomentumX(),
                                    nullptr,
+                                   l_waveProp->getBathymetry(),
                                    l_file );
       l_file.close();
       l_nOut++;
