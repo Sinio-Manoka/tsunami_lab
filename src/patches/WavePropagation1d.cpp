@@ -53,14 +53,12 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
   m_step = (m_step+1) % 2;
   t_real * l_hNew =  m_h[m_step];
   t_real * l_huNew = m_hu[m_step];
-  t_real * l_bNew  = m_b[m_step]; 
 
 
   // init new cell quantities
   for( t_idx l_ce = 1; l_ce < m_nCells+1; l_ce++ ) {
     l_hNew[l_ce]  = l_hOld[l_ce];
     l_huNew[l_ce] = l_huOld[l_ce];
-    l_bNew[l_ce] = l_bOld[l_ce];
   }
 
   // iterate over edges and update with Riemann solutions

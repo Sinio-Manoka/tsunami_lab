@@ -57,34 +57,29 @@ void tsunami_lab::solvers::fwave::flux( t_real i_hL,
 
 void tsunami_lab::solvers::fwave::decompose(t_real i_alphas[2],
                                             t_real i_eigens[2],
-                                            t_real   i_hL,
-                                            t_real   i_hR,
-                                            t_real   i_bR,
-                                            t_real   i_bL,
                                             t_real o_minus_A_deltaQ[2], 
                                             t_real o_plus_A_deltaQ[2]){
-
-    
+ 
     //Negative speed of wave propagation                                    
     if( i_eigens[0] < 0){
         o_minus_A_deltaQ[0] =  i_alphas[0];
-        o_minus_A_deltaQ[1] = (i_alphas[0] * i_eigens[0])- ((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2));
+        o_minus_A_deltaQ[1] = (i_alphas[0] * i_eigens[0]);
         o_plus_A_deltaQ[0] = 0;
         o_plus_A_deltaQ[1] = 0;
     }else{
         o_plus_A_deltaQ[0] =   i_alphas[0];
-        o_plus_A_deltaQ[1] =  (i_alphas[0] * i_eigens[0])-((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2));
+        o_plus_A_deltaQ[1] =  (i_alphas[0] * i_eigens[0]);
         o_minus_A_deltaQ[0] =  0;
         o_minus_A_deltaQ[1] = 0;
     }
     //Positive speed of wave propagation
     if(i_eigens[1] < 0){
         o_minus_A_deltaQ[0] = o_minus_A_deltaQ[0] + (i_alphas[1]);
-        o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]) - ((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2));
+        o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
         
     }else{
         o_plus_A_deltaQ[0] = o_plus_A_deltaQ[0] + (i_alphas[1]);
-        o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1])- ((-m_g) * (i_bR-i_bL)*((i_hL+i_hR)/2)) ;
+        o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]) ;
     } 
 
  }
@@ -106,8 +101,10 @@ void tsunami_lab::solvers::fwave::inverseMatrix(t_real i_eigen1,
 
 void tsunami_lab::solvers::fwave::eigencoefficientAlpha(t_real i_inverse[4],
                                                         t_real i_delta_f[2],
+                                                        t_real i_b,
                                                         t_real o_eigencoefficients[2]){
 
+    i_delta_f[1] = i_delta_f[1] - i_b;
     //m x n ° n x p = 
     o_eigencoefficients[0] = (i_inverse[0] * i_delta_f[0]) + (i_inverse[1] * i_delta_f[1]);
     o_eigencoefficients[1] = (i_inverse[2] * i_delta_f[0]) + (i_inverse[3] * i_delta_f[1]);
@@ -137,15 +134,13 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
 
     t_real l_fdelta[2];
     flux(i_hL,i_hR,i_huL,i_huR,l_fdelta);
-    
+    t_real l_b = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
     t_real l_eigencoefficients[2];
-    eigencoefficientAlpha(l_inverse,l_fdelta,l_eigencoefficients);
+    eigencoefficientAlpha(l_inverse,l_fdelta,l_b,l_eigencoefficients);
 
     t_real l_eigens[2] = {l_sL,l_sR};
-    decompose(l_eigencoefficients,l_eigens,i_hL,i_hR,i_bR,i_bL,o_minus_A_deltaQ,o_plus_A_deltaQ);
+    decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
     
-
-
 
     
 

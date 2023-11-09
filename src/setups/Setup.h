@@ -54,6 +54,10 @@ class tsunami_lab::setups::Setup {
      **/
     virtual t_real getMomentumY( t_real i_x,
                                  t_real i_y ) const = 0;
+
+
+    virtual t_real getBathymetry( t_real i_x,
+                                  t_real i_y ) const = 0;   
       
 };
 

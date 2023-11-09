@@ -55,11 +55,7 @@ class tsunami_lab::solvers::fwave {
     */
     static void decompose(t_real i_alphas[2],
                           t_real i_eigens[2],
-                          t_real   i_hL,
-                          t_real   i_hR,
-                          t_real   i_bR,
-                          t_real   i_bL,
-                          t_real o_minus_A_deltaQ[2],
+                          t_real o_minus_A_deltaQ[2], 
                           t_real o_plus_A_deltaQ[2]);
     /**
      * @brief Computes the inverse matrix for the eigencoefficients α
@@ -79,6 +75,7 @@ class tsunami_lab::solvers::fwave {
     */
     static void eigencoefficientAlpha(t_real i_inverse[4],
                                       t_real i_delta_f[2],
+                                      t_real i_b,
                                       t_real o_eigencoefficients[2]);
   
 

@@ -33,6 +33,10 @@ tsunami_lab::t_real tsunami_lab::setups::RareRare::getMomentumX(t_real i_x,
                                                                   
 }
 
+tsunami_lab::t_real tsunami_lab::setups::RareRare::getBathymetry( t_real,
+                                                                    t_real ) const {
+  return 0;
+}
 
 tsunami_lab::t_real tsunami_lab::setups::RareRare::getMomentumY(t_real,
                                                                   t_real)const{

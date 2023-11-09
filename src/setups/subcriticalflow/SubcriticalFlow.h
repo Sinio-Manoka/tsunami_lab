@@ -4,21 +4,21 @@
  * @section DESCRIPTION
  * One-dimensional dam break problem.
  **/
-#ifndef TSUNAMI_LAB_SETUPS_DAM_BREAK_1D_H
-#define TSUNAMI_LAB_SETUPS_DAM_BREAK_1D_H
+#ifndef TSUNAMI_LAB_SETUPS_SUBCRITICAL_FLOW_H
+#define TSUNAMI_LAB_SETUPS_SUBCRITICAL_FLOW_H
 
-#include "Setup.h"
+#include "../Setup.h"
 
 namespace tsunami_lab {
   namespace setups {
-    class DamBreak1d;
+    class SubcriticalFlow;
   }
 }
 
 /**
  * 1d dam break setup.
  **/
-class tsunami_lab::setups::DamBreak1d: public Setup {
+class tsunami_lab::setups::SubcriticalFlow: public Setup {
   private:
     //! height on the left side 
     t_real m_heightLeft = 0;
@@ -29,6 +29,8 @@ class tsunami_lab::setups::DamBreak1d: public Setup {
     //! location of the dam
     t_real m_locationDam = 0;
 
+    t_real m_b = 0;
+
   public:
     /**
      * Constructor.
@@ -37,9 +39,9 @@ class tsunami_lab::setups::DamBreak1d: public Setup {
      * @param i_heightRight water height on the right side of the dam.
      * @param i_locationDam location (x-coordinate) of the dam.
      **/
-    DamBreak1d( t_real i_heightLeft,
-                t_real i_heightRight,
-                t_real i_locationDam);
+    SubcriticalFlow(t_real i_heightLeft,
+                    t_real i_heightRight,
+                    t_real i_locationDam);
 
     /**
      * Gets the water height at a given point.
@@ -65,7 +67,7 @@ class tsunami_lab::setups::DamBreak1d: public Setup {
     t_real getMomentumY( t_real,
                          t_real ) const;
                          
-    t_real getBathymetry( t_real,
+    t_real getBathymetry( t_real i_x,
                           t_real ) const ;
 };
 

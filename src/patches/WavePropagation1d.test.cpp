@@ -100,11 +100,9 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
                             -122.0337839252433);
   }
 
-  middle_states1.setGhostOutflow();
-
-
   for (int i = 0; i < 17; i++)
   {
+    middle_states1.setGhostOutflow();
     middle_states1.timeStep(0.001);
   }
 

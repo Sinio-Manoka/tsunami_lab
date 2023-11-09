@@ -34,7 +34,7 @@ TEST_CASE( "Testing The eigencoefficient", "[AlphaVector]" ) {
   float i_inverse[4] = {1,2,3,4};
   float i_delta_f[2] = {5,6};
   float eigencoefficients[2];
-  tsunami_lab::solvers::fwave::eigencoefficientAlpha( i_inverse,i_delta_f,eigencoefficients);
+  tsunami_lab::solvers::fwave::eigencoefficientAlpha( i_inverse,i_delta_f,0,eigencoefficients);
   REQUIRE( eigencoefficients[0] == 17 );
   REQUIRE( eigencoefficients[1] == 39);
  
@@ -75,7 +75,7 @@ TEST_CASE( "Test the derivation of the Fwave net-updates ", "[Zp - Vectors]" ) {
   float i_minus_A_deltaQ[2];
   float i_plus_A_deltaQ[2];
   tsunami_lab::solvers::fwave::decompose(i_alphas,
-                                          i_eigens,0,0,0,0,
+                                        i_eigens,
                                          i_minus_A_deltaQ,
                                          i_plus_A_deltaQ );
 
