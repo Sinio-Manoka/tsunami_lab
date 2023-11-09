@@ -27,11 +27,6 @@ TEST_CASE( "Test the 1d wave propagation solver.", "[WaveProp1d]" ) {
 
   // construct solver and setup a dambreak problem
 
-  /*
-    SET it to True  -> Roe will be used
-    SET it to False -> Fwave will be used
-    Default ist always FWAVE
-  */
 
   tsunami_lab::patches::WavePropagation1d m_waveProp( 100 , true );
 
@@ -110,8 +105,121 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
   REQUIRE(middle_states1.getHeight()[49] == Approx(8899.74));
 
   REQUIRE(middle_states1.getHeight()[50] == Approx(8899.74));
+
+
+  tsunami_lab::patches::WavePropagation1d middle_states2(100, true);
+
+  for (std::size_t l_ce = 0; l_ce < 50; l_ce++)
+  {
+    middle_states1.setHeight(l_ce,
+                         0,
+                         9894.065328676988);
+    middle_states1.setMomentumX(l_ce,
+                            0,
+                            763.616897222239);
+  }
+  for (std::size_t l_ce = 50; l_ce < 100; l_ce++)
+  {
+    middle_states1.setHeight(l_ce,
+                         0,
+                         9894.065328676988);
+    middle_states1.setMomentumX(l_ce,
+                            0,
+                            -763.616897222239);
+  }
+
+  for (int i = 0; i < 17; i++)
+  {
+    middle_states1.setGhostOutflow();
+    middle_states1.timeStep(0.001);
+  }
+
+
+  REQUIRE(middle_states1.getHeight()[49] == Approx(9896.516538751875));
+
+  REQUIRE(middle_states1.getHeight()[50] == Approx(9896.516538751875));
  
 
+
+
+
+tsunami_lab::patches::WavePropagation1d middle_states3(100, false);
+
+  for (std::size_t l_ce = 0; l_ce < 50; l_ce++)
+  {
+    middle_states1.setHeight(l_ce,
+                         0,
+                         1387.176994373967);
+    middle_states1.setMomentumX(l_ce,
+                            0,
+                            -101.9619713277172);
+  }
+  for (std::size_t l_ce = 50; l_ce < 100; l_ce++)
+  {
+    middle_states1.setHeight(l_ce,
+                         0,
+                         1387.176994373967);
+    middle_states1.setMomentumX(l_ce,
+                            0,
+                            101.9619713277172);
+  }
+
+  for (int i = 0; i < 40; i++)
+  {
+    middle_states1.setGhostOutflow();
+    middle_states1.timeStep(0.001);
+  }
+
+
+  REQUIRE(middle_states1.getHeight()[49] == Approx(1386.303079031417));
+
+  REQUIRE(middle_states1.getHeight()[50] == Approx(1386.303079031417));
+
+
+  tsunami_lab::patches::WavePropagation1d m_waveProp2( 100 , false );
+
+  for( std::size_t l_ce = 0; l_ce < 50; l_ce++ ) {
+    m_waveProp.setHeight( l_ce,
+                          0,
+                          2 );
+    m_waveProp.setMomentumX( l_ce,
+                             0,
+                             6 );
+  }
+  for( std::size_t l_ce = 50; l_ce < 100; l_ce++ ) {
+    m_waveProp.setHeight( l_ce,
+                          0,
+                          5 );
+    m_waveProp.setMomentumX( l_ce,
+                             0,
+                             20 );
+  }
+
+  // set outflow boundary condition
+  m_waveProp.setGhostOutflow();
+
+  // perform a time step
+  m_waveProp.timeStep( 0.1 );
+
+  // steady state
+  for( std::size_t l_ce = 0; l_ce < 49; l_ce++ ) {
+    REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx(2) );
+    REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx(6) );
+  }
+
+  // dam-break
+  REQUIRE( m_waveProp.getHeight()[49]   == Approx(2.27629) );
+  REQUIRE( m_waveProp.getMomentumX()[49] == Approx(5.3794) );
+
+  REQUIRE( m_waveProp.getHeight()[50]   == Approx(3.32371) );
+  REQUIRE( m_waveProp.getMomentumX()[50] == Approx(4.12357) );
+
+  // steady state
+  for( std::size_t l_ce = 51; l_ce < 100; l_ce++ ) {
+    REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx(5) );
+    REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx(20) );
+  }
+ 
 
 }
 

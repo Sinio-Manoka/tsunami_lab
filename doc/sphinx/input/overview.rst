@@ -1,8 +1,6 @@
 
-In the introduction, you'll find the most recent update date of our documentation
-.With each update, we will go through all the tools and functions
-required for our tsunami project.  
-and We'll take a journey through our tsunami project, discussing
+In the introduction, you'll find the most recent updates to our documentation. With each update, we will cover all the tools and functions
+required for our tsunami project. We'll also take a journey through our Tsunami project, discussing
 how each function is made and explaining how to use them on your device. 
 During the final phase of the project, we'll dive into optimizing each function we've
 utilized and explore the process of visualizing a tsunami wave.

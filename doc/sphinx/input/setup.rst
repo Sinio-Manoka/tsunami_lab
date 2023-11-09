@@ -134,8 +134,6 @@ Replace <specific_number> with the specific input parameter or numerical value r
 
 
 
-**For every 10 input, there will be 1 corresponding CSV files generated in the build directory.!!**
-
 Documentation
 ----------------
 **The Project Documentation can be found** `Here`_ .

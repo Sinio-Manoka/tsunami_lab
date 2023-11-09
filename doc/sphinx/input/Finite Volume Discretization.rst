@@ -127,7 +127,7 @@ Integration of the F-wave solver
       ...
       }
    .. Important::
-      ``true`` will use the ``Roe solver`` and ``flase`` will use the ``Fwave solver``
+      ``true`` will use the ``Roe solver`` and ``false`` will use the ``Fwave solver``
 
 
 Constant middle states
@@ -525,11 +525,12 @@ and
 The influence of :math:`u_l` and :math:`h_l` on the wave speed in both shock-shock and rare-rare setup 
 ......................................................................................................
 
-After experimenting with different sets of initial water heights :math:`h_l` and particle velocities :math:`u_l` . we observed that the primary variable affecting wave velocities is the initial height. Both  :math:`u_l` and :math:`h_l` exert an influence on momentum.
+After experimenting with different sets of initial water heights :math:`h_l` and particle velocities :math:`u_l` . we observed that the primary variable affecting wave velocities is the initial height. 
+Both :math:`u_l` and :math:`h_l` exert an influence on momentum.
 Specifically, as :math:`h_l`and :math:`u_l` increase in magnitude, the momentum also increases, leading to higher middle state heights. However, the changes in particle velocities do not affect the wave speed; 
 only the initial height has an impact on both :math:`\lambda_{1}` and :math:`\lambda_{2}`.
 This relationship becomes evident through our Geogebra calculations,
-which demonstrate that only :math:`h_l` affect the wave speed. This connection is further illuminated by the following equations.
+which demonstrate that only :math:`h_l` affect the wave speed. This connection is further illuminated by the following equations for our approximate Riemann solver.
 
 .. math::
    

@@ -10,10 +10,6 @@
 
 
 
-/*
- * It takes 2 parameters.
- * 
-*/
 tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells,bool i_choice ) {
   m_choice = i_choice;
   m_nCells = i_nCells;
