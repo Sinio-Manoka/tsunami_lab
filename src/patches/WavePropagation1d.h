@@ -25,7 +25,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
 
     //! number of cells discretizing the computational domain
     t_idx m_nCells = 0;
-    t_real * m_b[2] = {nullptr,nullptr};
+    t_real * m_b = nullptr;
     //! water heights for the current and next time step for all cells
     t_real * m_h[2] = { nullptr, nullptr };
 
@@ -78,7 +78,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
 
 
    t_real const * getBathymetry(){
-      return m_b[m_step]+1;
+      return m_b+1;
     }
 
     /**
@@ -112,7 +112,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     void setBathymetry(t_idx  i_ix,
                        t_idx,
                        t_real i_b){
-      m_b[m_step][i_ix+1] = i_b;
+      m_b[i_ix+1] = i_b;
     }
 
     /**

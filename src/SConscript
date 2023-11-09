@@ -13,7 +13,8 @@ l_sources = [ 'solvers/Roe.cpp',
               'io/Csv.cpp',
               'solvers/fwave.cpp',
               'setups/ShockShock.cpp',
-              'setups/RareRare.cpp']
+              'setups/RareRare.cpp',
+              'setups/subcriticalflow/SubcriticalFlow.cpp']
 
 for l_so in l_sources:
   env.sources.append( env.Object( l_so ) )
@@ -28,7 +29,8 @@ l_tests = [ 'tests.cpp',
             'setups/DamBreak1d.test.cpp',
             'solvers/fwave.test.cpp',
             'setups/ShockShock.test.cpp',
-            'setups/RareRare.test.cpp']
+            'setups/RareRare.test.cpp',
+            'setups/subcriticalflow/SubcriticalFlow.test.cpp']
 
 for l_te in l_tests:
   env.tests.append( env.Object( l_te ) )

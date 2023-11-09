@@ -29,8 +29,6 @@ class tsunami_lab::setups::SubcriticalFlow: public Setup {
     //! location of the dam
     t_real m_locationDam = 0;
 
-    t_real m_b = 0;
-
   public:
     /**
      * Constructor.
