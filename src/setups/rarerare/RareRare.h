@@ -2,36 +2,35 @@
  * @author Ward Tammaa 
  *
  * @section DESCRIPTION
- * The Shock Shock problem.
+ * The Rare Rare problem.
  **/
- 
-#ifndef TSUNAMI_LAB_SETUPS_SHOCK_SHOCK_H
-#define TSUNAMI_LAB_SETUPS_SHOCK_SHOCK_H
 
-#include "Setup.h"
+#ifndef TSUNAMI_LAB_SETUPS_RARE_RARE_H
+#define TSUNAMI_LAB_SETUPS_RARE_RARE_H
+
+#include "../Setup.h"
 
 namespace tsunami_lab {
   namespace setups {
-    class ShockShock;
+    class RareRare;
   }
 }
 
 /**
- * Shock Shock setup.
+ * Rare Rare setup.
  **/
-class tsunami_lab::setups::ShockShock: public Setup {
+class tsunami_lab::setups::RareRare: public Setup {
   private:
-    //! height 
+    //! height  
     t_real m_height = 0;
-
-    //! impulse 
+    
+    //! impulse
     t_real m_hu = 0;
 
     //! location
     t_real m_locationDam = 0;
 
   public:
-
     /**
      * Constructor.
      *
@@ -40,17 +39,16 @@ class tsunami_lab::setups::ShockShock: public Setup {
      * @param i_locationDam location (x-coordinate) .    
      **/
 
-    ShockShock( t_real i_height,
-                t_real i_hu,
-                t_real i_locationDam);
+    RareRare( t_real i_height,
+              t_real i_hu,
+              t_real i_locationDam);
 
     /**
      * Gets the water height at a given point.
-     *
      * @return height at the given point.
      **/
-    t_real getHeight( t_real,
-                      t_real) const;
+    t_real getHeight( t_real ,
+                      t_real ) const;
 
 
     /**
@@ -67,9 +65,10 @@ class tsunami_lab::setups::ShockShock: public Setup {
      **/
     t_real getMomentumY( t_real,
                          t_real ) const;
-                         
+
     t_real getBathymetry( t_real,
                           t_real ) const ;
+                          
 };
 
 #endif

@@ -22,7 +22,7 @@ tsunami_lab::t_real tsunami_lab::setups::SubcriticalFlow::getHeight( t_real i_x,
 
 tsunami_lab::t_real tsunami_lab::setups::SubcriticalFlow::getMomentumX( t_real,
                                                                    t_real ) const {
-  return 0.18;
+  return 4.42;
 }
 
 tsunami_lab::t_real tsunami_lab::setups::SubcriticalFlow::getMomentumY( t_real,

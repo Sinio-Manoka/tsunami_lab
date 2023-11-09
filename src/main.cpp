@@ -5,10 +5,11 @@
  * Entry-point for simulations.
  **/
 #include "patches/WavePropagation1d.h"
-#include "setups/DamBreak1d.h"
-#include "setups/RareRare.h"
-#include "setups/ShockShock.h"
+#include "setups/dambreak/DamBreak1d.h"
+#include "setups/rarerare/RareRare.h"
+#include "setups/shockshock/ShockShock.h"
 #include "setups/subcriticalflow/SubcriticalFlow.h"
+#include "setups/supercriticalflow/SupercriticalFlow.h"
 #include "io/Csv.h"
 #include <cstdlib>
 #include <iostream>
