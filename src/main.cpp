@@ -25,7 +25,7 @@ int main( int   i_argc,
   tsunami_lab::t_idx l_ny = 1;
 
   // set cell size
-  tsunami_lab::t_real l_dxy = 1;
+  tsunami_lab::t_real l_dxy = 25;
 
   std::cout << "####################################" << std::endl;
   std::cout << "### Tsunami Lab                  ###" << std::endl;
@@ -46,7 +46,7 @@ int main( int   i_argc,
       std::cerr << "invalid number of cells" << std::endl;
       return EXIT_FAILURE;
     }
-    l_dxy = 10.0 / l_nx;
+    l_dxy = 25.0 / l_nx;
   }
   std::cout << "runtime configuration" << std::endl;
   std::cout << "  number of cells in x-direction: " << l_nx << std::endl;
@@ -55,9 +55,7 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
- l_setup = new tsunami_lab::setups::SupercriticalFlow(  60,
-                                                        90,
-                                                        5);
+  l_setup = new tsunami_lab::setups::SupercriticalFlow();
                                                 
 
   // construct solver
@@ -109,6 +107,7 @@ int main( int   i_argc,
                                                         l_y );
       tsunami_lab::t_real l_hv = l_setup->getMomentumY( l_x,
                                                         l_y );
+
       tsunami_lab::t_real l_bv = l_setup->getBathymetry(l_x,
                                                         l_y );                                       
 

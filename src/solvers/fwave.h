@@ -94,8 +94,8 @@ class tsunami_lab::solvers::fwave {
                             t_real   i_hR,
                             t_real   i_huL,
                             t_real   i_huR,
-                            t_real   i_bR,
                             t_real   i_bL,
+                            t_real   i_bR,
                             t_real   o_minus_A_deltaQ[2],
                             t_real   o_plus_A_deltaQ[2] );                               
 };
