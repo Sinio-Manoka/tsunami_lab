@@ -14,7 +14,7 @@ Overview
    self
    setup.rst
    riemann.rst
-   Finite Volume Discretization.rst
+   Finite_Volume_Discretization.rst
    BathymetryandBoundaryConditions.rst
    
 .. include:: overview.rst

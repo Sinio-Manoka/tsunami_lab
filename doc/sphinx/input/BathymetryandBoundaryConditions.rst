@@ -13,7 +13,7 @@ Adding bathymetry to the f-wave solver is easy because you can directly include 
    :label: eq:fwave_source
 
 
-The term :math:`\Delta x \Psi_{i-1/2}` summarizes\ [1]_ the effect of the bathymetry:
+The term :math:`\Delta x \Psi_{i-1/2}` summarizes the effect of the bathymetry:
 
 .. math::
    :label: eq:psi
@@ -25,9 +25,9 @@ The term :math:`\Delta x \Psi_{i-1/2}` summarizes\ [1]_ the effect of the bathym
 
 
 
-now lets implement the bathymetry in our fwave solver:
+Now, let's implement the bathymetry in our F-wave solver:
 
-1. lets change the ``eigencoefficientAlpha`` function:
+1. Let's modify the ``eigencoefficientAlpha`` function:
 
 .. code-block:: cpp
 
@@ -44,7 +44,7 @@ now lets implement the bathymetry in our fwave solver:
    }
 
 
-2. now lets change the our netupdates function: 
+2. Now, let's modify our ``netupdates`` function: 
 
 .. code-block:: cpp
 
@@ -83,9 +83,9 @@ now lets implement the bathymetry in our fwave solver:
     decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
     
 
-now lets add bathymetry to the respective patches
+let's add bathymetry to the respective patches
 
-   1. lets add the bathymetry the ``WavePropagation1d.h`` file :
+   1. Let's add the bathymetry to the ``WavePropagation1d.h`` file :
 
    .. code-block:: cpp
 
@@ -101,7 +101,7 @@ now lets add bathymetry to the respective patches
       m_b[i_ix+1] = i_b;
       }
 
-   2. now lets add it to the ``WavePropagation.h`` file
+   2.  Let's add it to the ``WavePropagation.h`` file:
 
 
    .. code-block:: cpp
@@ -114,7 +114,7 @@ now lets add bathymetry to the respective patches
       virtual t_real const * getBathymetry() = 0;
 
 
-   3. lastly but no least lets add it to the ``WavePropagation1d.cpp`` file: 
+   3. Lastly, but not least, let's add it to the ``WavePropagation1d.cpp`` file: 
 
          3.1. first lets allocate memory for the Bathymetry cells and init it to zero :
 
@@ -205,7 +205,7 @@ now lets add bathymetry to the respective patches
                }
             }
 
-         3.3. now lets set Boundary of the bathymetry in ``setGhostOutflow`` function:
+         3.3. Now, let's set the boundary of the bathymetry in the  ``setGhostOutflow`` function:
 
             .. code-block:: cpp
 
@@ -238,6 +238,75 @@ now lets add bathymetry to the respective patches
             }
 
 
+Effect of Bathymetry on Our F-Wave Solver
+..........................................
+
+Now, let's see the effect of bathymetry on our F-Wave solver. We are going to conduct a simulation using the Roe solver and
+our F-Wave solver for a specific setup to observe the impact of the bathymetry.
+
+The setup we are going to use for the comparison:
+
+.. code-block:: cpp
+
+   l_setup = new tsunami_lab::setups::SubcriticalFlow( 60,
+                                                90,
+                                                5);
+
+Now, let's examine the results for 500 cells:
+
+
+   .. video:: _static/Bathymetrie_effect.mp4
+      :width: 700
+      :autoplay:
+
+
+The height and momentum of the F-Wave solver are represented in dark blue and yellow, while those of the Roe solver are in red and light blue.
+In the video, we will notice that bathymetry affected the wave speed and height of the wave and that because Bathymetric features can affect the speed (Wave Refraction). Shallow areas may cause waves to shoal (decrease in depth),
+resulting in changes to wave height and wavelength
+
+Reflecting Boundary Conditions
+------------------------------
+Now, let's implement the reflecting boundary condition as defined in the following equation:
+
+   .. math::
+
+      h_{i} &:= h_{i-1} \\
+      (hu)_{i} &:= -(hu)_{i-1} \\
+      b_{i} &:= b_{i-1}
+
+to do that we have to change our ``setGhostOutflow`` fucntion in the ``WavePropagation1d.cpp`` file :
+
+.. code-block:: cpp 
+
+   void tsunami_lab::patches::WavePropagation1d::setGhostOutflow() {
+  t_real * l_h = m_h[m_step];
+  t_real * l_hu = m_hu[m_step];
+  t_real * l_b = m_b;
+
+  // set left boundary
+  l_h[0] = l_h[1];
+  l_hu[0] = l_hu[1];
+  l_b[0] = l_b[1];
+
+  // set right boundary
+  l_h[m_nCells+1]  = l_h[m_nCells];
+  l_hu[m_nCells+1] = l_hu[m_nCells];
+  l_b[m_nCells+1]  = l_b[m_nCells];
+
+  //reflecting boundary
+  l_h[m_nCells+1] = l_h[m_nCells ];
+  l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
+  l_b[m_nCells+1] = l_b[m_nCells ];
+   }
+
+
+
+
+
+
+
+Hydraulic Jumps
+---------------
 
 
 Personal Contribution

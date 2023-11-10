@@ -55,7 +55,7 @@ class tsunami_lab::setups::DamBreak1d: public Setup {
      *
      * @return momentum in x-direction.
      **/
-    t_real getMomentumX( t_real ,
+    t_real getMomentumX( t_real,
                          t_real ) const;
 
     /**

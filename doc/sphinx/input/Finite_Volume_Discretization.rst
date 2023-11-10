@@ -284,7 +284,7 @@ We'll apply our solver to solve situations where two streams of water move in op
 
    };
 
-3. We will implement the configuration for the ``Shock Shock Problem`` in the :
+3. We will implement the configuration for the ``Shock Shock Problem`` in the ``ShockShock.h```file :
 
 
 .. code-block:: cpp
@@ -725,6 +725,18 @@ so for :math:`\lambda_{1/2}` we get :math:`\lambda_{1}= 8.71 \frac{m}{s}` and  :
 **so we get :** 
 
 :math:`time_{\text{evacuation}} = \frac{25000 m}{8.71 \frac{m}{s}}  = 2870.26 s = 0.797 h = 47 min`
+
+This can also be calculated through a simulation:
+
+
+.. video:: _static/village_evakutaion.mp4
+   :width: 700
+   :autoplay:
+
+
+The simulation has 118 CSV solutions, and the shock wave reaches 9.79m, which means it has moved around 5.14m. Therefore, we have
+:math:`t = \frac{41}{118} * 1,5s = 0.52 s` he speed of the shock wave is given by: :math:`v_{\text{shockwave}} = \frac{5.14m}{0.52s} = 9,88 \frac{m}{s} = 35.56 \frac{km}{h}`.
+Hence, the evacuation time is: :math:`time_{\text{evacuation}} = \frac{25 km}{35.56 \frac{km}{h}} = 0.70h = 42 min`
 
 
 

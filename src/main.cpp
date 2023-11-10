@@ -33,7 +33,7 @@ int main( int   i_argc,
   std::cout << "### https://scalable.uni-jena.de ###" << std::endl;
   std::cout << "####################################" << std::endl;
 
-  if( i_argc < 2 ) {
+  if( i_argc < 3 ) {
     std::cerr << "invalid number of arguments, usage:" << std::endl;
     std::cerr << "  ./build/tsunami_lab N_CELLS_X" << std::endl;
     std::cerr << "where N_CELLS_X is the number of cells in x-direction." << std::endl;
@@ -55,19 +55,14 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
- l_setup = new tsunami_lab::setups::SubcriticalFlow( 40,
-                                                10,
+ l_setup = new tsunami_lab::setups::SubcriticalFlow( 60,
+                                                90,
                                                 5);
+                                                
+  /*l_setup = new tsunami_lab::setups::ShockShock(3,
+                                                3,
+                                                5);*/
 
-
-    /*l_setup = new tsunami_lab::setups::RareRare( 50,
-                                                 5,
-                                                 25 );*/
-
-
-
-
-                                                  
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
 
