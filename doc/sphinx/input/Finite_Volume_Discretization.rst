@@ -735,7 +735,7 @@ This can also be calculated through a simulation:
 
 
 The simulation has 118 CSV solutions, and the shock wave reaches 9.79m, which means it has moved around 5.14m. Therefore, we have
-:math:`t = \frac{41}{118} * 1,5s = 0.52 s` he speed of the shock wave is given by: :math:`v_{\text{shockwave}} = \frac{5.14m}{0.52s} = 9,88 \frac{m}{s} = 35.56 \frac{km}{h}`.
+:math:`t = \frac{41}{118} * 1,5s = 0.52 s`. the speed of the shock wave is given by: :math:`v_{\text{shockwave}} = \frac{5.14m}{0.52s} = 9,88 \frac{m}{s} = 35.56 \frac{km}{h}`.
 Hence, the evacuation time is: :math:`time_{\text{evacuation}} = \frac{25 km}{35.56 \frac{km}{h}} = 0.70h = 42 min`
 
 
@@ -748,7 +748,7 @@ Personal Contribution
 - Daniel Schicker, Mohamad Khaled Minawe , Ward Tammaa functions implementation
 - Mohamad Khaled Minawe, Daniel Schicker, Ward Tammaa Unit Testing
 - Mohamad Khaled Minawe, Daniel Schicker Geogebra Datei(Calculation for the Unit Tests)
-- Ward Tammaa Hosting the code , Action runner
+- Ward Tammaa Hosting the code, Action runner
 
 
     

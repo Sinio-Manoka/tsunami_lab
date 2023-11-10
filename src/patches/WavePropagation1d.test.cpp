@@ -176,49 +176,7 @@ tsunami_lab::patches::WavePropagation1d middle_states3(100, false);
   REQUIRE(middle_states1.getHeight()[50] == Approx(1386.303079031417));
 
 
-  tsunami_lab::patches::WavePropagation1d m_waveProp2( 100 , false );
-
-  for( std::size_t l_ce = 0; l_ce < 50; l_ce++ ) {
-    m_waveProp.setHeight( l_ce,
-                          0,
-                          2 );
-    m_waveProp.setMomentumX( l_ce,
-                             0,
-                             6 );
-  }
-  for( std::size_t l_ce = 50; l_ce < 100; l_ce++ ) {
-    m_waveProp.setHeight( l_ce,
-                          0,
-                          5 );
-    m_waveProp.setMomentumX( l_ce,
-                             0,
-                             20 );
-  }
-
-  // set outflow boundary condition
-  m_waveProp.setGhostOutflow();
-
-  // perform a time step
-  m_waveProp.timeStep( 0.1 );
-
-  // steady state
-  for( std::size_t l_ce = 0; l_ce < 49; l_ce++ ) {
-    REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx(2) );
-    REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx(6) );
-  }
-
-  // dam-break
-  REQUIRE( m_waveProp.getHeight()[49]   == Approx(2.27629) );
-  REQUIRE( m_waveProp.getMomentumX()[49] == Approx(5.3794) );
-
-  REQUIRE( m_waveProp.getHeight()[50]   == Approx(3.32371) );
-  REQUIRE( m_waveProp.getMomentumX()[50] == Approx(4.12357) );
-
-  // steady state
-  for( std::size_t l_ce = 51; l_ce < 100; l_ce++ ) {
-    REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx(5) );
-    REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx(20) );
-  }
+  
  
 
 }

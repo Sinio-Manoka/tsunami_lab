@@ -260,9 +260,10 @@ Now, let's examine the results for 500 cells:
       :autoplay:
 
 
-The height and momentum of the F-Wave solver are represented in dark blue and yellow, while those of the Roe solver are in red and light blue.
-In the video, we will notice that bathymetry affected the wave speed and height of the wave and that because Bathymetric features can affect the speed (Wave Refraction). Shallow areas may cause waves to shoal (decrease in depth),
-resulting in changes to wave height and wavelength
+The height and momentum of the F-Wave solver are represented in dark blue and green, while those of the Roe solver are
+in red and light blue. In the video, we will notice that bathymetry affected the wave speed and height. This is because the bathymetric
+features can influence the speed through wave refraction.
+Shallow areas may cause waves to shoal (decrease in depth), which leads to changes in wave height and wavelength.
 
 Reflecting Boundary Conditions
 ------------------------------
