@@ -55,13 +55,10 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
- l_setup = new tsunami_lab::setups::SubcriticalFlow( 60,
-                                                90,
-                                                5);
+ l_setup = new tsunami_lab::setups::SupercriticalFlow(  60,
+                                                        90,
+                                                        5);
                                                 
-  /*l_setup = new tsunami_lab::setups::ShockShock(3,
-                                                3,
-                                                5);*/
 
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
@@ -148,7 +145,7 @@ int main( int   i_argc,
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 1.25;
+  tsunami_lab::t_real l_endTime = 200;
   tsunami_lab::t_real l_simTime = 0;
 
   std::cout << "entering time loop" << std::endl;
