@@ -23,6 +23,8 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     //! boolean to which solver will be used
     bool m_choice = true;
 
+    bool m_choiceBoundry = false;
+
     //! number of cells discretizing the computational domain
     t_idx m_nCells = 0;
     t_real * m_b = nullptr;
@@ -56,7 +58,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     /**
      * Sets the values of the ghost cells according to outflow boundary conditions.
      **/
-    void setGhostOutflow();
+    void setGhostOutflow(bool m_choiceBoundry);
 
     /**
      * Gets the stride in y-direction. x-direction is stride-1.

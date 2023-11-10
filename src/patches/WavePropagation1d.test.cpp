@@ -48,7 +48,7 @@ TEST_CASE( "Test the 1d wave propagation solver.", "[WaveProp1d]" ) {
   }
 
   // set outflow boundary condition
-  m_waveProp.setGhostOutflow();
+  m_waveProp.setGhostOutflow(false);
 
   // perform a time step
   m_waveProp.timeStep( 0.1 );
@@ -97,7 +97,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
 
   for (int i = 0; i < 17; i++)
   {
-    middle_states1.setGhostOutflow();
+    middle_states1.setGhostOutflow(false);
     middle_states1.timeStep(0.001);
   }
 
@@ -130,7 +130,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
 
   for (int i = 0; i < 17; i++)
   {
-    middle_states1.setGhostOutflow();
+    middle_states1.setGhostOutflow(false);
     middle_states1.timeStep(0.001);
   }
 
@@ -166,7 +166,7 @@ tsunami_lab::patches::WavePropagation1d middle_states3(100, false);
 
   for (int i = 0; i < 40; i++)
   {
-    middle_states1.setGhostOutflow();
+    middle_states1.setGhostOutflow(false);
     middle_states1.timeStep(0.001);
   }
 

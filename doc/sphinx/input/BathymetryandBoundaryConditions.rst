@@ -275,11 +275,12 @@ Now, let's implement the reflecting boundary condition as defined in the followi
       (hu)_{i} &:= -(hu)_{i-1} \\
       b_{i} &:= b_{i-1}
 
-to do that we have to change our ``setGhostOutflow`` fucntion in the ``WavePropagation1d.cpp`` file :
+1. to do that first we have to change our ``setGhostOutflow`` fucntion in the ``WavePropagation1d.cpp`` file :
 
 .. code-block:: cpp 
 
-   void tsunami_lab::patches::WavePropagation1d::setGhostOutflow() {
+   void tsunami_lab::patches::WavePropagation1d::setGhostOutflow(bool i_choiceBoundry) {
+  m_choiceBoundry = i_choiceBoundry;
   t_real * l_h = m_h[m_step];
   t_real * l_hu = m_hu[m_step];
   t_real * l_b = m_b;
@@ -294,11 +295,138 @@ to do that we have to change our ``setGhostOutflow`` fucntion in the ``WavePropa
   l_hu[m_nCells+1] = l_hu[m_nCells];
   l_b[m_nCells+1]  = l_b[m_nCells];
 
+
   //reflecting boundary
+  if(i_choiceBoundry == true){
+
   l_h[m_nCells+1] = l_h[m_nCells ];
   l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
   l_b[m_nCells+1] = l_b[m_nCells ];
+
+  }
+  
+We added a boolean variable so that the ``reflecting boundary`` is not always active
+
+.. Important::
+
+  We also have to modify ``setGhostOutflow`` wherever it is declared and incorporate the boolean into it.
+
+2. Now we have to change our wave solver so that it matches the boundary by modifying the  ``net-updates`` function:
+
+.. code-block:: cpp
+
+   void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
+                                             t_real   i_hR,
+                                             t_real   i_huL,
+                                             t_real   i_huR,
+                                             t_real   i_bR,
+                                             t_real   i_bL,
+                                             t_real   o_minus_A_deltaQ[2],
+                                             t_real   o_plus_A_deltaQ[2]){
+
+    bool l_updateR = true;
+    bool l_updateL = true;
+
+      
+    if(i_hL == 0 && i_hR == 0 ){
+        o_minus_A_deltaQ[1] = 0;
+        o_minus_A_deltaQ[0] = 0;
+        o_plus_A_deltaQ[1] = 0;
+        o_plus_A_deltaQ[0] = 0;
+
+        return ;
+
+    }else if(i_hL == 0){
+
+        i_hL = i_hR;
+        i_huL = -i_huR;
+        i_bL = i_bR;
+        l_updateL = false;
+        
+    }else if(i_hR == 0){
+
+        i_hR = i_hL;
+        i_huR = -i_huL;
+        i_bR = i_bL;
+        l_updateR = false;
+    }
+
+
+
+
+
+    t_real l_uL = i_huL / i_hL;
+    t_real l_uR = i_huR / i_hR;
+      
+    t_real l_sL = 0;
+    t_real l_sR = 0;
+
+    eigenvalues(i_hL,i_hR,l_uL,l_uR,l_sL,l_sR);
+
+    t_real l_inverse[4];
+
+    inverseMatrix(l_sL, l_sR, l_inverse);
+
+    t_real l_fdelta[2];
+    flux(i_hL,i_hR,i_huL,i_huR,l_fdelta);
+    t_real l_b = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
+
+    t_real l_eigencoefficients[2];
+    eigencoefficientAlpha(l_inverse,l_fdelta,l_b,l_eigencoefficients);
+
+   
+    t_real l_eigens[2] = {l_sL,l_sR};
+    decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
+    
+    if(!l_updateL){
+        o_minus_A_deltaQ[1] = 0;
+        o_minus_A_deltaQ[0] = 0;
+    }if(!l_updateR){
+        
+        o_plus_A_deltaQ[1] = 0;
+        o_plus_A_deltaQ[0] = 0;
    }
+
+
+
+one-sided solution of the shock-shock setup
+.............................................
+
+1. to solve this task we have to change the shock shock setup to match the task where
+reflecting boundary conditions at the right boundary, and outflow boundary conditions at the left boundary.
+
+.. code-block:: cpp
+
+   tsunami_lab::t_real tsunami_lab::setups::ShockShock::getMomentumX(t_real i_x,
+                                                                  t_real)const{
+      
+      return m_hu;                                                                                                                          
+                                                                  
+   }
+
+2. Now, we need to implement a shock setup in the main, and we have to set the ``setGhostOutflow`` function to true in the main: 
+
+.. code-block:: cpp 
+   
+   l_setup = new tsunami_lab::setups::ShockShock(6,
+                                                6,
+                                                5);
+   
+   l_waveProp->setGhostOutflow(true);
+   ....
+
+
+3. Lastly, let's simulate the shock setup:
+
+
+   .. video:: _static/shockshockWithReflectionBoundry.mp4
+      :width: 700
+      :autoplay:
+
+
+
+
+
 
 
 

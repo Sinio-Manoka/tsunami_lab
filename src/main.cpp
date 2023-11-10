@@ -55,13 +55,13 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
- l_setup = new tsunami_lab::setups::SubcriticalFlow( 60,
+ /*l_setup = new tsunami_lab::setups::SubcriticalFlow( 60,
                                                 90,
-                                                5);
-                                                
-  /*l_setup = new tsunami_lab::setups::ShockShock(3,
-                                                3,
                                                 5);*/
+                                                
+  l_setup = new tsunami_lab::setups::ShockShock(6,
+                                                6,
+                                                5);
 
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
@@ -78,14 +78,14 @@ int main( int   i_argc,
       }
       if (std::strstr(i_argv[2], "roe") != nullptr) {
           std::cout << "ROE Will be Used" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true );
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true);
       } else {
           std::cout << "FWAVE Will be Used" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false );
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
       }
   }else{
     std::cout << "FWAVE Will be Used" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false );
+    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
   }  
 
 
@@ -148,7 +148,7 @@ int main( int   i_argc,
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 200;
+  tsunami_lab::t_real l_endTime = 1.25;
   tsunami_lab::t_real l_simTime = 0;
 
   std::cout << "entering time loop" << std::endl;
@@ -178,7 +178,7 @@ int main( int   i_argc,
       l_nOut++;
     }
 
-    l_waveProp->setGhostOutflow();
+    l_waveProp->setGhostOutflow(true);
     l_waveProp->timeStep( l_scaling );
 
     l_timeStep++;

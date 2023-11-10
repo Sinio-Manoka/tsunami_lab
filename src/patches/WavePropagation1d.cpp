@@ -10,7 +10,7 @@
 
 
 
-tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells,bool i_choice ) {
+tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells, bool i_choice ) {
   m_choice = i_choice;
   m_nCells = i_nCells;
 
@@ -99,7 +99,8 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
   }
 }
 
-void tsunami_lab::patches::WavePropagation1d::setGhostOutflow() {
+void tsunami_lab::patches::WavePropagation1d::setGhostOutflow(bool i_choiceBoundry) {
+  m_choiceBoundry = i_choiceBoundry;
   t_real * l_h = m_h[m_step];
   t_real * l_hu = m_hu[m_step];
   t_real * l_b = m_b;
@@ -114,10 +115,16 @@ void tsunami_lab::patches::WavePropagation1d::setGhostOutflow() {
   l_hu[m_nCells+1] = l_hu[m_nCells];
   l_b[m_nCells+1]  = l_b[m_nCells];
 
+
   //reflecting boundary
+  if(i_choiceBoundry == true){
+
   l_h[m_nCells+1] = l_h[m_nCells ];
   l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
   l_b[m_nCells+1] = l_b[m_nCells ];
 
+  }
   
+
+
 }
