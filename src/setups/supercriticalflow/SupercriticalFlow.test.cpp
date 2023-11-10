@@ -8,9 +8,7 @@
 #include "SupercriticalFlow.h"
 
 TEST_CASE( "Test the SupercriticalFlow flow setup.", "[SupercriticalFlow]" ) {
-  tsunami_lab::setups::SupercriticalFlow l_supercriticalFlow( 25,
-                                                          55,
-                                                          3);
+  tsunami_lab::setups::SupercriticalFlow l_supercriticalFlow;
 
   // left side
   REQUIRE( l_supercriticalFlow.getHeight( 2, 0 ) == 0.33f );

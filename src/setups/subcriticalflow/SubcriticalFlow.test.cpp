@@ -8,9 +8,7 @@
 #include "SubcriticalFlow.h"
 
 TEST_CASE( "Test the Subcritical flow setup.", "[SubcriticalFlow]" ) {
-  tsunami_lab::setups::SubcriticalFlow l_subcriticalFlow( 25,
-                                              55,
-                                               3);
+  tsunami_lab::setups::SubcriticalFlow l_subcriticalFlow;
 
   // left side
   REQUIRE( l_subcriticalFlow.getHeight( 2, 0 ) == 2 );

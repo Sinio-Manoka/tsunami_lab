@@ -25,7 +25,7 @@ int main( int   i_argc,
   tsunami_lab::t_idx l_ny = 1;
 
   // set cell size
-  tsunami_lab::t_real l_dxy = 1;
+  tsunami_lab::t_real l_dxy = 25;
 
   std::cout << "####################################" << std::endl;
   std::cout << "### Tsunami Lab                  ###" << std::endl;
@@ -46,7 +46,7 @@ int main( int   i_argc,
       std::cerr << "invalid number of cells" << std::endl;
       return EXIT_FAILURE;
     }
-    l_dxy = 10.0 / l_nx;
+    l_dxy = 25.0 / l_nx;
   }
   std::cout << "runtime configuration" << std::endl;
   std::cout << "  number of cells in x-direction: " << l_nx << std::endl;
@@ -55,13 +55,8 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
- /*l_setup = new tsunami_lab::setups::SubcriticalFlow( 60,
-                                                90,
-                                                5);*/
+  l_setup = new tsunami_lab::setups::SupercriticalFlow();
                                                 
-  l_setup = new tsunami_lab::setups::ShockShock(6,
-                                                6,
-                                                5);
 
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
@@ -112,6 +107,7 @@ int main( int   i_argc,
                                                         l_y );
       tsunami_lab::t_real l_hv = l_setup->getMomentumY( l_x,
                                                         l_y );
+
       tsunami_lab::t_real l_bv = l_setup->getBathymetry(l_x,
                                                         l_y );                                       
 
@@ -148,7 +144,7 @@ int main( int   i_argc,
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 1.25;
+  tsunami_lab::t_real l_endTime = 200;
   tsunami_lab::t_real l_simTime = 0;
 
   std::cout << "entering time loop" << std::endl;

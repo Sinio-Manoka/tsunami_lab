@@ -80,8 +80,8 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
                                   l_hOld[l_ceR],
                                   l_huOld[l_ceL],
                                   l_huOld[l_ceR],
-                                  l_b[l_ceR],
                                   l_b[l_ceL],
+                                  l_b[l_ceR],
                                   l_netUpdates[0],
                                   l_netUpdates[1]);
     }
@@ -117,12 +117,13 @@ void tsunami_lab::patches::WavePropagation1d::setGhostOutflow(bool i_choiceBound
 
 
   //reflecting boundary
-  if(i_choiceBoundry == true){
+  /*
+    if(i_choiceBoundry == true){
 
   l_h[m_nCells+1] = l_h[m_nCells ];
-  l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
-  l_b[m_nCells+1] = l_b[m_nCells ];
-
+    l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
+    l_b[m_nCells+1] = l_b[m_nCells ];
+  */
   }
   
 

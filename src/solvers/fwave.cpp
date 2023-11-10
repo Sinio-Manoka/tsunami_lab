@@ -115,8 +115,8 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
                                              t_real   i_hR,
                                              t_real   i_huL,
                                              t_real   i_huR,
-                                             t_real   i_bR,
                                              t_real   i_bL,
+                                             t_real   i_bR,
                                              t_real   o_minus_A_deltaQ[2],
                                              t_real   o_plus_A_deltaQ[2]){  
     bool l_updateR = true;
@@ -164,6 +164,7 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
 
     t_real l_fdelta[2];
     flux(i_hL,i_hR,i_huL,i_huR,l_fdelta);
+    
     t_real l_b = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
 
     t_real l_eigencoefficients[2];
