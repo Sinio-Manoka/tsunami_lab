@@ -863,9 +863,10 @@ now lets simulate the SupercriticalFlow:
 
 Now, let's simulate the Supercritical Flow. Navigate to the ``main.cpp`` file and run the supercritical setup
 
-.. code-blcok:: cpp
+.. code-block:: cpp
 
    l_setup = new tsunami_lab::setups::SupercriticalFlow();
+
                                            
 
 The position of the hydraulic can be observed in the following simulation: 
@@ -877,6 +878,9 @@ The position of the hydraulic can be observed in the following simulation:
 The position of the hydraulic jump is at 45 cells out of 100, and it's:
 
 .. math:: P := \frac{45}{100} * 25m = 11.25m 
+
+
+
 
 Personal Contribution
 ---------------------

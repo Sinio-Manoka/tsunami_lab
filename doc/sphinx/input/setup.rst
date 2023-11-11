@@ -141,15 +141,70 @@ Documentation
 .. _Here: https://tsunami-99843.web.app/
 
 
+how to build documentation
+..........................
+
+To build our documentation, you need to install Sphinx and Doxygen on your Linux/Ubuntu system.
+
+   .. code-block::
+
+      apt-get install doxygen
+
+      apt-get install python3-sphinx
+       
+
+1. doxygen:
+   
+   1.1. To build the Doxygen documentation, first, we need to generate the Doxygen configuration file as follows:
+
+   .. code-block::
+
+      doxygen -g <config-file>
+
+   or
+
+   You can use our configuration file, which is located inside the ``doc\data`` directory. Please update the paths accordingly.   
+
+   1.2. Now, open the configuration file and adjust certain paths. Additionally, make sure to enable specific options:
+
+     .. code-block::
+
+         OUTPUT_DIRECTORY       = "/home/<user>/tsunami_lab/doc/doxygen"
+
+         INPUT                  = "/home/<user>/tsunami_lab/src"
+
+         RECURSIVE              = YES
+
+         EXTRACT_PRIVATE        = YES
+   
 
 
+   1.3. We need to include the CSS file for the Doxygen documentation.
 
+      .. code-block::
 
+         HTML_EXTRA_STYLESHEET  = /home/<user>/tsunami_lab/doc/dta/doxygen-style.css
 
+     
 
+2. Sphnix:
 
+   2.1. We need to navigate to the ``doc\sphnix\Sphnix\``
 
+   2.2. Inside, you will find a file called ``Makefile`` Within this file, you will need to modify certain paths:
 
+      .. code-block:: 
+         
+         SOURCEDIR     = /home/<user>/tsunami_lab/doc/sphinx/input
+         BUILDDIR      = /home/<user>/tsunami_lab/doc/sphinx/site
+
+   3.3. Now, navigate to ``doc\sphinx\Sphinx\`` and execute the following command to build our documentation:
+
+       .. code-block:: 
+         
+         make html
+
+   3.4 The built ``documentation can be found in \tsunami_lab\doc\sphinx\site``.
 
 
 
