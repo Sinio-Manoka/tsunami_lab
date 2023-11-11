@@ -10,6 +10,7 @@
 #include "setups/shockshock/ShockShock.h"
 #include "setups/subcriticalflow/SubcriticalFlow.h"
 #include "setups/supercriticalflow/SupercriticalFlow.h"
+#include "setups/tsunamievent1d/TsunamiEvent1d.h"
 #include "io/Csv.h"
 #include <cstdlib>
 #include <iostream>
@@ -46,7 +47,7 @@ int main( int   i_argc,
       std::cerr << "invalid number of cells" << std::endl;
       return EXIT_FAILURE;
     }
-    l_dxy = 25.0 / l_nx;
+    l_dxy = 440500.0 / l_nx;
   }
   std::cout << "runtime configuration" << std::endl;
   std::cout << "  number of cells in x-direction: " << l_nx << std::endl;
@@ -55,7 +56,7 @@ int main( int   i_argc,
 
 
   tsunami_lab::setups::Setup *l_setup;
-  l_setup = new tsunami_lab::setups::SupercriticalFlow();
+  l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
                                                 
 
   // construct solver
@@ -144,7 +145,7 @@ int main( int   i_argc,
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 200;
+  tsunami_lab::t_real l_endTime = 3600;
   tsunami_lab::t_real l_simTime = 0;
 
   std::cout << "entering time loop" << std::endl;
@@ -155,7 +156,7 @@ int main( int   i_argc,
       std::cout << "  simulation time / #time steps: "
                 << l_simTime << " / " << l_timeStep << std::endl;
 
-      std::string l_path = "solution_" + std::to_string(l_nOut) + ".csv";
+      std::string l_path = "output/solution_" + std::to_string(l_nOut) + ".csv";
       std::cout << "  writing wave field to " << l_path << std::endl;
 
       std::ofstream l_file;

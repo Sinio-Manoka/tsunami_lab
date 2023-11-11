@@ -7,6 +7,7 @@
 #include <catch2/catch.hpp>
 #include "../constants.h"
 #include <sstream>
+#include <vector>
 #define private public
 #include "Csv.h"
 #undef public
@@ -74,4 +75,14 @@ TEST_CASE( "Test the CSV-writer for 2D settings.", "[CsvWrite2d]" ) {
 
   REQUIRE( l_stream1.str().size() == l_ref1.size() );
   REQUIRE( l_stream1.str() == l_ref1 );
+}
+
+TEST_CASE( "Test the CSV-reader for 1D settings.", "[CsvRead1d]" ) {
+
+  const std::string filename = "data/data_end.csv";
+  std::size_t columnIndex = 3;
+  std::vector<tsunami_lab::t_real> selectedColumn = tsunami_lab::io::Csv::read(filename,columnIndex);
+
+  REQUIRE(selectedColumn[0] == Approx(-8.39972685779));
+  REQUIRE(selectedColumn[1] == Approx(-5.16040036612));
 }

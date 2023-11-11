@@ -43,3 +43,29 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   }
   io_stream << std::flush;
 }
+
+std::vector<tsunami_lab::t_real> tsunami_lab::io::Csv::read(const std::string & filename,
+                                                std::size_t  columnIndex){
+
+    std::vector<t_real> selectedColumn;
+
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return selectedColumn;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string token;
+        for (std::size_t i = 0; std::getline(iss, token, ',') && i <= columnIndex; ++i) {
+            if (i == columnIndex) {
+                selectedColumn.push_back(std::stod(token));
+                break;
+            }
+        }
+    }
+
+    return selectedColumn;
+}
