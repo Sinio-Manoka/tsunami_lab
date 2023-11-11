@@ -117,13 +117,13 @@ void tsunami_lab::patches::WavePropagation1d::setGhostOutflow(bool i_choiceBound
 
 
   //reflecting boundary
-  /*
+  
     if(i_choiceBoundry == true){
 
-  l_h[m_nCells+1] = l_h[m_nCells ];
+    l_h[m_nCells+1] = l_h[m_nCells ];
     l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
     l_b[m_nCells+1] = l_b[m_nCells ];
-  */
+  
   }
   
 

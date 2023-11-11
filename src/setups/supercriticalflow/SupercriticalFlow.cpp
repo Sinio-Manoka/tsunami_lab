@@ -1,8 +1,8 @@
 /**
- * @author Alexander Breuer (alex.breuer AT uni-jena.de)
+ * @author Ward Tammaa
  *
  * @section DESCRIPTION
- * One-dimensional dam break problem.
+ *  SupercriticalFlow
  **/
 #include "SupercriticalFlow.h"
 #include <cmath>

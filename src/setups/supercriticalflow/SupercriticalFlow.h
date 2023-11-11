@@ -1,8 +1,8 @@
 /**
- * @author Alexander Breuer (alex.breuer AT uni-jena.de)
+ * @author Ward Tammaa 
  *
  * @section DESCRIPTION
- * One-dimensional dam break problem.
+ * supercriticalflow.
  **/
 #ifndef TSUNAMI_LAB_SETUPS_SUPERCRITICAL_FLOW_H
 #define TSUNAMI_LAB_SETUPS_SUPERCRITICAL_FLOW_H
@@ -16,7 +16,7 @@ namespace tsunami_lab {
 }
 
 /**
- * 1d dam break setup.
+ * SupercriticalFlow setup.
  **/
 class tsunami_lab::setups::SupercriticalFlow: public Setup {
 

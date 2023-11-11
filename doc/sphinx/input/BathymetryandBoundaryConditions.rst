@@ -248,9 +248,20 @@ The setup we are going to use for the comparison:
 
 .. code-block:: cpp
 
-   l_setup = new tsunami_lab::setups::SubcriticalFlow( 60,
-                                                90,
-                                                5);
+   l_setup = new tsunami_lab::setups::DamBreak1d(90,60,5);
+
+But before we simulate, we have to add bathymetry that is not a constant. So, we go to the ``DamBreak1d.cpp`` and add bathymetry there.
+
+
+.. code-block:: cpp
+
+   tsunami_lab::t_real tsunami_lab::setups::DamBreak1d::getBathymetry( t_real i_x,
+                                                                    t_real ) const {
+ 
+   return (-1.8-0.05*(i_x-10) *(i_x-10));
+  
+   }
+
 
 Now, let's examine the results for 500 cells:
 
@@ -427,16 +438,445 @@ reflecting boundary conditions at the right boundary, and outflow boundary condi
 
 
 
-
-
-
-
-
-
-
 Hydraulic Jumps
 ---------------
 
+maximum Froude value and location
+..................................
+
+The Froude number can be calculated through this formula:
+
+.. math:: F := \frac{u}{\sqrt{gh}}.
+
+To calculate the maximum Froude value and the location of subcritical flow and supercritical flow, we need to determine the maximum of the following function:
+
+.. math::
+   
+
+   \begin{aligned}
+         b(x) &=
+           \begin{cases}
+             -1.8 - 0.05 (x-10)^2 \quad   &\text{if } x \in (8,12) \\
+             -2 \quad &\text{else}
+           \end{cases}\\
+         h(x, 0) &= -b(x) \quad \text{if } x \in [0,25] \\
+         hu(x, 0) &= 4.42 \quad \text{if } x \in [0,25].
+       \end{aligned}
+
+and: 
+
+.. math::
+   
+
+   \begin{aligned}
+         b(x) &=
+           \begin{cases}
+             -0.13 - 0.05 (x-10)^2 \quad   &\text{if } x \in (8,12) \\
+             -0.33 \quad &\text{else}
+           \end{cases}\\
+         h(x, 0) &= -b(x) \quad \text{if } x \in [0,25] \\
+         hu(x, 0) &= 0.18 \quad \text{if } x \in [0,25].
+       \end{aligned}
+
+
+The calculations for the location and value of the maximum Froude number for the subcritical setting can be observed in the following picture:
+
+
+.. image:: _static/maxFroudeNumerSubcritical.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+And for the supercritical setting, the calculations can be observed here:
+
+.. image:: _static/maxFroudeNumberSupercritical.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
+
+
+setup 
+.......
+
+1. subcritical setting:
+
+   1.1 Now, let's compute the subcritical setting as a setup. We will have to create three files: ``SubcriticalFlow.cpp`` , ``SubcriticalFlow.h`` , ``SubcriticalFlow.test.cpp``
+
+      1.1.1. Let's start with the ``SubcriticalFlow.h`` file :
+
+         .. code-block:: cpp 
+
+            /**
+            * @author Ward Tammaa 
+            *
+            * @section DESCRIPTION
+            * subcriticalFlow.
+            **/
+            #ifndef TSUNAMI_LAB_SETUPS_SUBCRITICAL_FLOW_H
+            #define TSUNAMI_LAB_SETUPS_SUBCRITICAL_FLOW_H
+
+            #include "../Setup.h"
+
+            namespace tsunami_lab {
+            namespace setups {
+            class SubcriticalFlow;
+               }
+            }
+
+           class tsunami_lab::setups::SubcriticalFlow: public Setup {
+
+             public:
+
+               /**
+                * Gets the water height at a given point.
+                *
+                * @param i_x x-coordinate of the queried point.
+                * @return height at the given point.
+                **/
+               t_real getHeight( t_real i_x,
+                      t_real      ) const;
+
+               /**
+                * Gets the momentum in x-direction.
+                *
+                * @return momentum in x-direction.
+                **/
+               t_real getMomentumX( t_real ,
+                         t_real ) const;
+
+               /**
+                * Gets the momentum in y-direction.
+                * @return momentum in y-direction.
+                **/
+               t_real getMomentumY( t_real,
+                         t_real ) const;
+                         
+               t_real getBathymetry( t_real i_x,
+                          t_real ) const ;
+            };
+
+            #endif
+
+      1.1.2. Now, let's implement the  ``SubcriticalFlow.cpp`` using the following settings : 
+            For the **subcritical flow** we use the following initial values:
+
+                      .. math::
+                           \begin{aligned}
+                              b(x) &=
+                                 \begin{cases}
+                                    -1.8 - 0.05 (x-10)^2 \quad   &\text{if } x \in (8,12) \\
+                                    -2 \quad &\text{else}
+                           \end{cases}\\
+                         h(x, 0) &= -b(x) \quad \text{if } x \in [0,25] \\
+                         hu(x, 0) &= 4.42 \quad \text{if } x \in [0,25].
+                        \end{aligned}
+
+            the equivalent code for the settings :
+
+            .. code-block:: cpp
+               
+               /**
+                * @author Ward Tammaa (alex.breuer AT uni-jena.de)
+                *
+                * @section DESCRIPTION
+                * SubcriticalFlow.
+                **/
+               #include "SubcriticalFlow.h"
+               #include <cmath>
+
+               tsunami_lab::t_real tsunami_lab::setups::SubcriticalFlow::getHeight( t_real i_x,
+                                                                t_real      ) const {
+                 return -getBathymetry(i_x,0);
+               }
+
+               tsunami_lab::t_real tsunami_lab::setups::SubcriticalFlow::getMomentumX( t_real,
+                                                                   t_real ) const {
+                 return 4.42;
+               }
+
+               tsunami_lab::t_real tsunami_lab::setups::SubcriticalFlow::getMomentumY( t_real,
+                                                                   t_real ) const {
+                 return 0;
+               }
+
+               tsunami_lab::t_real tsunami_lab::setups::SubcriticalFlow::getBathymetry( t_real i_x,
+                                                                    t_real ) const {
+                 if(i_x > 8 && i_x < 12){
+                   return (-1.8-0.05*pow((i_x-10), 2));
+                 }else{
+                   return -2;
+                 }
+
+               }
+
+            1.1.3. lastly letes implement unit test for subcriticalFlow in the ``SubcriticalFlow.test.cpp`` file:
+
+                  .. code-block:: cpp
+               
+                        /**
+                       * @author Ward Tammaa 
+                        *
+                        * @section DESCRIPTION
+                        * Tests SubcriticalFlow.
+                        **/
+                       #include <catch2/catch.hpp>
+                       #include "SubcriticalFlow.h"
+
+                       TEST_CASE( "Test the Subcritical flow setup.", "[SubcriticalFlow]" ) {
+                         tsunami_lab::setups::SubcriticalFlow l_subcriticalFlow;
+
+                         // left side
+                         REQUIRE( l_subcriticalFlow.getHeight( 2, 0 ) == 2 );
+
+                         REQUIRE( l_subcriticalFlow.getMomentumX( 2, 0 ) == 4.42f);
+
+                         REQUIRE( l_subcriticalFlow.getMomentumY( 2, 0 ) == 0 );
+
+                         REQUIRE( l_subcriticalFlow.getBathymetry( 2, 0 ) == -2 );
+
+
+
+                         REQUIRE( l_subcriticalFlow.getHeight( 2, 5 ) == 2 );
+
+                         REQUIRE( l_subcriticalFlow.getMomentumX( 2, 5 ) == 4.42f);
+
+                         REQUIRE( l_subcriticalFlow.getMomentumY( 2, 2 ) == 0 );
+
+                         REQUIRE( l_subcriticalFlow.getBathymetry( 10, 0 ) == -1.8f );
+
+                         // right side
+
+
+
+                         REQUIRE( l_subcriticalFlow.getHeight( 10, 0 ) == 1.8f);
+
+                         REQUIRE( l_subcriticalFlow.getMomentumX( 4, 0 ) == 4.42f);
+
+                         REQUIRE( l_subcriticalFlow.getMomentumY( 4, 0 ) == 0 );
+
+                         REQUIRE( l_subcriticalFlow.getBathymetry( 2, 0 ) == -2.0f );
+
+
+
+
+                         REQUIRE( l_subcriticalFlow.getHeight( 4, 5 ) == 2 );
+
+                         REQUIRE( l_subcriticalFlow.getMomentumX( 4, 5 ) == 4.42f);
+
+                         REQUIRE( l_subcriticalFlow.getMomentumY( 4, 2 ) == 0 );  
+
+                         REQUIRE( l_subcriticalFlow.getBathymetry( 10, 0 ) == -1.8f );
+
+                     }
+
+
+2. supercritical setting:
+
+2.1 Now, let's compute the SupercriticalFlow setting as a setup. We will have to create three files: ``SupercriticalFlow.cpp`` , ``SupercriticalFlow.h`` , ``SupercriticalFlow.test.cpp``
+
+      2.1.1. Let's start with the ``SupercriticalFlow.h`` file :
+
+         .. code-block:: cpp 
+
+            /**
+            * @author Ward Tammaa 
+            *
+            * @section DESCRIPTION
+            * supercriticalflow.
+            **/
+            #ifndef TSUNAMI_LAB_SETUPS_SUPERCRITICAL_FLOW_H
+            #define TSUNAMI_LAB_SETUPS_SUPERCRITICAL_FLOW_H
+
+            #include "../Setup.h"
+
+            namespace tsunami_lab {
+            namespace setups {
+            class SupercriticalFlow;
+               }
+            }
+
+           class tsunami_lab::setups::SupercriticalFlow: public Setup {
+
+             public:
+
+               /**
+                * Gets the water height at a given point.
+                *
+                * @param i_x x-coordinate of the queried point.
+                * @return height at the given point.
+                **/
+               t_real getHeight( t_real i_x,
+                      t_real      ) const;
+
+               /**
+                * Gets the momentum in x-direction.
+                *
+                * @return momentum in x-direction.
+                **/
+               t_real getMomentumX( t_real ,
+                         t_real ) const;
+
+               /**
+                * Gets the momentum in y-direction.
+                * @return momentum in y-direction.
+                **/
+               t_real getMomentumY( t_real,
+                         t_real ) const;
+                         
+               t_real getBathymetry( t_real i_x,
+                          t_real ) const ;
+            };
+
+            #endif
+
+      2.1.2. Now, let's implement the  ``SupercriticalFlow.cpp`` using the following settings : 
+            For the **SupercriticalFlow flow** we use the following initial values:
+
+                     .. math::
+                         \begin{aligned}
+                           b(x) &=
+                              \begin{cases}
+                                 -0.13 - 0.05 (x-10)^2 \quad   &\text{if } x \in (8,12) \\
+                                 -0.33 \quad &\text{else}
+                           \end{cases}\\
+                              h(x, 0) &= -b(x) \quad \text{if } x \in [0,25] \\
+                              hu(x, 0) &= 0.18 \quad \text{if } x \in [0,25].
+                           \end{aligned}
+
+
+
+
+            the equivalent code for the settings :
+
+            .. code-block:: cpp
+               
+               /**
+                * @author Ward Tammaa 
+                *
+                * @section DESCRIPTION
+                * SupercriticalFlow.
+                **/
+               #include "SupercriticalFlow.h"
+               #include <cmath>
+
+               tsunami_lab::t_real tsunami_lab::setups::SupercriticalFlow::getHeight( t_real i_x,
+                                                                t_real      ) const {
+                 return -getBathymetry(i_x,0);
+               }
+
+               tsunami_lab::t_real tsunami_lab::setups::SupercriticalFlow::getMomentumX( t_real,
+                                                                   t_real ) const {
+                 return 0.18;
+               }
+
+               tsunami_lab::t_real tsunami_lab::setups::SupercriticalFlow::getMomentumY( t_real,
+                                                                   t_real ) const {
+                 return 0;
+               }
+
+               tsunami_lab::t_real tsunami_lab::setups::SupercriticalFlow::getBathymetry( t_real i_x,
+                                                                    t_real ) const {
+               if(i_x > 8 && i_x < 12){
+      	         return -0.13-0.05*((i_x-10)*(i_x-10));
+               }else{
+                  return -0.33;
+               }
+
+               
+
+            2.1.3. lastly letes implement unit test for SupercriticalFlow in the ``SupercriticalFlow.test.cpp`` file:
+
+                  .. code-block:: cpp
+               
+                        /**
+                       * @author Ward Tammaa 
+                        *
+                        * @section DESCRIPTION
+                        * Tests SubcriticalFlow.
+                        **/
+                       #include <catch2/catch.hpp>
+                       #include "SupercriticalFlow.h"
+
+                       TEST_CASE( "Test the SupercriticalFlow flow setup.", "[SupercriticalFlow]" ) {
+                         tsunami_lab::setups::SupercriticalFlow l_supercriticalFlow;
+
+                        // left side
+                        REQUIRE( l_supercriticalFlow.getHeight( 2, 0 ) == 0.33f );
+
+                        REQUIRE( l_supercriticalFlow.getMomentumX( 2, 0 ) == 0.18f);
+
+                        REQUIRE( l_supercriticalFlow.getMomentumY( 2, 0 ) == 0 );
+
+                          REQUIRE( l_supercriticalFlow.getBathymetry( 2, 0 ) == -0.33f );
+
+
+
+                          REQUIRE( l_supercriticalFlow.getHeight( 2, 5 ) == 0.33f );
+
+                          REQUIRE( l_supercriticalFlow.getMomentumX( 2, 5 ) == 0.18f);
+
+                          REQUIRE( l_supercriticalFlow.getMomentumY( 2, 2 ) == 0 );
+
+                          REQUIRE( l_supercriticalFlow.getBathymetry( 10, 0 ) == -0.13f );
+
+                          // right side
+
+
+
+                          REQUIRE( l_supercriticalFlow.getHeight( 10, 0 ) == 0.13f);
+
+                          REQUIRE( l_supercriticalFlow.getMomentumX( 4, 0 ) == 0.18f);
+
+                          REQUIRE( l_supercriticalFlow.getMomentumY( 4, 0 ) == 0 );
+
+                          REQUIRE( l_supercriticalFlow.getBathymetry( 2, 0 ) == -0.33f );
+
+
+
+
+                          REQUIRE( l_supercriticalFlow.getHeight( 4, 5 ) == 0.33f );
+
+                          REQUIRE( l_supercriticalFlow.getMomentumX( 4, 5 ) == 0.18f);
+
+                          REQUIRE( l_supercriticalFlow.getMomentumY( 4, 2 ) == 0 );  
+
+                          REQUIRE( l_supercriticalFlow.getBathymetry( 10, 0 ) == -0.13f );
+
+
+lastly lets change the end time in the ``main.cpp`` to 200 for the simulation like that
+
+.. code-block:: cpp
+
+   tsunami_lab::t_real l_endTime = 200;
+
+
+hydraulic jump in supercritical solution 
+-----------------------------------------
+
+now lets simulate the SupercriticalFlow:
+
+Now, let's simulate the Supercritical Flow. Navigate to the ``main.cpp`` file and run the supercritical setup
+
+.. code-blcok:: cpp
+
+   l_setup = new tsunami_lab::setups::SupercriticalFlow();
+                                           
+
+The position of the hydraulic can be observed in the following simulation: 
+
+   .. video:: _static/SupercriticalFlow.mp4
+      :width: 700
+      :autoplay:
+
+The position of the hydraulic jump is at 45 cells out of 100, and it's:
+
+.. math:: P := \frac{45}{100} * 25m = 11.25m 
 
 Personal Contribution
 ---------------------

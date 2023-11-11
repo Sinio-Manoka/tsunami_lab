@@ -174,7 +174,8 @@ int main( int   i_argc,
       l_nOut++;
     }
 
-    l_waveProp->setGhostOutflow(true);
+    //If true -> reflection boundary is active
+    l_waveProp->setGhostOutflow(false);
     l_waveProp->timeStep( l_scaling );
 
     l_timeStep++;

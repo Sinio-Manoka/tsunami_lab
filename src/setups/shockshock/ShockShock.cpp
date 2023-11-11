@@ -28,7 +28,7 @@ tsunami_lab::t_real tsunami_lab::setups::ShockShock::getMomentumX(t_real i_x,
         return m_hu;
     }
     else {
-        return m_hu;
+        return -m_hu;
     }                                                                                                                         
                                                                   
 }

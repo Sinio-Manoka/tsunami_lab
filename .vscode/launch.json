@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "//wsl.localhost/Ubuntu/home/imissoldgaren/tsunami_lab/src/io",
-      "program": "//wsl.localhost/Ubuntu/home/imissoldgaren/tsunami_lab/src/io/build/Debug/outDebug",
+      "cwd": "//wsl.localhost/Ubuntu/home/imissoldgaren/tsunami_lab/src/setups/subcriticalflow",
+      "program": "//wsl.localhost/Ubuntu/home/imissoldgaren/tsunami_lab/src/setups/subcriticalflow/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

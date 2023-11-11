@@ -151,20 +151,39 @@ tsunami_lab::solvers::fwave::netUpdates( 10,
   REQUIRE( l_netUpdatesR[0] == Approx(  -4.2));
   REQUIRE( l_netUpdatesR[1] == Approx( -65.504));
 
-
-  tsunami_lab::solvers::fwave::netUpdates( 10,
-                                         8,
+//test for the Bathymetry with net-update
+  tsunami_lab::solvers::fwave::netUpdates( 5,
+                                         6,
                                          0,
                                          0,
-                                         -15,
-                                         -8,
+                                         -10,
+                                         -4,
                                          l_netUpdatesL,
                                          l_netUpdatesR ); 
 
-  REQUIRE( l_netUpdatesL[0] == Approx( -23.4867 ) );
-  REQUIRE( l_netUpdatesL[1] == Approx( 220.650) );
+  REQUIRE( l_netUpdatesL[0] == Approx( -25.7045 ) );
+  REQUIRE( l_netUpdatesL[1] == Approx( 188.7780125) );
 
-  REQUIRE( l_netUpdatesR[0] == Approx( 23.4867) );
-  REQUIRE( l_netUpdatesR[1] == Approx( 220.650 ) );
+  REQUIRE( l_netUpdatesR[0] == Approx( 25.7045) );
+  REQUIRE( l_netUpdatesR[1] == Approx( 188.7780125 ) );
+
+
+  tsunami_lab::solvers::fwave::netUpdates( 5,
+                                         6,
+                                         4,
+                                         3,
+                                         -14,
+                                         -7,
+                                         l_netUpdatesL,
+                                         l_netUpdatesR ); 
+
+  REQUIRE( l_netUpdatesL[0] == Approx( -29.80466) );
+  REQUIRE( l_netUpdatesL[1] == Approx( 199.720) );
+
+  REQUIRE( l_netUpdatesR[0] == Approx( 28.80465) );
+  REQUIRE( l_netUpdatesR[1] == Approx( 230.072 ) );
+
+
+
 
 }

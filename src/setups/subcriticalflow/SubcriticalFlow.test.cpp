@@ -1,8 +1,8 @@
 /**
- * @author Alexander Breuer (alex.breuer AT uni-jena.de)
+ * @author Ward Tammaa 
  *
  * @section DESCRIPTION
- * Tests the dam break setup.
+ * Tests SubcriticalFlow.
  **/
 #include <catch2/catch.hpp>
 #include "SubcriticalFlow.h"

@@ -178,7 +178,7 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
         o_minus_A_deltaQ[1] = 0;
         o_minus_A_deltaQ[0] = 0;
     }if(!l_updateR){
-        
+
         o_plus_A_deltaQ[1] = 0;
         o_plus_A_deltaQ[0] = 0;
     }
