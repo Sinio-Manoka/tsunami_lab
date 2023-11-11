@@ -25,50 +25,61 @@ namespace tsunami_lab {
 class tsunami_lab::setups::TsunamiEvent1d: public Setup {
 
   private:
-    
+    //m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
     t_real m_delta = 0; 
 
-    std::vector<t_real> m_raws;
-
+    //m_bathymetry_values contains all bathymetry values
+    std::vector<t_real> m_bathymetry_values;
+    
+    //is the vertical displacement, typically caused by a subduction-zone earthquake.
     t_real displacement( t_real i_x) const;
 
   public:
 
     /**
-     * Constructor.
-     *
-     * @param i_delta small delta!!
+     * @brief The constructor for TsunamiEvent1D.
+     * @param i_delta to avoid running into numerical issues (small value)
      **/
 
     TsunamiEvent1d( t_real i_delta);
 
     /**
-     * Gets the water height at a given point.
+     * @brief Gets the water height at a given point.
      *
-     * @param i_x x-coordinate of the queried point.
-     * @return height at the given point.
+     * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant
+     * @return Height at the given point.
      **/
     t_real getHeight( t_real i_x,
                       t_real      ) const;
 
     /**
-     * Gets the momentum in x-direction.
+     * @brief Gets the momentum in x-direction.
      *
-     * @return momentum in x-direction.
+     * @return Momentum in x-direction.
      **/
     t_real getMomentumX( t_real ,
                          t_real ) const;
 
     /**
-     * Gets the momentum in y-direction.
-     * @return momentum in y-direction.
+     * @brief Gets the momentum in y-direction.
+     * @return Momentum in y-direction.
      **/
     t_real getMomentumY( t_real,
                          t_real ) const;
-                         
+    
+    /**
+    * @brief Computes the bathymetry as explained in <a href="https://scalable.uni-jena.de/opt/tsunami/chapters/assignment_3.html#equation-eq-tsunami-event-1d">3.4.1</a>.
+    * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+    * @return Bathymetry.
+    */
     t_real getBathymetry( t_real i_x,
                           t_real ) const ;
 
+    /** 
+    * @brief divide the distance i_x by 250 to determine the index for the bathymetry in the csv file.
+    * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+    * @return Bathymetry in the csv file (not the value that we use).
+    */
     t_real getBathymetryCsv(t_real i_x) const;
 };
 
