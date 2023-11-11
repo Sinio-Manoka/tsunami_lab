@@ -43,10 +43,16 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   }
   io_stream << std::flush;
 }
-
+  /**
+     * @param line every row gets saved in "line" and is overwritten in next iteration
+     * @param token is the determined bathymetry value written in "selectedColumn"
+     * @file  data_end.csv contains the bathymetry values
+     * @brief save the bathymetry values which are located in data:end.csv in the vector
+     * @return selectedColumn that contains the bathymetry values
+    */
 std::vector<tsunami_lab::t_real> tsunami_lab::io::Csv::read(const std::string & filename,
                                                 std::size_t  columnIndex){
-
+    //checks whether file exists 
     std::vector<t_real> selectedColumn;
 
     std::ifstream file(filename);
@@ -54,7 +60,7 @@ std::vector<tsunami_lab::t_real> tsunami_lab::io::Csv::read(const std::string & 
         std::cerr << "Error opening file: " << filename << std::endl;
         return selectedColumn;
     }
-
+    
     std::string line;
     while (std::getline(file, line)) {
         std::istringstream iss(line);

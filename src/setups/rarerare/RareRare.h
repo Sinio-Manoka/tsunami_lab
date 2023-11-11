@@ -24,18 +24,18 @@ class tsunami_lab::setups::RareRare: public Setup {
     //! height  
     t_real m_height = 0;
     
-    //! impulse
+    //! momentum
     t_real m_hu = 0;
-
+ 
     //! location
     t_real m_locationDam = 0;
 
   public:
     /**
-     * Constructor.
+     * @brief Constructor of RareRare.
      *
      * @param i_height water height 
-     * @param i_hu water impulse 
+     * @param i_hu momentum
      * @param i_locationDam location (x-coordinate) .    
      **/
 
@@ -44,7 +44,7 @@ class tsunami_lab::setups::RareRare: public Setup {
               t_real i_locationDam);
 
     /**
-     * Gets the water height at a given point.
+     * @brief Gets the water height at a given point.
      * @return height at the given point.
      **/
     t_real getHeight( t_real ,
@@ -52,7 +52,7 @@ class tsunami_lab::setups::RareRare: public Setup {
 
 
     /**
-     * Gets the momentum in x-direction.
+     * @brief Gets the momentum in x-direction.
      * @param i_x x-coordinate of the queried point.
      * @return momentum in x-direction.
      **/
@@ -60,7 +60,7 @@ class tsunami_lab::setups::RareRare: public Setup {
                          t_real ) const;
 
     /**
-     * Gets the momentum in y-direction.
+     * @brief Gets the momentum in y-direction.
      * @return momentum in y-direction.
      **/
     t_real getMomentumY( t_real,

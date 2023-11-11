@@ -30,7 +30,7 @@ tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells, bool
     }
   }
 }
-
+ //free memory
 tsunami_lab::patches::WavePropagation1d::~WavePropagation1d() {
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
     delete[] m_h[l_st];
@@ -46,7 +46,12 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
 
 
   t_real * l_b  = m_b; 
-
+  /**
+  * explanation :"m_step = (m_step+1) % 2;""
+  *  after every call the new data gets stored in the oldest values
+  * [old,new] ->compute newer values ->[newer,new]
+  * new data are now the old and newer becomes the new data
+  */
   m_step = (m_step+1) % 2;
   t_real * l_hNew =  m_h[m_step];
   t_real * l_huNew = m_hu[m_step];
@@ -110,22 +115,17 @@ void tsunami_lab::patches::WavePropagation1d::setGhostOutflow(bool i_choiceBound
   l_hu[0] = l_hu[1];
   l_b[0] = l_b[1];
 
-  // set right boundary
-  l_h[m_nCells+1]  = l_h[m_nCells];
-  l_hu[m_nCells+1] = l_hu[m_nCells];
-  l_b[m_nCells+1]  = l_b[m_nCells];
+    // set right boundary
+  l_h[m_nCells+1] = l_h[m_nCells ];
+  l_b[m_nCells+1] = l_b[m_nCells ];
 
 
-  //reflecting boundary
-  
-    if(i_choiceBoundry == true){
-
-    l_h[m_nCells+1] = l_h[m_nCells ];
+  if(i_choiceBoundry == true){
+    //reflecting boundary :same values except that the reflecting cell receives the paricel velocity with opposite sign
     l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
-    l_b[m_nCells+1] = l_b[m_nCells ];
-  
   }
-  
-
-
+  else
+  {
+    l_hu[m_nCells+1] = l_hu[m_nCells];
+  }
 }

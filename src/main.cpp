@@ -175,7 +175,7 @@ int main( int   i_argc,
       l_nOut++;
     }
 
-    //If true -> reflection boundary is active
+    //If true -> reflection boundary is active for the last cell
     l_waveProp->setGhostOutflow(false);
     l_waveProp->timeStep( l_scaling );
 

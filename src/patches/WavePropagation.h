@@ -103,5 +103,4 @@ class tsunami_lab::patches::WavePropagation {
                                t_idx  i_iy,
                                t_real i_hv ) = 0;
 };
-
 #endif

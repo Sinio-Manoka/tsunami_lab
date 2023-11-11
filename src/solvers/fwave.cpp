@@ -122,23 +122,27 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
     bool l_updateR = true;
     bool l_updateL = true;
 
-
+    //two dry cells next to each other you cant divide by zero
     if(i_hL == 0 && i_hR == 0 ){
         o_minus_A_deltaQ[1] = 0;
         o_minus_A_deltaQ[0] = 0;
         o_plus_A_deltaQ[1] = 0;
         o_plus_A_deltaQ[0] = 0;
 
-        return ;
-
-    }else if(i_hL == 0){
+        return;
+    
+    }
+    //left cell is a dry cell
+    else if(i_hL == 0){
 
         i_hL = i_hR;
         i_huL = -i_huR;
         i_bL = i_bR;
         l_updateL = false;
         
-    }else if(i_hR == 0){
+    }
+    //right cell is a dry cell
+    else if(i_hR == 0){
 
         i_hR = i_hL;
         i_huR = -i_huL;
@@ -174,11 +178,13 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
     t_real l_eigens[2] = {l_sL,l_sR};
     decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
     
+
+    //if left cell is dry its A-∆Q is zero
     if(!l_updateL){
         o_minus_A_deltaQ[1] = 0;
         o_minus_A_deltaQ[0] = 0;
+    //if left cell is dry its A+∆Q is zero 
     }if(!l_updateR){
-
         o_plus_A_deltaQ[1] = 0;
         o_plus_A_deltaQ[0] = 0;
     }

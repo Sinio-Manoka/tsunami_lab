@@ -16,7 +16,7 @@ tsunami_lab::setups::TsunamiEvent1d::TsunamiEvent1d(t_real i_delta){
 
     const std::string filename = "data/data_end.csv";
     std::size_t columnIndex = 3;
-    m_raws = tsunami_lab::io::Csv::read(filename,columnIndex); 
+    m_bathymetry_values = tsunami_lab::io::Csv::read(filename,columnIndex); 
     
 }
 
@@ -66,9 +66,9 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::displacement( t_real i_
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getBathymetryCsv(t_real i_x) const{
-    
+    //i_x gets divided by 250 because every cell is in 250m steps
     std::size_t l_index = i_x /250; 
-    return m_raws[l_index];
+    return m_bathymetry_values[l_index];
 }
 
 
