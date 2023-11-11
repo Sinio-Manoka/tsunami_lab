@@ -849,11 +849,12 @@ setup
                           REQUIRE( l_supercriticalFlow.getBathymetry( 10, 0 ) == -0.13f );
 
 
-lastly lets change the end time in the ``main.cpp`` to 200 for the simulation like that
+lastly lets change the end time in the ``main.cpp`` to 200 for the simulation like that:
 
 .. code-block:: cpp
 
    tsunami_lab::t_real l_endTime = 200;
+   tsunami_lab::t_real l_dxy = 25;
 
 
 hydraulic jump in supercritical solution 
@@ -878,6 +879,50 @@ The position of the hydraulic can be observed in the following simulation:
 The position of the hydraulic jump is at 45 cells out of 100, and it's:
 
 .. math:: P := \frac{45}{100} * 25m = 11.25m 
+
+And we will observe that our F-wave solver fails to converge to the analytically expected constant momentum at the 46th cell.
+
+
+1D Tsunami Simulation
+---------------------
+
+Extract bathymetry data for the 1D domain
+.........................................
+
+
+
+
+Extend the class csv
+....................
+
+
+
+
+
+setup TsunamiEvent1d
+.....................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
