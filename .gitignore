@@ -1,10 +1,5 @@
 /build/**
 
 doc/dta/dconfig
-doc/sphinx/Sphnix/Makefile
-doc/sphinx/Sphnix/make.bat
+
 .gitignore
-doc/sphinx/Sphnix/build/doctrees/index.doctree
-doc/sphinx/Sphnix/build/doctrees/environment.pickle
-doc/sphinx/Sphnix/source/conf.py
-doc/sphinx/Sphnix/source/index.rst
