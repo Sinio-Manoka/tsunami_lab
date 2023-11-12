@@ -7,7 +7,7 @@
 #include <catch2/catch.hpp>
 #include "SupercriticalFlow.h"
 
-TEST_CASE( "Test the SupercriticalFlow flow setup.", "[SupercriticalFlow]" ) {
+TEST_CASE( "Test the SupercriticalFlow setup.", "[SupercriticalFlow]" ) {
   tsunami_lab::setups::SupercriticalFlow l_supercriticalFlow;
 
   // left side

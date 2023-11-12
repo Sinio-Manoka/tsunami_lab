@@ -5,13 +5,20 @@ Bathymetry and Boundary Conditions
 
 Non-zero Source Term
 -----------------------
-Adding bathymetry to the f-wave solver is easy because you can directly include it in how the jump in the flux function is broken down: 
+Adding bathymetry to the f-wave solver is easy because you can subtract it
+from the multiplication of the inverse and the jump in fluxes: 
 
 
-
-.. math:: \Delta f - \Delta x \Psi_{i-1/2} =  \sum_{p=1}^2 Z_p.
-   :label: eq:fwave_source
-
+.. math:: 
+   \begin{bmatrix}
+         \alpha_1 \\
+         \alpha_2
+       \end{bmatrix} =
+       \begin{bmatrix}
+         1 & 1 \\
+         \lambda^{\text{Roe}}_1 & \lambda^{\text{Roe}}_2
+       \end{bmatrix}^{-1} \Delta f - \Delta x \Psi_{i-1/2}.
+   
 
 The term :math:`\Delta x \Psi_{i-1/2}` summarizes the effect of the bathymetry:
 
@@ -35,7 +42,7 @@ Now, let's implement the bathymetry in our F-wave solver:
                                                         t_real i_delta_f[2],
                                                         t_real i_b,
                                                         t_real o_eigencoefficients[2]){
-      // deltaf - bathymetry
+      //  ∆f - bathymetry
     i_delta_f[1] = i_delta_f[1] - i_b;
     //m x n ° n x p = 
     o_eigencoefficients[0] = (i_inverse[0] * i_delta_f[0]) + (i_inverse[1] * i_delta_f[1]);
@@ -48,14 +55,48 @@ Now, let's implement the bathymetry in our F-wave solver:
 
 .. code-block:: cpp
 
-   void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
+  void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
                                              t_real   i_hR,
                                              t_real   i_huL,
                                              t_real   i_huR,
-                                             t_real   i_bR,
                                              t_real   i_bL,
+                                             t_real   i_bR,
                                              t_real   o_minus_A_deltaQ[2],
-                                             t_real   o_plus_A_deltaQ[2]){
+                                             t_real   o_plus_A_deltaQ[2]){  
+    bool l_updateR = true;
+    bool l_updateL = true;
+
+    //two dry cells next to each other you cant divide by zero
+    if(i_hL == 0 && i_hR == 0 ){
+        o_minus_A_deltaQ[1] = 0;
+        o_minus_A_deltaQ[0] = 0;
+        o_plus_A_deltaQ[1] = 0;
+        o_plus_A_deltaQ[0] = 0;
+
+        return;
+    
+    }
+    //left cell is a dry cell
+    else if(i_hL == 0){
+
+        i_hL = i_hR;
+        i_huL = -i_huR;
+        i_bL = i_bR;
+        l_updateL = false;
+        
+    }
+    //right cell is a dry cell
+    else if(i_hR == 0){
+
+        i_hR = i_hL;
+        i_huR = -i_huL;
+        i_bR = i_bL;
+        l_updateR = false;
+    }
+
+
+
+
 
     t_real l_uL = i_huL / i_hL;
     t_real l_uR = i_huR / i_hR;
@@ -71,37 +112,32 @@ Now, let's implement the bathymetry in our F-wave solver:
 
     t_real l_fdelta[2];
     flux(i_hL,i_hR,i_huL,i_huR,l_fdelta);
-
-    //compute bathymetry
+    
     t_real l_b = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
-    
-    
+
     t_real l_eigencoefficients[2];
     eigencoefficientAlpha(l_inverse,l_fdelta,l_b,l_eigencoefficients);
 
+   
     t_real l_eigens[2] = {l_sL,l_sR};
     decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
     
 
-let's add bathymetry to the respective patches
-
-   1. Let's add the bathymetry to the ``WavePropagation1d.h`` file :
-
-   .. code-block:: cpp
-
-      t_real * m_b = nullptr;
-
-      t_real const * getBathymetry(){
-      return m_b+1;
+    //if left cell is dry its A-∆Q is zero
+    if(!l_updateL){
+        o_minus_A_deltaQ[1] = 0;
+        o_minus_A_deltaQ[0] = 0;
+    //if left cell is dry its A+∆Q is zero 
+    }if(!l_updateR){
+        o_plus_A_deltaQ[1] = 0;
+        o_plus_A_deltaQ[0] = 0;
       }
+   }
+    
 
-      void setBathymetry(t_idx  i_ix,
-                       t_idx,
-                       t_real i_b){
-      m_b[i_ix+1] = i_b;
-      }
 
-   2.  Let's add it to the ``WavePropagation.h`` file:
+
+2.  Let's add the bathymetry to the ``WavePropagation.h`` file:
 
 
    .. code-block:: cpp
@@ -114,13 +150,13 @@ let's add bathymetry to the respective patches
       virtual t_real const * getBathymetry() = 0;
 
 
-   3. Lastly, but not least, let's add it to the ``WavePropagation1d.cpp`` file: 
+   3. At last, let us add it to the ``WavePropagation1d.cpp`` file: 
 
-         3.1. first lets allocate memory for the Bathymetry cells and init it to zero :
+         3.1. You have to allocate the memory for the bathymetry cells and init it to zero :
 
             .. code-block:: cpp
 
-               tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells,bool i_choice ) {
+              tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells,bool i_choice ) {
                   m_choice = i_choice;
                   m_nCells = i_nCells;
 
@@ -141,7 +177,7 @@ let's add bathymetry to the respective patches
                   }
                }
 
-         3.2. now lets include it in the timeStep function:
+         3.2. Now, let's include it in the timeStep function:
 
           .. code-block:: cpp
 
@@ -238,10 +274,10 @@ let's add bathymetry to the respective patches
             }
 
 
-Effect of Bathymetry on Our F-Wave Solver
+Effect of bathymetry in our F-Wave Solver
 ..........................................
 
-Now, let's see the effect of bathymetry on our F-Wave solver. We are going to conduct a simulation using the Roe solver and
+Now, let's see the effect of bathymetry in our F-Wave solver. We are going to conduct a simulation using the Roe solver and
 our F-Wave solver for a specific setup to observe the impact of the bathymetry.
 
 The setup we are going to use for the comparison:
@@ -250,7 +286,7 @@ The setup we are going to use for the comparison:
 
    l_setup = new tsunami_lab::setups::DamBreak1d(90,60,5);
 
-But before we simulate, we have to add bathymetry that is not a constant. So, we go to the ``DamBreak1d.cpp`` and add bathymetry there.
+But before we simulate, we add a function that computes the bathymetry. So, we go to the ``DamBreak1d.cpp`` and add bathymetry there.
 
 
 .. code-block:: cpp
@@ -272,7 +308,7 @@ Now, let's examine the results for 500 cells:
 
 
 The height and momentum of the F-Wave solver are represented in dark blue and green, while those of the Roe solver are
-in red and light blue. In the video, we will notice that bathymetry affected the wave speed and height. This is because the bathymetric
+in red and light blue. In the video, we will notice that the bathymetry affected the wave speed and height. This is because the bathymetric
 features can influence the speed through wave refraction.
 Shallow areas may cause waves to shoal (decrease in depth), which leads to changes in wave height and wavelength.
 
@@ -286,7 +322,7 @@ Now, let's implement the reflecting boundary condition as defined in the followi
       (hu)_{i} &:= -(hu)_{i-1} \\
       b_{i} &:= b_{i-1}
 
-1. to do that first we have to change our ``setGhostOutflow`` fucntion in the ``WavePropagation1d.cpp`` file :
+1. The first thing is to change our ``setGhostOutflow`` function in the ``WavePropagation1d.cpp`` file:
 
 .. code-block:: cpp 
 
@@ -301,28 +337,28 @@ Now, let's implement the reflecting boundary condition as defined in the followi
   l_hu[0] = l_hu[1];
   l_b[0] = l_b[1];
 
-  // set right boundary
-  l_h[m_nCells+1]  = l_h[m_nCells];
-  l_hu[m_nCells+1] = l_hu[m_nCells];
-  l_b[m_nCells+1]  = l_b[m_nCells];
-
-
-  //reflecting boundary
-  if(i_choiceBoundry == true){
-
+    // set right boundary
   l_h[m_nCells+1] = l_h[m_nCells ];
-  l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
   l_b[m_nCells+1] = l_b[m_nCells ];
 
+
+  if(i_choiceBoundry == true){
+    //reflecting boundary :same values except that the reflecting cell receives the paricel velocity with opposite sign
+    l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
   }
+  else
+  {
+    l_hu[m_nCells+1] = l_hu[m_nCells];
+   }
+   }  
   
 We added a boolean variable so that the ``reflecting boundary`` is not always active
 
 .. Important::
 
-  We also have to modify ``setGhostOutflow`` wherever it is declared and incorporate the boolean into it.
+  We also have to modify ``setGhostOutflow`` and also add all occurrences with the boolean input parameter.
 
-2. Now we have to change our wave solver so that it matches the boundary by modifying the  ``net-updates`` function:
+2. Now we have to change our wave solver that it matches the boundary by modifying the  ``net-updates`` function:
 
 .. code-block:: cpp
 
@@ -330,31 +366,34 @@ We added a boolean variable so that the ``reflecting boundary`` is not always ac
                                              t_real   i_hR,
                                              t_real   i_huL,
                                              t_real   i_huR,
-                                             t_real   i_bR,
                                              t_real   i_bL,
+                                             t_real   i_bR,
                                              t_real   o_minus_A_deltaQ[2],
-                                             t_real   o_plus_A_deltaQ[2]){
-
+                                             t_real   o_plus_A_deltaQ[2]){  
     bool l_updateR = true;
     bool l_updateL = true;
 
-      
+    //two dry cells next to each other you cant divide by zero
     if(i_hL == 0 && i_hR == 0 ){
         o_minus_A_deltaQ[1] = 0;
         o_minus_A_deltaQ[0] = 0;
         o_plus_A_deltaQ[1] = 0;
         o_plus_A_deltaQ[0] = 0;
 
-        return ;
-
-    }else if(i_hL == 0){
+        return;
+    
+    }
+    //left cell is a dry cell
+    else if(i_hL == 0){
 
         i_hL = i_hR;
         i_huL = -i_huR;
         i_bL = i_bR;
         l_updateL = false;
         
-    }else if(i_hR == 0){
+    }
+    //right cell is a dry cell
+    else if(i_hR == 0){
 
         i_hR = i_hL;
         i_huR = -i_huL;
@@ -380,6 +419,7 @@ We added a boolean variable so that the ``reflecting boundary`` is not always ac
 
     t_real l_fdelta[2];
     flux(i_hL,i_hR,i_huL,i_huR,l_fdelta);
+    
     t_real l_b = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
 
     t_real l_eigencoefficients[2];
@@ -389,13 +429,19 @@ We added a boolean variable so that the ``reflecting boundary`` is not always ac
     t_real l_eigens[2] = {l_sL,l_sR};
     decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
     
+
+    //if left cell is dry its A-∆Q is zero
     if(!l_updateL){
         o_minus_A_deltaQ[1] = 0;
         o_minus_A_deltaQ[0] = 0;
+    //if left cell is dry its A+∆Q is zero 
     }if(!l_updateR){
-        
         o_plus_A_deltaQ[1] = 0;
         o_plus_A_deltaQ[0] = 0;
+      }
+
+    
+
    }
 
 
@@ -441,7 +487,7 @@ reflecting boundary conditions at the right boundary, and outflow boundary condi
 Hydraulic Jumps
 ---------------
 
-maximum Froude value and location
+Maximum Froude value and location
 ..................................
 
 The Froude number can be calculated through this formula:
@@ -479,7 +525,7 @@ and:
        \end{aligned}
 
 
-The calculations for the location and value of the maximum Froude number for the subcritical setting can be observed in the following picture:
+The calculations for the location and the value of the maximum Froude number for the subcritical setting can be observed in the following picture:
 
 
 .. image:: _static/maxFroudeNumerSubcritical.png
@@ -501,7 +547,7 @@ And for the supercritical setting, the calculations can be observed here:
 
 
 
-setup 
+setup
 .......
 
 1. subcritical setting:
@@ -510,10 +556,10 @@ setup
 
       1.1.1. Let's start with the ``SubcriticalFlow.h`` file :
 
-         .. code-block:: cpp 
+         .. code-block:: cpp
 
             /**
-            * @author Ward Tammaa 
+            * @author Ward Tammaa
             *
             * @section DESCRIPTION
             * subcriticalFlow.
@@ -615,7 +661,7 @@ setup
 
                }
 
-            1.1.3. lastly letes implement unit test for subcriticalFlow in the ``SubcriticalFlow.test.cpp`` file:
+            1.1.3. lastly let's implement a unit test for subcriticalFlow in the ``SubcriticalFlow.test.cpp`` file:
 
                   .. code-block:: cpp
                
@@ -678,7 +724,7 @@ setup
 
 2. supercritical setting:
 
-2.1 Now, let's compute the SupercriticalFlow setting as a setup. We will have to create three files: ``SupercriticalFlow.cpp`` , ``SupercriticalFlow.h`` , ``SupercriticalFlow.test.cpp``
+2.1 Now, let's compute the Supercritical Flow setting as a setup. We will have to create three files: ``SupercriticalFlow.cpp`` , ``SupercriticalFlow.h`` , ``SupercriticalFlow.test.cpp``
 
       2.1.1. Let's start with the ``SupercriticalFlow.h`` file :
 
@@ -735,8 +781,8 @@ setup
 
             #endif
 
-      2.1.2. Now, let's implement the  ``SupercriticalFlow.cpp`` using the following settings : 
-            For the **SupercriticalFlow flow** we use the following initial values:
+      2.1.2. Now, let's implement the ``SupercriticalFlow.cpp`` using the following settings : 
+            For the **Supercritical flow** we use the following initial values:
 
                      .. math::
                          \begin{aligned}
@@ -790,7 +836,7 @@ setup
 
                
 
-            2.1.3. lastly letes implement unit test for SupercriticalFlow in the ``SupercriticalFlow.test.cpp`` file:
+            2.1.3. lastly let's implement a unit test for SupercriticalFlow in the ``SupercriticalFlow.test.cpp`` file:
 
                   .. code-block:: cpp
                
@@ -803,7 +849,7 @@ setup
                        #include <catch2/catch.hpp>
                        #include "SupercriticalFlow.h"
 
-                       TEST_CASE( "Test the SupercriticalFlow flow setup.", "[SupercriticalFlow]" ) {
+                       TEST_CASE( "Test the SupercriticalFlow setup.", "[SupercriticalFlow]" ) {
                          tsunami_lab::setups::SupercriticalFlow l_supercriticalFlow;
 
                         // left side
@@ -849,7 +895,7 @@ setup
                           REQUIRE( l_supercriticalFlow.getBathymetry( 10, 0 ) == -0.13f );
 
 
-lastly lets change the end time in the ``main.cpp`` to 200 for the simulation like that:
+lastly lets change the end time in the ``main.cpp`` to 200 for the simulation:
 
 .. code-block:: cpp
 
@@ -857,10 +903,8 @@ lastly lets change the end time in the ``main.cpp`` to 200 for the simulation li
    tsunami_lab::t_real l_dxy = 25;
 
 
-hydraulic jump in supercritical solution 
------------------------------------------
-
-now lets simulate the SupercriticalFlow:
+Hydraulic jump in the supercritical solution 
+----------------------------------------------
 
 Now, let's simulate the Supercritical Flow. Navigate to the ``main.cpp`` file and run the supercritical setup
 
@@ -870,31 +914,111 @@ Now, let's simulate the Supercritical Flow. Navigate to the ``main.cpp`` file an
 
                                            
 
-The position of the hydraulic can be observed in the following simulation: 
+The position of the hydraulic jump can be observed in the following simulation: 
 
    .. video:: _static/SupercriticalFlow.mp4
       :width: 700
       :autoplay:
 
-The position of the hydraulic jump is at 45 cells out of 100, and it's:
+The hydraulic jump is located at 45th cell of 100 cells:
 
 .. math:: P := \frac{45}{100} * 25m = 11.25m 
 
-And we will observe that our F-wave solver fails to converge to the analytically expected constant momentum at the 46th cell.
+We can observe that our F-wave solver fails to converge to the analytically expected constant momentum at the 46th cell.
 
 
 1D Tsunami Simulation
 ---------------------
 
 Extract bathymetry data for the 1D domain
-.........................................
-
+..........................................
 
 
 
 Extend the class csv
-....................
+.....................
 
+To extract the bathymetry data, we have to navigate to the ``Csv.cpp`` file.
+and implement the following ``read`` function and add bathymetry to the ``write`` function.
+
+.. code-block:: cpp
+
+   std::vector<tsunami_lab::t_real> tsunami_lab::io::Csv::read(const std::string & filename,
+                                                std::size_t  columnIndex){
+    //checks whether file exists 
+    std::vector<t_real> selectedColumn;
+
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return selectedColumn;
+    }
+    
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string token;
+        for (std::size_t i = 0; std::getline(iss, token, ',') && i <= columnIndex; ++i) {
+            if (i == columnIndex) {
+                selectedColumn.push_back(std::stod(token));
+                break;
+            }
+        }
+    }
+
+    return selectedColumn;
+   }
+
+   void tsunami_lab::io::Csv::write( t_real            i_dxy,
+                                  t_idx                i_nx,
+                                  t_idx                i_ny,
+                                  t_idx                i_stride,
+                                  t_real       const * i_h,
+                                  t_real       const * i_hu,
+                                  t_real       const * i_hv,
+                                  t_real       const * i_b,
+                                  std::ostream       & io_stream ) {
+  // write the CSV header
+  io_stream << "x,y";
+  if( i_h  != nullptr ) io_stream << ",height";
+  if( i_hu != nullptr ) io_stream << ",momentum_x";
+  if( i_hv != nullptr ) io_stream << ",momentum_y";
+  if( i_b != nullptr ) io_stream <<  ",bathymetry";
+  io_stream << "\n";
+
+  // iterate over all cells
+  for( t_idx l_iy = 0; l_iy < i_ny; l_iy++ ) {
+    for( t_idx l_ix = 0; l_ix < i_nx; l_ix++ ) {
+      // derive coordinates of cell center
+      t_real l_posX = (l_ix + 0.5) * i_dxy;
+      t_real l_posY = (l_iy + 0.5) * i_dxy;
+
+      t_idx l_id = l_iy * i_stride + l_ix;
+
+      // write data
+      io_stream << l_posX << "," << l_posY;
+      if( i_h  != nullptr ) io_stream << "," << i_h[l_id];
+      if( i_hu != nullptr ) io_stream << "," << i_hu[l_id];
+      if( i_hv != nullptr ) io_stream << "," << i_hv[l_id];
+      if( i_b  != nullptr ) io_stream << "," << i_b[l_id];
+      io_stream << "\n";
+      }
+   }
+   io_stream << std::flush;
+   }
+
+
+
+
+Now we have to check our data in the csv file to find out how far our points are.
+In our csv file the furthest point is ``440499.999828`` meter away so we implement it in the main fucntion.
+
+.. code-block:: cpp 
+
+   l_dxy = 440500.0 / l_nx;
+
+
+**Now we can read out csv file.** 
 
 
 
@@ -902,19 +1026,167 @@ Extend the class csv
 setup TsunamiEvent1d
 .....................
 
+to implement the TsunamiEvent1d setup first we will have to creat the following files : ``TsunamiEvent1d.cpp`` , ``TsunamiEvent1d.h`` and ``TsunamiEvent1d.test.cpp``
+
+We have to include the ``Csv.h`` to gain access to the bathymetry values.
+In the constructor we call the ``read`` methode with a path to the csv values ``filename = "data/data_end.csv"```
+and the ``collumnIndex = 3`` because the bathymetry values are stored at index 3 in the csv file.
+
+.. code-block:: cpp
+
+   #include "TsunamiEvent1d.h"
+   #include "../../io/Csv.h"
+   #include <cmath>
+   #include <cstddef> 
+
+
+   tsunami_lab::setups::TsunamiEvent1d::TsunamiEvent1d(t_real i_delta){
+
+    m_delta = i_delta;
+
+    const std::string filename = "data/data_end.csv";
+    std::size_t columnIndex = 3;
+    m_bathymetry_values = tsunami_lab::io::Csv::read(filename,columnIndex); 
+    
+   }
+
+Now we implement a displacement methode that satisfies this functionality:
+
+   .. math::
+
+      d(x) = \begin{cases}
+               10\cdot\sin(\frac{x-175000}{37500} \pi + \pi), & \text{ if } 175000 < x < 250000 \\
+               0, &\text{else}.
+               \end{cases}
+
+The method should look like this:
+
+   .. code-block:: cpp
+
+      tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::displacement( t_real i_x) const{
+    
+         if(i_x > 175000 && i_x < 250000){
+            return 10* sin(((i_x-175000)/(37500))* M_PI + M_PI);
+         }
+         else
+         {
+            return 0;
+         }
+      }
+
+``M_PI`` is :math:`\pi` in the function above.
+
+We have to add two methods to get the right bathymetry value. One method determines the bathymetry value in the csv file and 
+one that uses bathymetry value of the csv file and satisfies the following:
+
+.. math::
+
+   \begin{split}
+       h  &= \begin{cases}
+               \max( -b_\text{in}, \delta), &\text{if } b_\text{in} < 0 \\
+               0, &\text{else}
+             \end{cases}\\
+       hu &= 0\\
+       b  &= \begin{cases}
+               \min(b_\text{in}, -\delta) + d, & \text{ if } b_\text{in} < 0\\
+               \max(b_\text{in}, \delta) + d, & \text{ else}.
+             \end{cases}
+   \end{split}
+
+with:
+
+   .. code-block:: cpp
+
+      tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getHeight( t_real i_x,
+                                                                    t_real      )const{
+      t_real l_bin = getBathymetryCsv(i_x);                           
+      if(l_bin < 0 ){
+         if( -l_bin < m_delta){
+            return m_delta;
+         }
+         else
+            {
+               return -l_bin;
+            }
+         }
+         else
+         {
+            return 0;
+         }                                                                                                                                                                              
+      }
+
+and the method that determines the bathymetry value in the csv file:
+
+   .. code-block:: cpp
+
+      tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getBathymetryCsv(t_real i_x) const{
+         //i_x gets divided by 250 because every cell is in 250m steps
+         std::size_t l_index = i_x /250; 
+         return m_bathymetry_values[l_index];
+      }
+
+the same ```getBathymetryCsv`` method is used to determine the height which satisfies that following:
+
+      .. math::
+            \begin{split}
+            h  &= \begin{cases}
+                     \max( -b_\text{in}, \delta), &\text{if } b_\text{in} < 0 \\
+                     0, &\text{else}
+                  \end{cases}\\
+            \end{split}
+            
+            
+   .. code-block:: cpp
+
+      tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getHeight( t_real i_x,
+                                                                    t_real      )const{
+         t_real l_bin = getBathymetryCsv(i_x);                           
+         if(l_bin < 0 ){
+            if( -l_bin < m_delta){
+               return m_delta;
+            }
+            else
+            {
+               return -l_bin;
+            }
+         }
+         else
+         {
+         return 0;
+         }                                                                                                                                                                                    
+      }
+
+
+
+   
+
+and lastly ``hu`` which gets initialized with zero :
+
+   .. code-block:: cpp
+
+      tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getMomentumY(  t_real,
+                                                                        t_real)const{
+         return 0;                                                                                                                                                                      
+      }
+
+
+
+      tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getMomentumX(  t_real ,
+                                                                        t_real)const{
+         return 0;                                                                                                                       
+      }
 
 
 
 
+Tsunami simulation
+...................
 
+.. video:: _static/3.4.4.mp4
+      :width: 700
+      :autoplay:
 
-
-
-
-
-
-
-
+We can see that our 
 
 
 

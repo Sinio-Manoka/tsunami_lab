@@ -35,7 +35,7 @@ class tsunami_lab::setups::TsunamiEvent1d: public Setup {
     t_real displacement( t_real i_x) const;
 
   public:
-
+  
     /**
      * @brief The constructor for TsunamiEvent1D.
      * @param i_delta to avoid running into numerical issues (small value)

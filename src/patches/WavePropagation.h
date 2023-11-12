@@ -62,7 +62,11 @@ class tsunami_lab::patches::WavePropagation {
      **/
     virtual t_real const * getMomentumY() = 0;
 
-
+    /**
+     * Gets the cells' Bathymetry at a given position .
+     *
+     * @return Bathymetry.
+     **/
     virtual t_real const * getBathymetry() = 0;
 
     /**
@@ -76,7 +80,11 @@ class tsunami_lab::patches::WavePropagation {
                             t_idx  i_iy,
                             t_real i_h ) = 0;
 
-
+    /**
+    * @brief Sets the bathymetry at a given position.
+    * @param i_ix x-coordinate.
+    * @param i_iy y-coordinate.
+    */
     virtual void setBathymetry(t_idx  i_ix,
                                t_idx  i_iy,
                                t_real i_b)=0;

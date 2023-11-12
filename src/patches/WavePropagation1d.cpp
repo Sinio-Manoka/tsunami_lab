@@ -116,11 +116,11 @@ void tsunami_lab::patches::WavePropagation1d::setGhostOutflow(bool i_choiceBound
   l_b[0] = l_b[1];
 
     // set right boundary
-  l_h[m_nCells+1] = l_h[m_nCells ];
-  l_b[m_nCells+1] = l_b[m_nCells ];
+  l_h[m_nCells+1] = l_h[m_nCells];
+  l_b[m_nCells+1] = l_b[m_nCells];
 
 
-  if(i_choiceBoundry == true){
+  if(i_choiceBoundry){
     //reflecting boundary :same values except that the reflecting cell receives the paricel velocity with opposite sign
     l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
   }

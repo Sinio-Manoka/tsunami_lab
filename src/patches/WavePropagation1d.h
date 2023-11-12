@@ -78,7 +78,11 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
       return m_h[m_step]+1;
     }
 
-
+    /**
+     * @brief Gets cells' Bathymetry.
+     *
+     * @return Bathymetry.
+     */
    t_real const * getBathymetry(){
       return m_b+1;
     }
@@ -111,6 +115,13 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
       m_h[m_step][i_ix+1] = i_h;
     }
 
+
+    /**
+     * @brief Sets the Bathymetry of the cell to the given value.
+     *
+     * @param i_ix id of the cell in x-direction.
+     * @param i_b Bathymetry.
+     **/
     void setBathymetry(t_idx  i_ix,
                        t_idx,
                        t_real i_b){

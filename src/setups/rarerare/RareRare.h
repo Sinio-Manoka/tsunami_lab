@@ -45,7 +45,7 @@ class tsunami_lab::setups::RareRare: public Setup {
 
     /**
      * @brief Gets the water height at a given point.
-     * @return height at the given point.
+     * @return Height at the given point.
      **/
     t_real getHeight( t_real ,
                       t_real ) const;
@@ -54,18 +54,21 @@ class tsunami_lab::setups::RareRare: public Setup {
     /**
      * @brief Gets the momentum in x-direction.
      * @param i_x x-coordinate of the queried point.
-     * @return momentum in x-direction.
+     * @return Momentum in x-direction.
      **/
     t_real getMomentumX( t_real i_x,
                          t_real ) const;
 
     /**
      * @brief Gets the momentum in y-direction.
-     * @return momentum in y-direction.
+     * @return Momentum in y-direction.
      **/
     t_real getMomentumY( t_real,
                          t_real ) const;
-
+    /**
+     * @brief Gets the bathymetry.
+     * @return Bathymetry.
+     **/
     t_real getBathymetry( t_real,
                           t_real ) const ;
                           

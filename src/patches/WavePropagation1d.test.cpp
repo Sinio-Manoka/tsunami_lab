@@ -106,7 +106,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
 
   REQUIRE(middle_states1.getHeight()[50] == Approx(8899.74));
 
-
+// calculated bei geogebra
   tsunami_lab::patches::WavePropagation1d middle_states2(100, true);
 
   for (std::size_t l_ce = 0; l_ce < 50; l_ce++)
@@ -142,7 +142,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
 
 
 
-
+// calculated bei geogebra
 tsunami_lab::patches::WavePropagation1d middle_states3(100, false);
 
   for (std::size_t l_ce = 0; l_ce < 50; l_ce++)

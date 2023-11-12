@@ -49,11 +49,8 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getHeight( t_real i_x,
         }
     }else{
         return 0;
-    }                                                                                                                     
-                                                                  
+    }                                                                                                                                                                                     
 }
-
-
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::displacement( t_real i_x) const{
 
@@ -62,7 +59,6 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::displacement( t_real i_
     }else{
         return 0;
     }
-
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getBathymetryCsv(t_real i_x) const{

@@ -150,8 +150,21 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 
       apt-get install doxygen
 
-      apt-get install python3-sphinx
+      pip install -U sphinx
        
+.. Important::
+
+   to build our project in Sphnix we need to install tow things:
+
+   .. code-block::
+
+      pip install sphinxcontrib-video
+
+      pip install sphinx-rtd-theme
+
+   
+
+
 
 1. doxygen:
    
@@ -190,6 +203,8 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 2. Sphnix:
 
    2.1. We need to navigate to the ``doc\sphnix\Sphnix\``
+
+
 
    2.2. Inside, you will find a file called ``Makefile`` Within this file, you will need to modify certain paths:
 
