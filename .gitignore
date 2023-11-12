@@ -1,8 +1,6 @@
 build/**
 
 doc/dta/**
-
-doc/sphinx/Sphnix/**
 doc/sphinx/site/**
 doc/doxygen/**
 
