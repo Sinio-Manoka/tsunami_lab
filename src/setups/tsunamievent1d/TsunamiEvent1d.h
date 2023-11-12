@@ -25,13 +25,20 @@ namespace tsunami_lab {
 class tsunami_lab::setups::TsunamiEvent1d: public Setup {
 
   private:
-    //m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
+    /**
+     * @param m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
+     */
     t_real m_delta = 0; 
 
-    //m_bathymetry_values contains all bathymetry values
+    /**
+    * @param m_bathymetry_values contains all bathymetry values 
+    */
     std::vector<t_real> m_bathymetry_values;
     
-    //is the vertical displacement, typically caused by a subduction-zone earthquake.
+    /**
+    * @brief the method adds the vertical displacement, typically caused by a subduction-zone earthquake.
+    * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+    */
     t_real displacement( t_real i_x) const;
 
   public:
