@@ -933,6 +933,45 @@ We can observe that our F-wave solver fails to converge to the analytically expe
 Extract bathymetry data for the 1D domain
 ..........................................
 
+to extract the bathymetry data for our 1D domain we need to install the following tools: 
+
+- GMT
+- gebco
+
+.. code-block:: 
+
+   sudo apt install gmt
+
+GEBCO can be installed `here <https://www.bodc.ac.uk/data/open_download/gebco/gebco_2023/zip/>`_ .
+
+Now let's extract the data:
+
+1. first we have to cut the data from the nc file:
+
+.. code-block:: 
+
+   gmt grdcut -R138/147/35/39 data_in/GEBCO_2023.nc -G data_temp/GEBCO_2023_cut.nc
+
+.. important:: 
+
+   gmt grdcut -R~which region to cut out~ ~from which data~ -G ~output file~ :
+
+The nc file can be checked with the following command:
+
+.. code-block:: 
+
+   gmt grdcut -R~what to cut out~ ~from which data~ -G ~output file~ :
+
+
+2. The data can be extracted with the following command from the cuted nc file
+
+.. code-block::
+
+   gmt grdtrack -GGEBCO_2023_cut.nc -E141.024949/37.316569/146.0/37.365691+i250e+d -Ar > dem.csv
+   
+.. important:: 
+
+   gmt grdtrack -G~input file -E from where to where (points)+i250e+d -Ar ~output file~ 
 
 
 Extend the class csv
@@ -1181,32 +1220,34 @@ and lastly ``hu`` which gets initialized with zero :
 
 Tsunami simulation
 ...................
+This video shows the visualization of the setup:
 
 .. video:: _static/3.4.4.mp4
       :width: 700
       :autoplay:
 
-We can see that our 
 
 
+The runup is hardly observeable that's why another zoomed in picture at the left boundary:
 
-
-
-
-
-
-
-
+.. image:: _static/runup.png
+   :width: 800px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+   
+the runup is approximately ``1.8241`` meters.
 
 
 Personal Contribution
 ---------------------
 
 - Ward Tammaa, Daniel Schicker Doxygen Documentation
-- Mohamad Khaled Minawe, Ward Tammaa Sphnix Documentation
+- Mohamad Khaled Minawe, Ward Tammaa, Daniel Schicker Sphnix Documentation
 - Daniel Schicker, Mohamad Khaled Minawe , Ward Tammaa functions implementation
 - Mohamad Khaled Minawe, Daniel Schicker, Ward Tammaa Unit Testing
-- Mohamad Khaled Minawe, Daniel Schicker Geogebra Datei(Calculation for the Unit Tests)
+- Mohamad Khaled Minawe, Daniel Schicker Geogebra Datei(Calculations for the Unit Tests)
 - Ward Tammaa Hosting the code , Action runner
 
 

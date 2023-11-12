@@ -70,9 +70,9 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     }
 
     /**
-     * @brief Gets cells' water heights.
+     * @brief Gets the cells water heights.
      *
-     * @return water heights.
+     * @return Water heights.
      */
     t_real const * getHeight(){
       return m_h[m_step]+1;
