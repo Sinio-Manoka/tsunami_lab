@@ -34,11 +34,11 @@ int main( int   i_argc,
   std::cout << "### https://scalable.uni-jena.de ###" << std::endl;
   std::cout << "####################################" << std::endl;
 
-  if( i_argc < 3 ) {
+  if( i_argc < 2 ) {
     std::cerr << "invalid number of arguments, usage:" << std::endl;
     std::cerr << "  ./build/tsunami_lab N_CELLS_X" << std::endl;
     std::cerr << "where N_CELLS_X is the number of cells in x-direction." << std::endl;
-    std::cerr << "Solver Choice is field so please make an Input by adding ROE or FWAVE !!" << std::endl;
+    std::cerr << "(optional,default value = fwave) Solver Choice is either ROE or FWAVE!!" << std::endl;
     return EXIT_FAILURE;
   }
   else {
