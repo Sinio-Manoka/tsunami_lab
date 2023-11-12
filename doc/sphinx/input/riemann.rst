@@ -22,7 +22,7 @@ Important Links
 
 `GitHub Page <https://github.com/Sinio-Manoka/tsunami_lab>`_
 
-`Doxygen Documentation <https://tsunami-99843.web.app/>`_
+`Doxygen Documentation <https://doxygen-tsunami.web.app>`_
 
 
 Riemann Solver
@@ -302,7 +302,7 @@ This function should invoke every other function in the file to compute :math:`A
 
 .. Important::
    We are given :math:`q_l = [h_l, (hu)_l]^T` and :math:`q_r = [h_r, (hu)_r]^T` so we simply plug them in the function to compute :math:`A^- \Delta Q` and :math:`A^+ \Delta Q` as 2D vector.
-   for more infromation check the `Documentation <https://tsunami-99843.web.app/>`_.
+   for more information check the `Documentation <https://doxygen-tsunami.web.app/>`_.
 
 
 

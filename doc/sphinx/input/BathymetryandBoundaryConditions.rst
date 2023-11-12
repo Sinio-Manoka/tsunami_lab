@@ -528,7 +528,7 @@ and:
 The calculations for the location and the value of the maximum Froude number for the subcritical setting can be observed in the following picture:
 
 
-.. image:: _static/maxFroudeNumerSubcritical.png
+.. image:: _static/MaxFroudeNumerSubcritical.png
    :width: 700px
    :height: 500px
    :scale: 100 %
@@ -537,9 +537,9 @@ The calculations for the location and the value of the maximum Froude number for
 
 And for the supercritical setting, the calculations can be observed here:
 
-.. image:: _static/maxFroudeNumberSupercritical.png
+.. image:: _static/MaxFroudeNumberSupercritical.png
    :width: 700px
-   :height: 500px
+   :height: 700px
    :scale: 100 %
    :alt: alternate text
    :align: right
