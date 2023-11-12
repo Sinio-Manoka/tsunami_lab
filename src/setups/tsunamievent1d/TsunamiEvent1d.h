@@ -20,7 +20,7 @@ namespace tsunami_lab {
 }
 
 /**
- * SupercriticalFlow setup.
+ * TsunamiEvent1d setup.
  **/
 class tsunami_lab::setups::TsunamiEvent1d: public Setup {
 

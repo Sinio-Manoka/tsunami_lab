@@ -241,13 +241,13 @@ div.summary {
 /***********************************/
 
 a, a:visited, a:active, .contents a:visited, body.SRPage a, body.SRPage a:visited, body.SRPage a:active {
-    color: var(--bgfont);
+    color:  rgb(0, 102, 170);/*var(--bgfont);*/ 
     text-decoration: none;
 }
 
 a:hover, .contents a:hover, body.SRPage a:hover {
-    color: var(--bgfont-hover);
-    text-decoration: var(--bgfont-hover-text-decoration);
+    color: #f3c60a; /* var(--bgfont-hover); */
+    text-decoration: underline; /*var(--bgfont-hover-text-decoration); */
 }
 
 /***********************************/

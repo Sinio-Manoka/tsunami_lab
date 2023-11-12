@@ -284,7 +284,7 @@ We'll apply our solver to solve situations where two streams of water move in op
 
    };
 
-3. We will implement the configuration for the ``Shock Shock Problem`` in the ``ShockShock.h```file :
+3. We will implement the configuration for the ``Shock Shock Problem`` in the ``ShockShock.h`` file :
 
 
 .. code-block:: cpp

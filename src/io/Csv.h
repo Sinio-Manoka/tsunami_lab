@@ -24,7 +24,7 @@ namespace tsunami_lab {
 class tsunami_lab::io::Csv {
   public:
     /**
-     * Writes the data as CSV to the given stream.
+     * @brief Writes the data as CSV to the given stream.
      *
      * @param i_dxy cell width in x- and y-direction.
      * @param i_nx number of cells in x-direction.
@@ -45,6 +45,12 @@ class tsunami_lab::io::Csv {
                        t_real       const * i_b,
                        std::ostream       & io_stream );
 
+    /**
+    * @brief Reads the csv file and stores the data into a vector (in our case only bathymetry values).
+    * @param filename location of the csv file.
+    * @param columnIndex is after how many commas "," the value you want to read is located.
+    * @return vector<t_real> that contains a collumn of the csv file (in our case only bathymetry values).
+    */
     static std::vector<t_real> read(const std::string & filename,
                                     std::size_t         columnIndex);
 };
