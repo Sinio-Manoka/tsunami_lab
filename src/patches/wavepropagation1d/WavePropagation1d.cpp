@@ -5,8 +5,8 @@
  * One-dimensional wave propagation patch.
  **/
 #include "WavePropagation1d.h"
-#include "../solvers/Roe.h"
-#include "../solvers/fwave.h"
+#include "../../solvers/Roe.h"
+#include "../../solvers/fwave.h"
 
 
 

@@ -4,7 +4,7 @@
  * @section DESCRIPTION
  * Entry-point for simulations.
  **/
-#include "patches/WavePropagation1d.h"
+#include "patches/wavepropagation1d/WavePropagation1d.h"
 #include "setups/dambreak/DamBreak1d.h"
 #include "setups/rarerare/RareRare.h"
 #include "setups/shockshock/ShockShock.h"

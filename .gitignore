@@ -1,6 +1,4 @@
 build/**
-
 doc/sphinx/site/**
-doc/doxygen/**
-
-.gitignoredoc/dta/dconfig
+doc/doxygen/site/**
+.gitignore

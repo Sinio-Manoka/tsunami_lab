@@ -7,7 +7,7 @@
 #ifndef TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION
 #define TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION
 
-#include "../constants.h"
+#include "../../constants.h"
 
 namespace tsunami_lab {
   namespace patches {
