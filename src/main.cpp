@@ -69,7 +69,7 @@ int main() {
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver", "dxy", "setup","nx"};
+  std::vector<std::string> keysToCheck = {"solver", "dxy", "setup","nx","h","hu","location"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -93,14 +93,32 @@ int main() {
   //New:: Reading the dxy from the Json File
   tsunami_lab::t_real l_temp_dxy =  tsunami_lab::io::Configuration::readFromConfigReal("dxy");
   l_dxy = l_temp_dxy / l_nx;
-  
+
+
   //New:: Reading the Setup from the Json File
   std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
   tsunami_lab::setups::Setup *l_setup = nullptr;
+  tsunami_lab::t_real l_temp_h = 0, l_temp_hu = 0 , l_temp_location = 0 , l_temp_hl = 0 , l_temp_hr = 0  ;
+
+
   if(l_temp_setup == "tsunamievent1d"){
     std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
     l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);  
-  }
+  }else if(l_temp_setup == "ShockShock" || l_temp_setup =="RareRare" ){
+      l_temp_h = tsunami_lab::io::Configuration::readFromConfigReal("h");
+      l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
+      l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+      if(l_temp_setup == "ShockShock" ){
+         l_setup = new tsunami_lab::setups::ShockShock(l_temp_h ,l_temp_hu,l_temp_location);  
+      }else{
+        l_setup = new tsunami_lab::setups::RareRare(l_temp_h ,l_temp_hu,l_temp_location);  
+      }
+    }else if(l_temp_setup == "Dambreak1d"){
+      l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
+      l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
+      l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+      l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
+    }
                                     
   // construct solver
   tsunami_lab::patches::WavePropagation *l_waveProp;
