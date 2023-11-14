@@ -103,8 +103,16 @@ int main() {
 
   if(l_temp_setup == "tsunamievent1d"){
     std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
-    l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);  
-  }else if(l_temp_setup == "shockshock" || l_temp_setup =="rarerare" ){
+    l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
+  }else if(l_temp_setup == "supercriticalflow"){
+    std::cout << "\033[1;32m\u2713 Setup : SupercriticalFlow \033[0m" << std::endl;
+     l_setup = new tsunami_lab::setups::SupercriticalFlow();
+  }
+  else if(l_temp_setup == "subcriticalflow"){
+    std::cout << "\033[1;32m\u2713 Setup : SubcriticalFlow \033[0m" << std::endl;
+     l_setup = new tsunami_lab::setups::SubcriticalFlow();
+  }
+  else if(l_temp_setup == "shockshock" || l_temp_setup =="rarerare" ){
       l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
       l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
       if(l_temp_setup == "shockshock" ){
@@ -114,7 +122,8 @@ int main() {
         std::cout << "\033[1;32m\u2713 Setup : RareRare \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::RareRare(l_temp_hl ,l_temp_hu,l_temp_location);  
       }
-    }else if(l_temp_setup == "dambreak1d"){
+    }
+    else if(l_temp_setup == "dambreak1d"){
       std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
       l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
       l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
