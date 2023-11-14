@@ -5,7 +5,7 @@
  * Unit tests for the CSV-interface.
  **/
 #include <catch2/catch.hpp>
-#include "../constants.h"
+#include "../../constants.h"
 #include <sstream>
 #include <vector>
 #define private public

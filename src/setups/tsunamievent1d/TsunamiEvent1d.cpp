@@ -5,7 +5,7 @@
  * The Shock Shock problem.
  **/
 #include "TsunamiEvent1d.h"
-#include "../../io/Csv.h"
+#include "../../io/Csv/Csv.h"
 #include <cmath>
 #include <cstddef> 
 
