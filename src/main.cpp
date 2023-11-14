@@ -96,7 +96,7 @@ int main() {
   
   //New:: Reading the Setup from the Json File
   std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
-  tsunami_lab::setups::Setup *l_setup = new tsunami_lab::setups::TsunamiEvent1d(20); //default setup
+  tsunami_lab::setups::Setup *l_setup = nullptr;
   if(l_temp_setup == "tsunamievent1d"){
     std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
     l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);  

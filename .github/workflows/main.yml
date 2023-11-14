@@ -22,10 +22,10 @@ jobs:
 
       - name: Dependencies
         run: |
-          sudo apt-get update -y 
-          sudo apt-get install scons -y 
-          sudo apt-get install valgrind -y 
-          sudo apt-get install cppcheck -y 
+          sudo apt-get update 
+          sudo apt-get install scons 
+          sudo apt-get install valgrind 
+          sudo apt-get install cppcheck 
           git submodule init 
           git submodule update 
 
@@ -37,10 +37,10 @@ jobs:
         run: |
           scons mode=debug+san
           ./build/tests
-          ./build/tsunami_lab 25
+          ./build/tsunami_lab
           scons mode=release+san
           ./build/tests
-          ./build/tsunami_lab 500
+          ./build/tsunami_lab
 
       - name: Valgrind
         run: |
