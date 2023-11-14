@@ -125,7 +125,8 @@ Usage
 
 **2. Within the folder, locate a JSON file and navigate into it.t:**
 
-   .. code-block:: js
+   .. code-block:: 
+
       {
       "solver" : "fwave",
       "dxy" : 440500.0,
@@ -208,9 +209,9 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 
      .. code-block::
 
-         OUTPUT_DIRECTORY       = "/home/<user>/tsunami_lab/doc/doxygen"
+         OUTPUT_DIRECTORY       = ../doxygen"
 
-         INPUT                  = "/home/<user>/tsunami_lab/src"
+         INPUT                  = ../../src"
 
          RECURSIVE              = YES
 
@@ -222,13 +223,13 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 
       .. code-block::
 
-         HTML_EXTRA_STYLESHEET  = /home/<user>/tsunami_lab/doc/dta/doxygen-style.css
+         HTML_EXTRA_STYLESHEET  = ../dta/doxygen-style.css
 
      
 
 2. Sphnix:
 
-   2.1. We need to navigate to the ``doc\sphnix\Sphnix\``
+   2.1. We need to navigate to the ``doc\sphnix\maker\``
 
 
 
@@ -236,8 +237,8 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 
       .. code-block:: 
          
-         SOURCEDIR     = /home/<user>/tsunami_lab/doc/sphinx/input
-         BUILDDIR      = /home/<user>/tsunami_lab/doc/sphinx/site
+         SOURCEDIR     = ../input
+         BUILDDIR      = ../site
 
    3.3. Now, navigate to ``doc\sphinx\Sphinx\`` and execute the following command to build our documentation:
 
