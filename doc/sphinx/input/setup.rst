@@ -54,7 +54,7 @@ Installation
 
 
 
-**3. Include Catch2:**
+**3. Include Catch2 and nlohmann/json.hpp:**
 
    3.1. Navigate to the project directory:
 
@@ -81,7 +81,9 @@ Installation
           git submodule update 
 
 
-
+.. important::
+   
+   If you possess an outdated version of our project, please do these steps once more.
 
 
 
@@ -113,24 +115,48 @@ Usage
 --------
 **To use the Riemann solver, follow these steps:**
 
-**1. Navigate to the build directory:**
+**1. To modify the argument for the initial run, you need to navigate to the "configs" folder.**
+
+   .. code-block:: 
+
+     cd configs
+
+
+
+**2. Within the folder, locate a JSON file and navigate into it.t:**
+
+   .. code-block:: js
+      {
+      "solver" : "fwave",
+      "dxy" : 440500.0,
+      "setup" :  "tsunamievent1d",
+      "nx" : 10
+      }
+
+.. important::
+
+   Solver: Choose between Fwave or Roe.
+   Dxy: The distance between one point and another point.
+   Setup: Select from shock, rare, tsunamievent1d, dambreak1d, supercritical, subcritical.
+   Nx: Number of cells.
+
+   Feel free to adjust the arguments to suit your needs. 
+   And don't forget to build the project after every change.
+
+**3. Navigate to the build directory:**
 
 .. code-block:: 
 
      cd build
 
 
-**2. To run the Riemann solver, use the following command:**
+**4. To run the Riemann solver, use the following command:**
 
 .. code-block:: 
 
-    ./tsunami_lab <specific_number>
+    ./tsunami_lab
 
-Replace <specific_number> with the specific input parameter or numerical value required for your Riemann solver.
 
-.. code-block:: 
-
-   Example:  ./tsunami_lab 300.
 
 
 
