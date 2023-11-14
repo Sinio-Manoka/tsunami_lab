@@ -31,7 +31,6 @@ jobs:
           sudo apt-get install cppcheck -y
           git submodule status
           git submodule init 
-          git submodule update --init --recursive 
 
       - name: Static Code Analysis
         run:

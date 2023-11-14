@@ -3,6 +3,4 @@ build/**
 doc/sphinx/site/**
 doc/doxygen/**
 
-submodules/json/**
-
 .gitignoredoc/dta/dconfig
