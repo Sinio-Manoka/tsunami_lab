@@ -17,7 +17,7 @@ jobs:
   # This workflow contains a single job called "tester"
   tester:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: Self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -31,7 +31,9 @@ jobs:
           sudo apt-get install cppcheck
           git submodule init
           git submodule update
-          
+          cd submodules/
+          git clone https://github.com/nlohmann/json.git  
+
       - name: Static Code Analysis
         run:
           cppcheck src/ --template=gcc --force --error-exitcode=1
@@ -40,20 +42,20 @@ jobs:
         run: |
           scons mode=debug+san
           ./build/tests
-          ./build/tsunami_lab 25 FWAVE
+          ./build/tsunami_lab 
           scons mode=release+san
           ./build/tests
-          ./build/tsunami_lab 500 FWAVE
+          ./build/tsunami_lab 
 
       - name: Valgrind
         run: |
           scons mode=debug
           valgrind ./build/tests
-          valgrind ./build/tsunami_lab 25 FWAVE
+          valgrind ./build/tsunami_lab
 
       - name: Release
         run: |
           scons
           ./build/tests
-          ./build/tsunami_lab 500 FWAVE
+          ./build/tsunami_lab
 
