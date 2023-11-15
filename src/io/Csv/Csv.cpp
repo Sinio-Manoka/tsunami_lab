@@ -27,8 +27,8 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   for( t_idx l_iy = 0; l_iy < i_ny; l_iy++ ) {
     for( t_idx l_ix = 0; l_ix < i_nx; l_ix++ ) {
       // derive coordinates of cell center
-      t_real l_posX = (l_ix + 0.5) * i_dxy;
-      t_real l_posY = (l_iy + 0.5) * i_dxy;
+      t_real l_posX = ((l_ix + 0.5) * i_dxy )-50;
+      t_real l_posY = ((l_iy + 0.5) * i_dxy )-50;
 
       t_idx l_id = l_iy * i_stride + l_ix;
 

@@ -17,4 +17,10 @@ namespace tsunami_lab {
   typedef float t_real;
 }
 
+struct Cell {
+    int x;
+    int y;
+    int data[2]; // Array of data with size 2
+};
+
 #endif

@@ -9,7 +9,9 @@ Import('env')
 # gather sources
 l_sources = [ 'solvers/Roe.cpp',
               'patches/wavepropagation1d/WavePropagation1d.cpp',
+              'patches/wavepropagation2d/WavePropagation2d.cpp',
               'setups/dambreak/DamBreak1d.cpp',
+              'setups/dambreak2d/DamBreak2d.cpp',
               'io/Csv/Csv.cpp',
               'solvers/fwave.cpp',
               'setups/shockshock/ShockShock.cpp',

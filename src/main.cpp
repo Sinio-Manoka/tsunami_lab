@@ -5,7 +5,9 @@
  * Entry-point for simulations.
  **/
 #include "patches/wavepropagation1d/WavePropagation1d.h"
+#include "patches/wavepropagation2d/WavePropagation2d.h"
 #include "setups/dambreak/DamBreak1d.h"
+#include "setups/dambreak2d/DamBreak2d.h"
 #include "setups/rarerare/RareRare.h"
 #include "setups/shockshock/ShockShock.h"
 #include "setups/subcriticalflow/SubcriticalFlow.h"
@@ -13,6 +15,7 @@
 #include "setups/tsunamievent1d/TsunamiEvent1d.h"
 #include "io/Csv/Csv.h"
 #include "io/JsReader/Configuration.h"
+//#include <filesystem>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
@@ -60,16 +63,16 @@ int main() {
   //NEW::
   //Errors checking-----------------------------------------------------------------------START
   //1. Does the Json File exists???
-  const std::string filename = "configs/config.js";
+  const std::string filename = "configs/config.json";
   std::ifstream fileStream(filename.c_str());
   if (fileStream.good()) {
-    std::cout << "\033[1;32m\u2713 The File 'config.js' does exists "  << std::endl;
+    std::cout << "\033[1;32m\u2713 The File 'config.json' does exists "  << std::endl;
   } else {
-    std::cout << "\033[1;31m\u2717 The File 'config.js' does not exist under 'configs/config.js'  "<< std::endl;
+    std::cout << "\033[1;31m\u2717 The File 'config.json' does not exist under 'configs/config.json'  "<< std::endl;
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver", "dxy", "setup","nx","hu","location","hl","hr"};
+  std::vector<std::string> keysToCheck = {"solver", "dxy", "setup","nx","hu","location","hl","hr","ny"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -89,7 +92,8 @@ int main() {
   
   //New:: Reading the nx from the Json File
   l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
-        
+  l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+      
   //New:: Reading the dxy from the Json File
   tsunami_lab::t_real l_temp_dxy =  tsunami_lab::io::Configuration::readFromConfigReal("dxy");
   l_dxy = l_temp_dxy / l_nx;
@@ -130,17 +134,21 @@ int main() {
       l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
       l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
     }
+    else if(l_temp_setup == "dambreak2d"){
+      std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
+      l_setup = new tsunami_lab::setups::DamBreak2d(); 
+    }
                                     
   // construct solver
-  tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
+  tsunami_lab::patches::WavePropagation2d *l_waveProp = nullptr;
   //NEW:: Reading the Solver from the Json file 
   std::string l_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
   if(l_solver == "roe") {
     std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true);
+    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , true);
   }else{
     std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
+    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , false);
   }
 
 
@@ -150,6 +158,7 @@ int main() {
    *    else it uses the Fwave solver
    * if there is no arg given then it uses the Fwave solver. 
    */
+
   /*
     OLD:
     if (i_argc > 2) {
@@ -181,13 +190,12 @@ int main() {
 
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
-
   // set up solver
   for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ) {
-    tsunami_lab::t_real l_y = l_cy * l_dxy; 
+    tsunami_lab::t_real l_y = (l_cy * l_dxy) -50; 
 
     for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ) {
-      tsunami_lab::t_real l_x = l_cx * l_dxy ;
+      tsunami_lab::t_real l_x = (l_cx * l_dxy)-50;
 
       // get initial values of the setup
       tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
@@ -235,11 +243,21 @@ int main() {
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 3600;
+  tsunami_lab::t_real l_endTime = 10;
   tsunami_lab::t_real l_simTime = 0;
-
   std::cout << "entering time loop" << std::endl;
 
+/*
+
+  if (std::filesystem::exists("output"))
+  {
+    std::filesystem::remove_all("output");
+  }
+  std::filesystem::create_directory("output");
+*/
+
+  
+  
   // iterate over time
   while( l_simTime < l_endTime ){
     if( l_timeStep % 25 == 0 ) {
@@ -251,14 +269,14 @@ int main() {
 
       std::ofstream l_file;
       l_file.open( l_path  );
-
+      
       tsunami_lab::io::Csv::write( l_dxy,
                                    l_nx,
-                                   1,
-                                   1,
+                                   l_nx,
+                                   l_waveProp->getStride(),
                                    l_waveProp->getHeight(),
                                    l_waveProp->getMomentumX(),
-                                   nullptr,
+                                   l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
       l_file.close();

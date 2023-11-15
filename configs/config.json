@@ -1,0 +1,12 @@
+{
+    "solver" : "fwave",
+    "dxy" : 100,
+    "setup" :  "dambreak2d",
+    "nx" : 200,
+    "ny" : 200,
+    "hu" : 0.0,
+    "location" : 5.0,
+    "hv":0.0,
+    "hr": 10,
+    "hl":0
+}

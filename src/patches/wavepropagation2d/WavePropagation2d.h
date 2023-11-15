@@ -4,8 +4,8 @@
  * @section DESCRIPTION
  * One-dimensional wave propagation patch.
  **/
-#ifndef TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION_1D
-#define TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION_1D
+#ifndef TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION_2D
+#define TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION_2D
 
 #include "../WavePropagation.h"
 
@@ -24,7 +24,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     bool m_choice = true;
     //if true then we'll use reflecting boundary conditions at cell m_nCells+1 (last cell)
     bool m_choiceBoundry = false;
-  /*
+
     //! number of cells discretizing the computational domain
     t_idx m_nCells = 0;
     t_real * m_b = nullptr;
@@ -32,41 +32,23 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     t_real * m_h[2] = { nullptr, nullptr };
 
     //! momenta for the current and next time step for all cells
-    t_real * m_hux[2] = { nullptr, nullptr };
-    t_real * m_huy[2] = { nullptr, nullptr };
-    
-    
-     t_real * m_hu[2] = { nullptr, nullptr };
-  */
-    
-    // x [] y [] var [] -> 0 = l_h, 1 = l_hux , 2 = l_huy , 3 l_bat
-    // man kann einen nehmen und wenn man in der row durch ist dann 502 * n + m wobei n
-    // welche zeile und m welche spalte 502 ist die anzahl der spalten in einer row
-    //like matrix row major
-    /*
-     for(int k =0 ; k<2; i++){
-      for(int i =0 ; i<m_cells +1; i++){
-        for(int j =0; j<m_cells +1; j++){
-          m_h[][] = ____ ; you knoow what i mean?
-        weil ich glaub deins funktioniert nicht du bräuchstest für jede spalte ein array
-        }
-      }
-    }
-      yes bro 
-    */
-    
+    t_real * m_hu[2] = { nullptr, nullptr };
+    t_real * m_hv[2] = { nullptr, nullptr };
+
+
+
   public:
     /**
      * @brief Constructs the 1d wave propagation solver.
      * @param i_choice which solver to choice from (true means Roe and false means our Fwave).
      * @param i_nCells number of cells.
      **/
-    WavePropagation1d( t_idx i_nCellsm, bool i_choice );
+    WavePropagation2d( t_idx i_nCellsm, bool i_choice );
 
     /**
      * @brief Destructor which frees all allocated memory.
      **/
-    ~WavePropagation1d();
+    ~WavePropagation2d();
 
     /**
      * @brief Performs a time step.
@@ -94,8 +76,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      *
      * @return Water heights.
      */
-    t_real const * getHeight(/*t_idx  i_ix,
-                               t_idx  i_iy*/){
+    t_real const * getHeight(){
       return m_h[m_step]+1;
     }
 
@@ -121,7 +102,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @brief Dummy function which returns a nullptr.
      **/
     t_real const * getMomentumY(){
-      return nullptr;
+      return m_hv[m_step]+1;
     }
 
     /**
@@ -133,7 +114,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setHeight( t_idx  i_ix,
                     t_idx  i_iy,
                     t_real i_h ) {
-      m_h[m_step][i_ix+1] = i_h;
+      m_h[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_h;
     }
 
 
@@ -146,7 +127,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setBathymetry(t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_b){
-      m_b[i_ix+1] = i_b;
+      m_b[(i_iy+1) * getStride() + (i_ix+1)] = i_b;
     }
 
     /**
@@ -156,17 +137,23 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @param i_hu momentum in x-direction.
      **/
     void setMomentumX( t_idx  i_ix,
-                       t_idx  i_iy, 
+                       t_idx  i_iy,
                        t_real i_hu ) {
-      m_hu[m_step][i_ix+1] = i_hu;
+      m_hu[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hu;
     }
 
     /**
      * @brief Dummy function since there is no y-momentum in the 1d solver.
      **/
-    void setMomentumY( t_idx i_ix,
-                       t_idx i_iy,
-                       t_real i_hv) {};
+    void setMomentumY( t_idx  i_ix,
+                       t_idx  i_iy,
+                       t_real i_hv) {
+      m_hv[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hv;
+    }
+    tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+      return (m_nCells+2) * i_iy +i_ix;
+    }
+
 };
 
 #endif

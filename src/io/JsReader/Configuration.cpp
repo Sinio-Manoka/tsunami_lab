@@ -2,35 +2,35 @@
 
 std::string tsunami_lab::io::Configuration::readFromConfigString(std::string i_configVariable){
     
-    std::ifstream f("configs/config.js");
+    std::ifstream f("configs/config.json");
     json data = json::parse(f); 
     return data[i_configVariable];
 }
 
 tsunami_lab::t_real tsunami_lab::io::Configuration::readFromConfigReal(std::string i_configVariable){
     
-    std::ifstream f("configs/config.js");
+    std::ifstream f("configs/config.json");
     json data = json::parse(f); 
     return data[i_configVariable];
 }
 
 tsunami_lab::t_idx tsunami_lab::io::Configuration::readFromConfigIndex(std::string i_configVariable){
     
-    std::ifstream f("configs/config.js");
+    std::ifstream f("configs/config.json");
     json data = json::parse(f); 
     return data[i_configVariable];
 }
 
 bool tsunami_lab::io::Configuration::readFromConfigBoolean(std::string  i_configVariable){
     
-    std::ifstream f("configs/config.js");
+    std::ifstream f("configs/config.json");
     json data = json::parse(f); 
     return data[i_configVariable];
 }
 
 std::vector<std::string> tsunami_lab::io::Configuration::checkMissingKeys(std::vector<std::string> i_keys) {
     std::vector<std::string> missingKeys;
-    std::string filePath = "configs/config.js";
+    std::string filePath = "configs/config.json";
     // Read JSON data from the file
     std::ifstream fileStream(filePath);
     if (!fileStream.is_open()) {
