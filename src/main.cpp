@@ -272,7 +272,7 @@ int main() {
       
       tsunami_lab::io::Csv::write( l_dxy,
                                    l_nx,
-                                   l_nx,
+                                   l_ny,
                                    l_waveProp->getStride(),
                                    l_waveProp->getHeight(),
                                    l_waveProp->getMomentumX(),

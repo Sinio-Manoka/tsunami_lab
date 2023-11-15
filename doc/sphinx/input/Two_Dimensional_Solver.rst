@@ -1,0 +1,463 @@
+
+Two-Dimensional Solver
+========================
+
+Dimensional Splitting
+---------------------------
+In this assignment, we'll enhance our wavepropagation to handle two-dimensional problems by implementing Dimensional Splitting.
+This approach eliminates the need to modify our fwave solver; instead, we'll perform separate x-sweeps and y-sweeps on the grid using these function:
+
+x-sweep:
+
+.. math:: Q_{i,j}^* = Q_{i,j}^n - \frac{\Delta t}{\Delta x} \left( A^+ \Delta Q_{i-1/2,j} + A^- \Delta Q_{i+1/2,j} \right)  \quad \forall i \in \{ 1, .., n \}, \; j \in \{ 0, .., n+1 \}.
+
+y-sweep: 
+
+.. math:: Q_{i,j}^{n+1} = Q_{i,j}^* - \frac{\Delta t}{\Delta y} \left( B^+ \Delta Q^*_{i,j-1/2} + B^- \Delta Q^*_{i,j+1/2} \right)  \quad \forall i,j \in \{ 1, .., n \}.
+
+
+We need to transition from wavepropagation1d to wavepropagation2d.
+
+
+1. There are various approaches to tackle the problem:
+
+- Using a 3D array to store the grid and accessing all elements through it, where the first
+  dimension is dedicated to storing the steps, and the other two dimensions represent the x and y coordinates..
+
+- Employing a 2D array with a quadratic number of cells, where the first
+  dimension represents the steps, and the second dimension corresponds
+  to the x and y coordinates. Specific cells are accessed using a designated formula.
+
+    .. code-block:: cpp
+
+        t_idx l_id = l_iy * i_stride + l_ix;
+
+and we will use the second approach.
+
+2. Now, we will need to create two files. : ``WavePropagation2d.h`` , ``WavePropagation2d.cpp`` and ``WavePropagation2d.test.cpp`` :
+
+    2.1. Let's begin with our ``WavePropagation2d.h``. Our  ``WavePropagation2d.h`` will resemble the 1D version but with some modifications to the following functions:
+
+        .. code-block:: cpp
+
+            void setHeight( t_idx  i_ix,
+                    t_idx  i_iy,
+                    t_real i_h ) {
+                    m_h[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_h;
+            }
+
+            void setBathymetry(t_idx  i_ix,
+                    t_idx  i_iy,
+                    t_real i_b){
+                    m_b[(i_iy+1) * getStride() + (i_ix+1)] = i_b;
+            }
+
+            void setMomentumX( t_idx  i_ix,
+                       t_idx  i_iy,
+                       t_real i_hu ) {
+                m_hu[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hu;
+            }
+
+
+            void setMomentumY( t_idx  i_ix,
+                       t_idx  i_iy,
+                       t_real i_hv) {
+                m_hv[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hv;
+             }
+
+
+            tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+                    return (m_nCells+2) * i_iy +i_ix;
+            }
+
+
+
+    2.2. now lest start implementing ``wavepropagation2d.cpp``. Our  ``WavePropagation2d.cpp`` will resemble the 1D version but with some modifications to the following functions:
+
+        .. code-block:: cpp
+
+            tsunami_lab::patches::WavePropagation2d::WavePropagation2d( t_idx i_nCells, bool i_choice ) {
+                    m_choice = i_choice;
+                    m_nCells = i_nCells;
+
+                  // allocate memory including a single ghost cell on each side
+                  for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
+                    m_h[l_st]  = new t_real[ (m_nCells+2) * (m_nCells+2) ];
+                    m_hu[l_st] = new t_real[ (m_nCells+2) * (m_nCells+2) ];
+                    m_hv[l_st] = new t_real[ (m_nCells+2) * (m_nCells+2) ];
+                  }
+                  m_b = new t_real[(m_nCells+2) * (m_nCells+2)];
+
+                  // init to zero
+                  for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
+                    for( t_idx l_ce = 0; l_ce <  (m_nCells+2) * (m_nCells+2) ; l_ce++ ) {
+                      m_h[l_st][l_ce] = 0;
+                      m_hu[l_st][l_ce] = 0;
+                      m_hv[l_st][l_ce] = 0;
+                      m_b[l_ce] = 0;
+                    }
+                  }
+                }
+                 //free memory
+                tsunami_lab::patches::WavePropagation2d::~WavePropagation2d() {
+                  for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
+                    delete[] m_h[l_st];
+                    delete[] m_hu[l_st];
+                    delete[] m_hv[l_st];
+                  }
+                  delete[] m_b;
+                }
+
+        Now, let's implement the x-sweep and y-sweep in the " ``wavepropagation2d.cpp``
+
+            .. code-block:: cpp
+        
+                void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
+                  // pointers to old and new data
+                  t_real * l_hOld  = m_h[m_step];
+                  t_real * l_huOld = m_hu[m_step];
+                  t_real * l_hvOld = m_hv[m_step];
+
+                  t_real * l_b  = m_b; 
+                  m_step = (m_step+1) % 2;
+                  _real * l_hNew =  m_h[m_step];
+                  t_real * l_huNew = m_hu[m_step];
+                  t_real * l_hvNew = m_hv[m_step];
+
+
+                  for( t_idx l_ce = 1; l_ce < ((m_nCells+2) * (m_nCells+2)); l_ce++ ) {
+                    l_hNew[l_ce]  = l_hOld[l_ce];
+                    l_huNew[l_ce] = l_huOld[l_ce];
+                    l_hvNew[l_ce] = l_hvOld[l_ce];
+                  }
+                    //x-sweep
+                  for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){ 
+                    for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
+                      t_real l_netUpdates[2][2];
+                      t_idx l_ceL = (l_ey+1) * getStride() + (l_ex+1);
+                      t_idx l_ceR = (l_ey+1) * getStride() + (l_ex+2);
+                      if(m_choice){
+                        solvers::Roe::netUpdates(l_hOld[l_ceL],
+                                                l_hOld[l_ceR],
+                                                l_huOld[l_ceL],
+                                                l_huOld[l_ceR],
+                                                l_netUpdates[0],
+                                                l_netUpdates[1]);
+                    }else{
+                        solvers::fwave::netUpdates( l_hOld[l_ceL],
+                                                    l_hOld[l_ceR],
+                                                    l_huOld[l_ceL],
+                                                    l_huOld[l_ceR],
+                                                    l_b[l_ceL],
+                                                    l_b[l_ceR],
+                                                    l_netUpdates[0],
+                                                    l_netUpdates[1]);
+                    }
+                      l_hNew[l_ceL]  -= i_scaling * l_netUpdates[0][0];
+                      l_huNew[l_ceL] -= i_scaling * l_netUpdates[0][1];
+                      l_hNew[l_ceR]  -= i_scaling * l_netUpdates[1][0];
+                      l_huNew[l_ceR] -= i_scaling * l_netUpdates[1][1];
+      
+                    }
+                }
+                    l_hOld  = m_h[m_step];
+                    l_huOld = m_hu[m_step];
+                    l_hvOld = m_hv[m_step];
+                    m_step = (m_step+1) % 2;
+                    l_hNew =  m_h[m_step];
+                    l_huNew = m_hu[m_step];
+                    l_hvNew = m_hv[m_step];
+
+                  for( t_idx l_ce = 1; l_ce < ((m_nCells+2) * (m_nCells+2)); l_ce++ ) {
+                    l_hNew[l_ce]  = l_hOld[l_ce];
+                    l_huNew[l_ce] = l_huOld[l_ce];
+                    l_hvNew[l_ce] = l_hvOld[l_ce];
+                  }
+                  setGhostOutflow(true);
+
+                    //y-sweep
+                  for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){ 
+                    for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
+                      t_real l_netUpdates[2][2];
+                      t_idx l_ceL = (l_ey)   * getStride() + (l_ex);
+                      t_idx l_ceR = (l_ey+1) * getStride() + (l_ex);
+                      if(m_choice){
+                        solvers::Roe::netUpdates( l_hOld[l_ceL],
+                                                  l_hOld[l_ceR],
+                                                  l_hvOld[l_ceL],
+                                                  l_hvOld[l_ceR],
+                                                  l_netUpdates[0],
+                                                  l_netUpdates[1]);
+                      }else{
+                        solvers::fwave::netUpdates( l_hOld[l_ceL],
+                                                    l_hOld[l_ceR],
+                                                    l_hvOld[l_ceL],
+                                                    l_hvOld[l_ceR],
+                                                    l_b[l_ceL],
+                                                    l_b[l_ceR],
+                                                    l_netUpdates[0],
+                                                    l_netUpdates[1]);
+                      }
+                      l_hNew[l_ceL]  -= i_scaling * l_netUpdates[0][0];
+                      l_hvNew[l_ceL] -= i_scaling * l_netUpdates[0][1];
+                      l_hNew[l_ceR]  -= i_scaling * l_netUpdates[1][0];
+                      l_hvNew[l_ceR] -= i_scaling * l_netUpdates[1][1];
+      
+                    }
+    
+                  }
+
+                }
+
+            Let's implement our boundary:
+
+                .. code-block:: cpp
+
+                    void tsunami_lab::patches::WavePropagation2d::setGhostOutflow(bool i_choiceBoundry) {
+                        m_choiceBoundry = i_choiceBoundry;
+                        t_real * l_h = m_h[m_step];
+                        t_real * l_hu = m_hu[m_step];
+                        t_real * l_hv = m_hv[m_step];
+                        t_real * l_b = m_b;
+                        for (unsigned short l_qw = 0; l_qw < 2; ++l_qw){
+                            for (unsigned short l_qe = 0; l_qe < 2; ++l_qe){
+                                const int i = l_qw * (m_nCells + 2);
+                                const int j = l_qe * (m_nCells + 2);
+                                const int targetIndex = (m_nCells + 2 - l_qw) * (m_nCells + 2) + l_qe;
+
+                                l_h[targetIndex] = l_h[i + j + l_qe + 1];
+                                if(i_choiceBoundry){
+                                l_hu[targetIndex] = -l_hu[i + j + l_qe + 1];
+                                l_hv[targetIndex] = -l_hv[i + j + l_qe + 1];
+                                }
+                                else
+                                {
+                                    l_hu[targetIndex] = l_hu[i + j + l_qe + 1];
+                                    l_hv[targetIndex] = l_hv[i + j + l_qe + 1];
+                                }
+                                l_b[targetIndex] = l_b[i + j + l_qe + 1];
+                            }
+                        }
+                        // bottom row & top row
+                        for (t_idx l_g = 1; l_g < m_nCells; l_g++)
+                        { 
+                            l_h[l_g] = l_h[getIndex(l_g,1)];
+                            l_h[getIndex(l_g,m_nCells+1)] = l_h[getIndex(l_g,m_nCells)];
+
+                            if(i_choiceBoundry)
+                            {
+                                l_hu[l_g] = -l_hu[getIndex(l_g,1)];
+                                l_hu[getIndex(l_g,m_nCells+1)] = -l_hu[getIndex(l_g,m_nCells)];
+                                l_hv[l_g] = -l_hv[getIndex(l_g,1)];
+                                l_hv[getIndex(l_g,m_nCells+1)] = -l_hv[getIndex(l_g,m_nCells)];
+                            }     
+                            else
+                            {
+                                l_hu[l_g] = l_hu[getIndex(l_g,1)];
+                                l_hu[getIndex(l_g,m_nCells+1)] = l_hu[getIndex(l_g,m_nCells)];
+                                l_hv[l_g] = l_hv[getIndex(l_g,1)];
+                                l_hv[getIndex(l_g,m_nCells+1)] = l_hv[getIndex(l_g,m_nCells)];
+                            }
+                            l_b[l_g] = l_b[getIndex(l_g,1)];
+                            l_b[getIndex(l_g,m_nCells+1)] = l_b[getIndex(l_g,m_nCells)];
+                        }
+
+                        // leftest and rightest column
+                        for (t_idx l_g = 1; l_g < m_nCells; l_g++)
+                        {
+                            l_h[getIndex(0,l_g)] = l_h[getIndex(1,l_g)];
+                            l_h[getIndex(m_nCells+1,l_g)] = l_h[getIndex(m_nCells,l_g)];
+                            if(i_choiceBoundry)
+                            {
+                                l_hu[getIndex(0,l_g)] = -l_hu[getIndex(1,l_g)];
+                                l_hu[getIndex(m_nCells+1,l_g)] = -l_hu[getIndex(m_nCells,l_g)];
+                                l_hv[getIndex(0,l_g)] = -l_hv[getIndex(1,l_g)];
+                                l_hv[getIndex(m_nCells+1,l_g)] = -l_hv[getIndex(m_nCells,l_g)];
+                            }
+                            else
+                            {
+                                l_hu[getIndex(0,l_g)] = l_hu[getIndex(1,l_g)];
+                                l_hu[getIndex(m_nCells+1,l_g)] = l_hu[getIndex(m_nCells,l_g)];
+                                l_hv[getIndex(0,l_g)] = l_hv[getIndex(1,l_g)];
+                                l_hv[getIndex(m_nCells+1,l_g)] = l_hv[getIndex(m_nCells,l_g)];
+                            }
+                                l_b[getIndex(0,l_g)] = l_b[getIndex(1,l_g)];
+                                l_b[getIndex(m_nCells+1,l_g)] = l_b[getIndex(m_nCells,l_g)];
+                        }
+                    }
+                
+                .. important::
+
+                    tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+                    return (m_nCells+2) * i_iy +i_ix;
+                  }
+
+                  where our strid is m_nCells+2
+
+
+                        
+circular dam break setup 
+........................
+
+
+After enabling our wavepropagation to accommodate a 2D system, we can now proceed to implement a circular dam break setup within
+the specified domain :math:`[-50, 50]^2` This will be achieved by utilizing the following initial values:
+
+  .. math::
+
+            \begin{cases}
+                        [h, hu, hv]^T = [10, 0, 0]^T &\text{if } \sqrt{x^2+y^2} < 10 \\
+                        [h, hu, hv]^T = [5, 0, 0]^T  \quad &\text{else}
+                        \end{cases}
+
+
+
+We need to generate the following files in setup:   ``DamBreak2d.cpp`` , ``DamBreak2d.h`` and ``DamBreak2d.test.cpp``
+
+1. lets start by implemeting ``DamBreak2d.h``
+
+
+.. code-block:: cpp 
+
+
+  #ifndef TSUNAMI_LAB_SETUPS_DAM_BREAK_2D_H
+  #define TSUNAMI_LAB_SETUPS_DAM_BREAK_2D_H
+
+  #include "../Setup.h"
+
+  namespace tsunami_lab {
+    namespace setups {
+      class DamBreak2d;
+    }
+  }
+
+  /**
+  * 2d dam break setup.
+  **/
+  class tsunami_lab::setups::DamBreak2d: public Setup {
+
+  public:
+
+    /**
+     * @brief Gets the water height at a given point.
+     *
+     * @param i_x x-coordinate of the queried point.
+     * @return height at the given point.
+     **/
+    t_real getHeight( t_real i_x,
+                      t_real i_y) const;
+
+    /**
+     * @brief Gets the momentum in x-direction.
+     *
+     * @return momentum in x-direction.
+     **/
+    t_real getMomentumX( t_real,
+                         t_real ) const;
+
+    /**
+     * @brief Gets the momentum in y-direction.
+     * @return momentum in y-direction.
+     **/
+    t_real getMomentumY( t_real,
+                         t_real ) const;
+
+    /**
+     * @brief Gets the bathymetry.
+     * @return bathymetry.
+     **/                
+    t_real getBathymetry( t_real,
+                          t_real ) const ;
+  };
+
+  #endif
+
+
+
+2. lets implement the ``DamBreak2d.cpp`` :
+
+  .. code-block:: cpp
+
+    /**
+    * @author Alexander Breuer (alex.breuer AT uni-jena.de)
+    *
+     * @section DESCRIPTION
+     * two-dimensional dam break problem.
+     **/
+    #include "DamBreak2d.h"
+    #include "cmath"
+
+    tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getHeight( t_real i_x,
+                                                                t_real i_y) const {
+      if(std::sqrt((i_x*i_x)+(i_y*i_y)) < 10){
+        return 10;
+      } else{
+        return 5;
+      }
+
+    }
+
+    tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getMomentumX( t_real ,
+                                                                   t_real ) const {
+      return 0;
+    }
+
+
+
+    tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getMomentumY( t_real ,
+                                                                   t_real ) const {
+      return 0;
+    }
+
+    tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getBathymetry( t_real ,
+                                                                    t_real ) const {
+      return 0;
+    }
+
+
+3. simulation
+
+
+
+
+Illustration of the support for bathymetry
+................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Personal Contribution
+---------------------
+
+- Ward Tammaa, Daniel Schicker Doxygen Documentation
+- Mohamad Khaled Minawe, Ward Tammaa, Daniel Schicker Sphnix Documentation
+- Daniel Schicker, Mohamad Khaled Minawe , Ward Tammaa functions implementation
+- Mohamad Khaled Minawe, Daniel Schicker, Ward Tammaa Unit Testing
+- Mohamad Khaled Minawe, Daniel Schicker Geogebra Datei(Calculations for the Unit Tests)
+- Ward Tammaa Hosting the code , Action runner
+
+
+    

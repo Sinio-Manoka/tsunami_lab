@@ -16,6 +16,7 @@ Overview
    riemann.rst
    Finite_Volume_Discretization.rst
    BathymetryandBoundaryConditions.rst
+   Two_Dimensional_Solver
    
 .. include:: overview.rst
 

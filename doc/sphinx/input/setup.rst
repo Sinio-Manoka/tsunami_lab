@@ -125,24 +125,45 @@ Usage
 
 **2. Within the folder, locate a JSON file and navigate into it.t:**
 
-   .. code-block:: 
+   .. code-block:: JSON
 
       {
       "solver" : "fwave",
-      "dxy" : 440500.0,
-      "setup" :  "tsunamievent1d",
-      "nx" : 10
+      "dxy" : 100,
+      "setup" :  "dambreak2d",
+      "nx" : 200,
+      "ny" : 200,
+      "hu" : 0.0,
+      "location" : 5.0,
+      "hv":0.0,
+      "hr": 10,
+      "hl":0
       }
 
 .. important::
 
-   Solver: Choose between Fwave or Roe.
-   Dxy: The distance between one point and another point.
-   Setup: Select from shock, rare, tsunamievent1d, dambreak1d, supercritical, subcritical.
-   Nx: Number of cells.
+   solver: Choose between Fwave or Roe.
+
+   hv: momentum in the y direction.
+
+   ny : number of y cells.
+
+   dxy: The distance between one point and another point.
+
+   setup: Select from shock, rare, tsunamievent1d, dambreak1d, supercritical, subcritical.
+
+   nx: Number of cells.
+
+   location: location for the setup.
+
+   hr: right heigts.
+
+   hl: left heigts.
 
    Feel free to adjust the arguments to suit your needs. 
    And don't forget to build the project after every change.
+
+   
 
 **3. Navigate to the build directory:**
 
@@ -203,27 +224,27 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 
    or
 
-   You can use our configuration file, which is located inside the ``doc\data`` directory. Please update the paths accordingly.   
+   You can use our configuration file, which is located inside the ``doc\doxygen\data`` directory. Please update the paths accordingly.   
 
    1.2. Now, open the configuration file and adjust certain paths. Additionally, make sure to enable specific options:
 
      .. code-block::
 
-         OUTPUT_DIRECTORY       = ../doxygen"
+         OUTPUT_DIRECTORY       = "../site"
 
-         INPUT                  = ../../src"
+         INPUT                  = "../../../src"
 
          RECURSIVE              = YES
 
          EXTRACT_PRIVATE        = YES
    
-
+   
 
    1.3. We need to include the CSS file for the Doxygen documentation.
 
       .. code-block::
 
-         HTML_EXTRA_STYLESHEET  = ../dta/doxygen-style.css
+         HTML_EXTRA_STYLESHEET  = doxygen-style.css
 
      
 
