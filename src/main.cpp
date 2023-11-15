@@ -136,6 +136,7 @@ int main() {
     }
     else if(l_temp_setup == "dambreak2d"){
       std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
+      l_ny = l_nx;
       l_setup = new tsunami_lab::setups::DamBreak2d(); 
     }
                                     
@@ -191,11 +192,11 @@ int main() {
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
   // set up solver
-  for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ) {
+  for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ) { 
     tsunami_lab::t_real l_y = (l_cy * l_dxy) -50; 
 
     for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ) {
-      tsunami_lab::t_real l_x = (l_cx * l_dxy)-50;
+      tsunami_lab::t_real l_x = (l_cx * l_dxy)-50; 
 
       // get initial values of the setup
       tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
@@ -260,6 +261,7 @@ int main() {
   
   // iterate over time
   while( l_simTime < l_endTime ){
+    l_waveProp->setGhostOutflow(true);
     if( l_timeStep % 25 == 0 ) {
       std::cout << "  simulation time / #time steps: "
                 << l_simTime << " / " << l_timeStep << std::endl;
@@ -284,7 +286,6 @@ int main() {
     }
 
     //If true -> reflection boundary is active for the last cell
-    l_waveProp->setGhostOutflow(false);
     l_waveProp->timeStep( l_scaling );
 
     l_timeStep++;
