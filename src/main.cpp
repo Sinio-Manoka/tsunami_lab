@@ -15,7 +15,7 @@
 #include "setups/tsunamievent1d/TsunamiEvent1d.h"
 #include "io/Csv/Csv.h"
 #include "io/JsReader/Configuration.h"
-//#include <filesystem>
+#include <filesystem>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
@@ -89,7 +89,8 @@ int main() {
   }
   //Errors checking-----------------------------------------------------------------------END
   //Declaration---------------------------------------------------------------------------START
-  
+  if (std::filesystem::exists("outputs")) std::filesystem::remove_all("outputs");
+  std::filesystem::create_directory("outputs");
   //New:: Reading the nx from the Json File
   l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
   l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
