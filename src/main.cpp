@@ -267,11 +267,11 @@ int main() {
       std::cout << "  simulation time / #time steps: "
                 << l_simTime << " / " << l_timeStep << std::endl;
 
-      std::string l_path = "output/solution_" + std::to_string(l_nOut) + ".csv";
+      std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
       std::cout << "  writing wave field to " << l_path << std::endl;
 
       std::ofstream l_file;
-      l_file.open( l_path  );
+      l_file.open( l_path );
       
       tsunami_lab::io::Csv::write( l_dxy,
                                    l_nx,

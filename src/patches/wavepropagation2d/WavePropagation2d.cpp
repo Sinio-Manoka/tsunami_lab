@@ -65,8 +65,8 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
   for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){ 
     for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
       t_real l_netUpdates[2][2];
-      t_idx l_ceL = (l_ey+1) * getStride() + (l_ex+1);
-      t_idx l_ceR = (l_ey+1) * getStride() + (l_ex+2);
+      t_idx l_ceL = getIndex(l_ey,l_ex);
+      t_idx l_ceR = getIndex(l_ey+1,l_ex);
       if(m_choice){
         solvers::Roe::netUpdates(l_hOld[l_ceL],
                                 l_hOld[l_ceR],
@@ -95,7 +95,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
   l_hOld  = m_h[m_step];
   l_huOld = m_hu[m_step];
   l_hvOld = m_hv[m_step];
-  m_step = (m_step+1) % 2; // warum das??
+  m_step = (m_step+1) % 2;
   l_hNew =  m_h[m_step];
   l_huNew = m_hu[m_step];
   l_hvNew = m_hv[m_step];
@@ -110,8 +110,10 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
   for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){
     for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
       t_real l_netUpdates[2][2];
-      t_idx l_ceL = (l_ey)   * getStride() + (l_ex);
-      t_idx l_ceR = (l_ey+1) * getStride() + (l_ex);
+
+      t_idx l_ceL = getIndex(l_ey,l_ex);
+      t_idx l_ceR = getIndex(l_ey,l_ex+1);
+      
       if(m_choice){
         solvers::Roe::netUpdates( l_hOld[l_ceL],
                                   l_hOld[l_ceR],
