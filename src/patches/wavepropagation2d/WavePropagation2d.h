@@ -35,6 +35,21 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     t_real * m_hu[2] = { nullptr, nullptr };
     t_real * m_hv[2] = { nullptr, nullptr };
 
+    /**
+     * @brief Get the Index object
+     * 
+     * @param i_ix 
+     * @param i_iy 
+     * @return tsunami_lab::t_idx 
+     */
+    tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+      return (m_nCells+2) * i_iy +i_ix;
+    }
+    /*
+     * @brief Set the GhostoutFlowfor Edges 
+     *  void setGhostoutFlowforEdges();
+     */
+   
 
 
   public:
@@ -77,7 +92,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return Water heights.
      */
     t_real const * getHeight(){
-      return m_h[m_step]+1;
+      return m_h[m_step];
     }
 
     /**
@@ -86,7 +101,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return Bathymetry.
      */
    t_real const * getBathymetry(){
-      return m_b+1;
+      return m_b;
     }
 
     /**
@@ -95,26 +110,26 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return momenta in x-direction.
      **/
     t_real const * getMomentumX(){
-      return m_hu[m_step]+1;
+      return m_hu[m_step];
     }
 
     /**
      * @brief Dummy function which returns a nullptr.
      **/
     t_real const * getMomentumY(){
-      return m_hv[m_step]+1;
+      return m_hv[m_step];
     }
 
     /**
      * @brief Sets the height of the cell to the given value.
-     *
+     * @param i_ix id of the cell in x-direction.
      * @param i_ix id of the cell in x-direction.
      * @param i_h water height.
      **/
     void setHeight( t_idx  i_ix,
                     t_idx  i_iy,
                     t_real i_h ) {
-      m_h[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_h;
+      m_h[m_step][getIndex(i_ix+1,i_iy+1)] = i_h;
     }
 
 
@@ -127,7 +142,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setBathymetry(t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_b){
-      m_b[(i_iy+1) * getStride() + (i_ix+1)] = i_b;
+      m_b[getIndex(i_ix+1,i_iy+1)] = i_b;
     }
 
     /**
@@ -139,7 +154,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setMomentumX( t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_hu ) {
-      m_hu[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hu;
+      m_hu[m_step][getIndex(i_ix+1,i_iy+1)] = i_hu;
     }
 
     /**
@@ -148,11 +163,11 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setMomentumY( t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_hv) {
-      m_hv[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hv;
+      m_hv[m_step][getIndex(i_ix+1,i_iy+1)] = i_hv;
     }
-    tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
-      return (m_nCells+2) * i_iy +i_ix;
-    }
+    
+
+    
 
 };
 
