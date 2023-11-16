@@ -1,6 +1,6 @@
 {
     "solver" : "fwave",
-    "dxy" : 100,
+    "dimension" : 100,
     "setup" :  "dambreak2d",
     "nx" : 200,
     "ny" : 200,
@@ -8,5 +8,6 @@
     "location" : 5.0,
     "hv":0.0,
     "hr": 10,
-    "hl":0
+    "hl":0,
+    "domain_start" : -50
 }
