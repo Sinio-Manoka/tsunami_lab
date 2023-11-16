@@ -72,7 +72,7 @@ int main() {
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver", "dxy", "setup","nx","hu","location","hl","hr","ny"};
+  std::vector<std::string> keysToCheck = {"solver","dimension", "setup","nx","hu","location","hl","hr","ny","domain_start"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -95,17 +95,15 @@ int main() {
   l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
   l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
       
-  //New:: Reading the dxy from the Json File
-  tsunami_lab::t_real l_temp_dxy =  tsunami_lab::io::Configuration::readFromConfigReal("dxy");
-  l_dxy = l_temp_dxy / l_nx;
+  //New:: Reading the length and Width from the Json File
+  tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
+  l_dxy = l_temp_dimension / l_nx;
 
 
   //New:: Reading the Setup from the Json File
   std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
   tsunami_lab::setups::Setup *l_setup = nullptr;
-  tsunami_lab::t_real l_temp_hu = 0 ,l_temp_location = 0 , l_temp_hl = 0 , l_temp_hr = 0  ;
-
-
+  
   if(l_temp_setup == "tsunamievent1d"){
     std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
     l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
@@ -118,8 +116,9 @@ int main() {
      l_setup = new tsunami_lab::setups::SubcriticalFlow();
   }
   else if(l_temp_setup == "shockshock" || l_temp_setup =="rarerare" ){
-      l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
-      l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+      tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
+      tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+      tsunami_lab::t_real l_temp_hl = 0;
       if(l_temp_setup == "shockshock" ){
         std::cout << "\033[1;32m\u2713 Setup : ShockShock \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::ShockShock(l_temp_hl ,l_temp_hu,l_temp_location);  
@@ -130,9 +129,9 @@ int main() {
     }
     else if(l_temp_setup == "dambreak1d"){
       std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
-      l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
-      l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
-      l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+      tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
+      tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
+      tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
       l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
     }
     else if(l_temp_setup == "dambreak2d"){
@@ -143,7 +142,7 @@ int main() {
                                     
   // construct solver
   tsunami_lab::patches::WavePropagation2d *l_waveProp = nullptr;
-  //NEW:: Reading the Solver from the Json file 
+  //NEW:: Reading the Solver from the Json file
   std::string l_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
   if(l_solver == "roe") {
     std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
@@ -189,15 +188,15 @@ int main() {
   std::cout << "  cell size:                      " << l_dxy << std::endl;
 
 
-
+  tsunami_lab::t_real domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domain_start");
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
   // set up solver
   for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ) { 
-    tsunami_lab::t_real l_y = (l_cy * l_dxy) -50; 
+    tsunami_lab::t_real l_y = (l_cy * l_dxy) + domain_start; 
 
     for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ) {
-      tsunami_lab::t_real l_x = (l_cx * l_dxy)-50; 
+      tsunami_lab::t_real l_x = (l_cx * l_dxy) + domain_start; 
 
       // get initial values of the setup
       tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
@@ -245,7 +244,7 @@ int main() {
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 10;
+  tsunami_lab::t_real l_endTime = 20;
   tsunami_lab::t_real l_simTime = 0;
   std::cout << "entering time loop" << std::endl;
 
