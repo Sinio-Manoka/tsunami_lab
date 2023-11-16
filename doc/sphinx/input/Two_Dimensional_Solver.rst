@@ -40,35 +40,41 @@ and we will use the second approach.
 
         .. code-block:: cpp
 
+            private : 
+
+            tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+                return (m_nCells+2) * i_iy +i_ix;
+            }
+
+            public:
+
             void setHeight( t_idx  i_ix,
                     t_idx  i_iy,
                     t_real i_h ) {
-                    m_h[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_h;
+                    m_h[m_step][getIndex(i_ix+1,i_iy+1)] = i_h;
             }
 
             void setBathymetry(t_idx  i_ix,
                     t_idx  i_iy,
                     t_real i_b){
-                    m_b[(i_iy+1) * getStride() + (i_ix+1)] = i_b;
+                    m_b[getIndex(i_ix+1,i_iy+1)] = i_b;
             }
 
             void setMomentumX( t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_hu ) {
-                m_hu[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hu;
+                m_hu[m_step][getIndex(i_ix+1,i_iy+1)] = i_hu;
             }
 
 
             void setMomentumY( t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_hv) {
-                m_hv[m_step][(i_iy+1) * getStride() + (i_ix+1)] = i_hv;
+                m_hv[m_step][getIndex(i_ix+1,i_iy+1)] = i_hv;
              }
 
 
-            tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
-                    return (m_nCells+2) * i_iy +i_ix;
-            }
+
 
 
 
@@ -130,12 +136,14 @@ and we will use the second approach.
                     l_huNew[l_ce] = l_huOld[l_ce];
                     l_hvNew[l_ce] = l_hvOld[l_ce];
                   }
+
+                  setGhostOutflow(true);
                     //x-sweep
                   for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){ 
                     for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
                       t_real l_netUpdates[2][2];
-                      t_idx l_ceL = (l_ey+1) * getStride() + (l_ex+1);
-                      t_idx l_ceR = (l_ey+1) * getStride() + (l_ex+2);
+                          t_idx l_ceL = getIndex(l_ey,l_ex);
+                          t_idx l_ceR = getIndex(l_ey+1,l_ex);
                       if(m_choice){
                         solvers::Roe::netUpdates(l_hOld[l_ceL],
                                                 l_hOld[l_ceR],
@@ -179,8 +187,8 @@ and we will use the second approach.
                   for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){ 
                     for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
                       t_real l_netUpdates[2][2];
-                      t_idx l_ceL = (l_ey)   * getStride() + (l_ex);
-                      t_idx l_ceR = (l_ey+1) * getStride() + (l_ex);
+                            t_idx l_ceL = getIndex(l_ey,l_ex);
+                            t_idx l_ceR = getIndex(l_ey,l_ex+1);
                       if(m_choice){
                         solvers::Roe::netUpdates( l_hOld[l_ceL],
                                                   l_hOld[l_ceR],
@@ -284,6 +292,33 @@ and we will use the second approach.
                                 l_b[getIndex(0,l_g)] = l_b[getIndex(1,l_g)];
                                 l_b[getIndex(m_nCells+1,l_g)] = l_b[getIndex(m_nCells,l_g)];
                         }
+
+                                // Ecken des Gitters aktualisieren 
+                                              //[0/0]
+                                      l_b[getIndex(0,0)] = l_b[getIndex(1,1)];
+                                      l_h[getIndex(0,0)] = l_h[getIndex(1,1)];
+                                      l_hu[getIndex(0,0)] = l_hu[getIndex(1,1)];
+                                      l_hv[getIndex(0,0)] = l_hv[getIndex(1,1)];
+      
+                                      //[n/0]
+                                      l_b[getIndex(m_nCells+1,0)] = l_b[getIndex(m_nCells,1)];
+                                      l_h[getIndex(m_nCells+1,0)] = l_h[getIndex(m_nCells,1)];
+                                      l_hu[getIndex(m_nCells+1,0)] = l_hu[getIndex(m_nCells,1)];
+                                      l_hv[getIndex(m_nCells+1,0)] = l_hv[getIndex(m_nCells,1)];
+      
+                                      //[0/n]
+                                      l_b[getIndex(0,m_nCells+1)] = l_b[getIndex(1,m_nCells)];
+                                      l_h[getIndex(0,m_nCells+1)] = l_h[getIndex(1,m_nCells)];
+                                      l_hu[getIndex(0,m_nCells+1)] = l_hu[getIndex(1,m_nCells)];
+                                      l_hv[getIndex(0,m_nCells+1)] = l_hv[getIndex(1,m_nCells)];
+      
+                                      //[n/n]
+                                      l_b[getIndex(m_nCells+1,m_nCells+1)] = l_b[getIndex(m_nCells,m_nCells)];
+                                      l_h[getIndex(m_nCells+1,m_nCells+1)] = l_h[getIndex(m_nCells,m_nCells)];
+                                      l_hu[getIndex(m_nCells+1,m_nCells+1)] = l_hu[getIndex(m_nCells,m_nCells)];
+                                      l_hv[getIndex(m_nCells+1,m_nCells+1)] = l_hv[getIndex(m_nCells,m_nCells)];
+      
+                         }
                     }
                 
                 .. important::
@@ -418,10 +453,20 @@ We need to generate the following files in setup:   ``DamBreak2d.cpp`` , ``DamBr
 3. simulation
 
 
+Now, we'll model the circular DamBreak, incorporating a reflective boundary.
+
+
+  .. video:: _static/Dambreak2d.mp4
+   :width: 700
+   :autoplay:
+
+
+
 
 
 Illustration of the support for bathymetry
 ................................................
+
 
 
 

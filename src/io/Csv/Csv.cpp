@@ -5,6 +5,8 @@
  * IO-routines for writing a snapshot as Comma Separated Values (CSV).
  **/
 #include "Csv.h"
+#include "../JsReader/Configuration.h"
+#include <fstream>
 
 void tsunami_lab::io::Csv::write( t_real               i_dxy,
                                   t_idx                i_nx,
@@ -22,27 +24,53 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   if( i_hv != nullptr ) io_stream << ",momentum_y";
   if( i_b != nullptr ) io_stream <<  ",bathymetry";
   io_stream << "\n";
+  
+  tsunami_lab::t_real domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domain_start");
+   std::string setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
 
-  // iterate over all cells
-   for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
-    for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {//l_ix=0 -> l_ix=1
+  if(setup == "dambreak2d" ){
+      for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
+        for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {//l_ix=0 -> l_ix=1
+        // derive coordinates of cell center
+          t_real l_posX = ((l_ix-1 + 0.5) * i_dxy )+ domain_start; //l_ix -> l_ix-1
+          t_real l_posY = ((l_iy-1 + 0.5) * i_dxy )+ domain_start;
+
+          t_idx l_id = l_iy * i_stride + l_ix;
+
+        // write data
+          io_stream << l_posX << "," << l_posY;
+          if( i_h  != nullptr ) io_stream << "," << i_h[l_id];
+          if( i_hu != nullptr ) io_stream << "," << i_hu[l_id];
+          if( i_hv != nullptr ) io_stream << "," << i_hv[l_id];
+          if( i_b  != nullptr ) io_stream << "," << i_b[l_id];
+          io_stream << "\n";
+        }
+      }
+      io_stream << std::flush;
+}else{      // iterate over all cells
+  for (t_idx l_iy = 0; l_iy < i_ny; l_iy++){
+    for (t_idx l_ix = 0; l_ix < i_nx; l_ix++){
       // derive coordinates of cell center
-      t_real l_posX = ((l_ix-1 + 0.5) * i_dxy )-50; //l_ix -> l_ix-1
-      t_real l_posY = ((l_iy-1 + 0.5) * i_dxy )-50;
+      t_real l_posX = (l_ix + 0.5) * i_dxy;
+      t_real l_posY = (l_iy + 0.5) * i_dxy;
 
       t_idx l_id = l_iy * i_stride + l_ix;
 
       // write data
-      io_stream << l_posX << "," << l_posY;
-      if( i_h  != nullptr ) io_stream << "," << i_h[l_id];
-      if( i_hu != nullptr ) io_stream << "," << i_hu[l_id];
-      if( i_hv != nullptr ) io_stream << "," << i_hv[l_id];
-      if( i_b  != nullptr ) io_stream << "," << i_b[l_id];
-      io_stream << "\n";
+        io_stream << l_posX << "," << l_posY;
+        if( i_h  != nullptr ) io_stream << "," << i_h[l_id];
+        if( i_hu != nullptr ) io_stream << "," << i_hu[l_id];
+        if( i_hv != nullptr ) io_stream << "," << i_hv[l_id];
+        if( i_b  != nullptr ) io_stream << "," << i_b[l_id];
+        io_stream << "\n";
+
+      }
     }
+
+      io_stream << std::flush;
   }
-  io_stream << std::flush;
-}
+}  // iterate over all cells
+  
   /**
      * @param line every row gets saved in "line" and is overwritten in next iteration
      * @param token is the determined bathymetry value written in "selectedColumn"

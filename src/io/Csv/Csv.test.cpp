@@ -29,11 +29,11 @@ TEST_CASE( "Test the CSV-writer for 1D settings.", "[CsvWrite1d]" ) {
                                l_stream0 );
 
   std::string l_ref0 = R"V0G0N(x,y,height,momentum_x
-0.25,0.25,1,5
-0.75,0.25,2,4
-1.25,0.25,3,3
-1.75,0.25,4,2
-2.25,0.25,5,1
+-49.75,-49.75,5,0
+-49.25,-49.75,4,0
+-48.75,-49.75,3,0
+-48.25,-49.75,2,0
+-47.75,-49.75,1,0
 )V0G0N";
 
   REQUIRE( l_stream0.str().size() == l_ref0.size() );
@@ -66,11 +66,11 @@ TEST_CASE( "Test the CSV-writer for 2D settings.", "[CsvWrite2d]" ) {
                                0,
                                l_stream1 );
 
-  std::string l_ref1 = R"V0G0N(x,y,height,momentum_x,momentum_y
-5,5,5,10,5
-15,5,6,9,9
-5,15,9,6,6
-15,15,10,5,10
+std::string l_ref1 = R"V0G0N(x,y,height,momentum_x,momentum_y
+-45,-45,10,5,10
+-35,-45,11,4,14
+-45,-35,14,1,11
+-35,-35,15,0,15
 )V0G0N";
 
   REQUIRE( l_stream1.str().size() == l_ref1.size() );

@@ -37,7 +37,9 @@ l_tests = [ 'tests.cpp',
             'setups/shockshock/ShockShock.test.cpp',
             'setups/rarerare/RareRare.test.cpp',
             'setups/subcriticalflow/SubcriticalFlow.test.cpp',
-            'setups/supercriticalflow/SupercriticalFlow.test.cpp']
+            'setups/supercriticalflow/SupercriticalFlow.test.cpp',
+            'setups/dambreak2d/DamBreak2d.test.cpp',
+            'patches/wavepropagation2d/WavePropagation2d.test.cpp']
 
 for l_te in l_tests:
   env.tests.append( env.Object( l_te ) )
