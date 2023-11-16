@@ -60,7 +60,8 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
     l_huNew[l_ce] = l_huOld[l_ce];
     l_hvNew[l_ce] = l_hvOld[l_ce];
   }
- 
+  setGhostOutflow(true);
+  
   for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){ 
     for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
       t_real l_netUpdates[2][2];
@@ -91,8 +92,6 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
     }
 
   }
-
-  
   l_hOld  = m_h[m_step];
   l_huOld = m_hu[m_step];
   l_hvOld = m_hv[m_step];
@@ -100,19 +99,13 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
   l_hNew =  m_h[m_step];
   l_huNew = m_hu[m_step];
   l_hvNew = m_hv[m_step];
-<<<<<<< HEAD
-  setGhostOutflow(false);
- 
-  for( t_idx l_ce = 1; l_ce < ((m_nCells+2) * (m_nCells+2)); l_ce++ ) {
-=======
 
   for( t_idx l_ce = 0; l_ce < ((m_nCells+2) * (m_nCells+2)); l_ce++ ) {
->>>>>>> 7c75bb7358565758b962293508ec006ebd869110
     l_hNew[l_ce]  = l_hOld[l_ce];
     l_huNew[l_ce] = l_huOld[l_ce];
     l_hvNew[l_ce] = l_hvOld[l_ce];
   }
-  
+  setGhostOutflow(true);
 
   for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){
     for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
@@ -120,7 +113,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
 
       t_idx l_ceL = getIndex(l_ey,l_ex);
       t_idx l_ceR = getIndex(l_ey,l_ex+1);
-
+      
       if(m_choice){
         solvers::Roe::netUpdates( l_hOld[l_ceL],
                                   l_hOld[l_ceR],
@@ -153,37 +146,9 @@ void tsunami_lab::patches::WavePropagation2d::setGhostOutflow(bool i_choiceBound
   t_real * l_hu = m_hu[m_step];
   t_real * l_hv = m_hv[m_step];
   t_real * l_b = m_b;
-<<<<<<< HEAD
-for (unsigned short l_qw = 0; l_qw < 2; ++l_qw){
-      for (unsigned short l_qe = 0; l_qe < 2; ++l_qe){
-        const int i = l_qw * (m_nCells + 2);
-        const int j = l_qe * (m_nCells + 2);
-        const int targetIndex = (m_nCells + 2 - l_qw) * (m_nCells + 2 ) + l_qe ;
-
-        l_h[targetIndex] = l_h[i + j + l_qe ];
-        if(i_choiceBoundry)
-        {
-          l_hu[targetIndex] = -l_hu[i + j + l_qe + 1];
-          l_hv[targetIndex] = -l_hv[i + j + l_qe + 1];
-        }
-        else
-        {
-          l_hu[targetIndex] = l_hu[i + j + l_qe + 1];
-          l_hv[targetIndex] = l_hv[i + j + l_qe + 1];
-
-        }
-        l_b[targetIndex] = l_b[i + j + l_qe + 1];
-      }
-    }
-    // bottom row & top row
-    for (t_idx l_g = 0; l_g < m_nCells + 2 ; l_g++)
-    { //(m_nCells+2)*i_iy+i_ix
-=======
-
     // bottom row & top row
     for (t_idx l_g = 1; l_g < m_nCells+1; l_g++)
     {
->>>>>>> 7c75bb7358565758b962293508ec006ebd869110
       l_h[l_g] = l_h[getIndex(l_g,1)];
       l_h[getIndex(l_g,m_nCells+1)] = l_h[getIndex(l_g,m_nCells)];
     //(m_nCells+2) * i_iy +i_ix; = 
@@ -229,31 +194,25 @@ for (unsigned short l_qw = 0; l_qw < 2; ++l_qw){
       l_b[getIndex(0,l_g)] = l_b[getIndex(1,l_g)];
       l_b[getIndex(m_nCells+1,l_g)] = l_b[getIndex(m_nCells,l_g)];
     }
-      // Ecken des Gitters aktualisieren 
-      //[0/0]
+      // Ecken des Gitters aktualisieren
+
       l_b[getIndex(0,0)] = l_b[getIndex(1,1)];
-      l_h[getIndex(0,0)] = l_h[getIndex(1,1)];
-      l_hu[getIndex(0,0)] = l_hu[getIndex(1,1)];
-      l_hv[getIndex(0,0)] = l_hv[getIndex(1,1)];
-      
-      //[n/0]
       l_b[getIndex(m_nCells+1,0)] = l_b[getIndex(m_nCells,1)];
-      l_h[getIndex(m_nCells+1,0)] = l_h[getIndex(m_nCells,1)];
-      l_hu[getIndex(m_nCells+1,0)] = l_hu[getIndex(m_nCells,1)];
-      l_hv[getIndex(m_nCells+1,0)] = l_hv[getIndex(m_nCells,1)];
-      
-      //[0/n]
       l_b[getIndex(0,m_nCells+1)] = l_b[getIndex(1,m_nCells)];
-      l_h[getIndex(0,m_nCells+1)] = l_h[getIndex(1,m_nCells)];
-      l_hu[getIndex(0,m_nCells+1)] = l_hu[getIndex(1,m_nCells)];
-      l_hv[getIndex(0,m_nCells+1)] = l_hv[getIndex(1,m_nCells)];
-      
-      //[n/n]
       l_b[getIndex(m_nCells+1,m_nCells+1)] = l_b[getIndex(m_nCells,m_nCells)];
-      l_h[getIndex(m_nCells+1,m_nCells+1)] = l_h[getIndex(m_nCells,m_nCells)];
-      l_hu[getIndex(m_nCells+1,m_nCells+1)] = l_hu[getIndex(m_nCells,m_nCells)];
-      l_hv[getIndex(m_nCells+1,m_nCells+1)] = l_hv[getIndex(m_nCells,m_nCells)];
       
+      l_h[getIndex(0,0)] = l_h[getIndex(1,1)];
+      l_h[getIndex(m_nCells+1,0)] = l_h[getIndex(m_nCells,1)];
+      l_h[getIndex(0,m_nCells+1)] = l_h[getIndex(1,m_nCells)];
+      l_h[getIndex(m_nCells+1,m_nCells+1)] = l_h[getIndex(m_nCells,m_nCells)];
 
+      l_hu[getIndex(0,0)] = l_hu[getIndex(1,1)];
+      l_hu[getIndex(m_nCells+1,0)] = l_hu[getIndex(m_nCells,1)];
+      l_hu[getIndex(0,m_nCells+1)] = l_hu[getIndex(1,m_nCells)];
+      l_hu[getIndex(m_nCells+1,m_nCells+1)] = l_hu[getIndex(m_nCells,m_nCells)];
 
+      l_hv[getIndex(0,0)] = l_hv[getIndex(1,1)];
+      l_hv[getIndex(m_nCells+1,0)] = l_hv[getIndex(m_nCells,1)];
+      l_hv[getIndex(0,m_nCells+1)] = l_hv[getIndex(1,m_nCells)];
+      l_hv[getIndex(m_nCells+1,m_nCells+1)] = l_hv[getIndex(m_nCells,m_nCells)];
 }

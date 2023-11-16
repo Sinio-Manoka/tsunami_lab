@@ -2,4 +2,4 @@ build/**
 doc/sphinx/site/**
 doc/doxygen/site/**
 .gitignore
-sconsign.dblite
+

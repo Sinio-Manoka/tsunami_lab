@@ -35,7 +35,6 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     t_real * m_hu[2] = { nullptr, nullptr };
     t_real * m_hv[2] = { nullptr, nullptr };
 
-    
     /**
      * @brief Get the Index object
      * 
