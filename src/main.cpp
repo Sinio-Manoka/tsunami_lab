@@ -73,8 +73,7 @@ int main() {
   //Declaration---------------------------------------------------------------------------START
       
   //New:: Reading the length and Width from the Json File
-  tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
-  l_dxy = l_temp_dimension / l_nx;
+
 
   tsunami_lab::setups::Setup *l_setup = nullptr;
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
@@ -91,6 +90,8 @@ int main() {
   tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
   tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
   tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+  tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
+  l_dxy = l_temp_dimension / l_nx;
 
   bool l_solver;
   if(l_temp_solver == "roe") {
@@ -115,41 +116,41 @@ int main() {
     l_ny = l_nx;
     l_setup = new tsunami_lab::setups::DamBreak2d();
 
-  }if else((l_waveprop == "1d") && (l_temp_setup != "dambreak2d") ){
-    std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
-    if(l_temp_setup == "tsunamievent1d"){
-      std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
-    }else if(l_temp_setup == "dambreak1d"){
-      std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
-    }else if(l_temp_setup == "supercriticalflow"){
-      std::cout << "\033[1;32m\u2713 Setup : SupercriticalFlow \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::SupercriticalFlow();
-    }
-    else if(l_temp_setup == "subcriticalflow"){
-      std::cout << "\033[1;32m\u2713 Setup : SubcriticalFlow \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::SubcriticalFlow();
-    }
-    else if(l_temp_setup == "shockshock" || l_temp_setup =="rarerare" ){
-
-      if(l_temp_setup == "shockshock" ){
-        std::cout << "\033[1;32m\u2713 Setup : ShockShock \033[0m" << std::endl;
-        l_setup = new tsunami_lab::setups::ShockShock(l_temp_hl ,l_temp_hu,l_temp_location);  
-      }else{
-        std::cout << "\033[1;32m\u2713 Setup : RareRare \033[0m" << std::endl;
-        l_setup = new tsunami_lab::setups::RareRare(l_temp_hl ,l_temp_hu,l_temp_location);  
+  }else if((l_waveprop == "1d") && (l_temp_setup != "dambreak2d") ){
+      std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
+      l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
+      if(l_temp_setup == "tsunamievent1d"){
+        std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
+        l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
+      }else if(l_temp_setup == "dambreak1d"){
+        std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
+        l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
+      }else if(l_temp_setup == "supercriticalflow"){
+        std::cout << "\033[1;32m\u2713 Setup : SupercriticalFlow \033[0m" << std::endl;
+        l_setup = new tsunami_lab::setups::SupercriticalFlow();
       }
-    }else if(l_temp_setup == "dambreak1d"){
-      
-      std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
-    }
-
-  }else{
-
+      else if(l_temp_setup == "subcriticalflow"){
+        std::cout << "\033[1;32m\u2713 Setup : SubcriticalFlow \033[0m" << std::endl;
+        l_setup = new tsunami_lab::setups::SubcriticalFlow();
+      }
+      else if(l_temp_setup == "shockshock" || l_temp_setup =="rarerare" ){
+        if(l_temp_setup == "shockshock" ){
+          std::cout << "\033[1;32m\u2713 Setup : ShockShock \033[0m" << std::endl;
+          l_setup = new tsunami_lab::setups::ShockShock(l_temp_hl ,l_temp_hu,l_temp_location);  
+        }else{
+          std::cout << "\033[1;32m\u2713 Setup : RareRare \033[0m" << std::endl;
+          l_setup = new tsunami_lab::setups::RareRare(l_temp_hl ,l_temp_hu,l_temp_location);  
+        }
+      }else if(l_temp_setup == "dambreak1d"){
+        
+        std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
+        l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
+      }
+    }else{
     std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
+    std::cout << "freeing memory" << std::endl;
+    delete l_setup;
+    delete l_waveProp;
     return EXIT_SUCCESS;
   }
 
@@ -265,4 +266,5 @@ int main() {
 
   std::cout << "finished, exiting" << std::endl;
   return EXIT_SUCCESS;
+
 }
