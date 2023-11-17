@@ -39,26 +39,6 @@ int main() {
   std::cout << "### https://scalable.uni-jena.de ###" << std::endl;
   std::cout << "####################################" << std::endl;
 
-
-
-  /*
-  OLD:
-  if( i_argc < 2 ) {
-
-    std::cerr << "invalid number of arguments, usage:" << std::endl;
-    std::cerr << "  ./build/tsunami_lab N_CELLS_X" << std::endl;
-    std::cerr << "where N_CELLS_X is the number of cells in x-direction." << std::endl;
-    return EXIT_FAILURE;
-  }
-  else {
-    l_nx = atoi( i_argv[1] );
-    if( l_nx < 1 ) {
-      std::cerr << "invalid number of cells" << std::endl;
-      return EXIT_FAILURE;
-    }
-    l_dxy = 440500.0 / l_nx;
-  }
-  */
   
   //NEW::
   //Errors checking-----------------------------------------------------------------------START
@@ -87,38 +67,73 @@ int main() {
     }
       std::cout << "\033[0m"; //reset the Terminal color From Green to White
   }
-  //Errors checking-----------------------------------------------------------------------END
-  //Declaration---------------------------------------------------------------------------START
   if (std::filesystem::exists("outputs")) std::filesystem::remove_all("outputs");
   std::filesystem::create_directory("outputs");
-  //New:: Reading the nx from the Json File
-  l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
-  l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+  //Errors checking-----------------------------------------------------------------------END
+  //Declaration---------------------------------------------------------------------------START
       
   //New:: Reading the length and Width from the Json File
   tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
   l_dxy = l_temp_dimension / l_nx;
 
-
-  //New:: Reading the Setup from the Json File
-  std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
   tsunami_lab::setups::Setup *l_setup = nullptr;
+  tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   
-  if(l_temp_setup == "tsunamievent1d"){
-    std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
-    l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
-  }else if(l_temp_setup == "supercriticalflow"){
-    std::cout << "\033[1;32m\u2713 Setup : SupercriticalFlow \033[0m" << std::endl;
-     l_setup = new tsunami_lab::setups::SupercriticalFlow();
+  
+  
+  //New:: Reading Data from the Json File
+  l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
+  l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+  std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
+  std::string l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
+  std::string l_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
+  tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
+  tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
+  tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
+  tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+
+  bool l_solver;
+  if(l_temp_solver == "roe") {
+    std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
+    l_solver = true;
+  }else{
+    std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
+    l_solver = false;
   }
-  else if(l_temp_setup == "subcriticalflow"){
-    std::cout << "\033[1;32m\u2713 Setup : SubcriticalFlow \033[0m" << std::endl;
-     l_setup = new tsunami_lab::setups::SubcriticalFlow();
-  }
-  else if(l_temp_setup == "shockshock" || l_temp_setup =="rarerare" ){
-      tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
-      tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
-      tsunami_lab::t_real l_temp_hl = 0;
+
+  //Declaration---------------------------------------------------------------------------END
+  //Setup---------------------------------------------------------------------------------START
+
+  // construct solver
+  //NEW:: Reading the Solver from the Json file
+
+
+  if(l_waveprop == "2d"){
+    std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
+    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , l_solver);
+    std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
+    l_ny = l_nx;
+    l_setup = new tsunami_lab::setups::DamBreak2d();
+
+  }else{
+    std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
+    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
+    if(l_temp_setup == "tsunamievent1d"){
+      std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
+      l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
+    }else if(l_temp_setup == "dambreak1d"){
+      std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
+      l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
+    }else if(l_temp_setup == "supercriticalflow"){
+      std::cout << "\033[1;32m\u2713 Setup : SupercriticalFlow \033[0m" << std::endl;
+      l_setup = new tsunami_lab::setups::SupercriticalFlow();
+    }
+    else if(l_temp_setup == "subcriticalflow"){
+      std::cout << "\033[1;32m\u2713 Setup : SubcriticalFlow \033[0m" << std::endl;
+      l_setup = new tsunami_lab::setups::SubcriticalFlow();
+    }
+    else if(l_temp_setup == "shockshock" || l_temp_setup =="rarerare" ){
+
       if(l_temp_setup == "shockshock" ){
         std::cout << "\033[1;32m\u2713 Setup : ShockShock \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::ShockShock(l_temp_hl ,l_temp_hu,l_temp_location);  
@@ -126,84 +141,14 @@ int main() {
         std::cout << "\033[1;32m\u2713 Setup : RareRare \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::RareRare(l_temp_hl ,l_temp_hu,l_temp_location);  
       }
-    }
-    else if(l_temp_setup == "dambreak1d"){
+    }else if(l_temp_setup == "dambreak1d"){
+      
       std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
-      tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
-      tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
-      tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
       l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
     }
-    else if(l_temp_setup == "dambreak2d"){
-      std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
-      l_ny = l_nx;
-      l_setup = new tsunami_lab::setups::DamBreak2d(); 
-    }
-                                    
-  // construct solver
-  
-  //NEW:: Reading the Solver from the Json file
-  std::string l_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
-  std::string l_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
-  tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
 
-  if((l_waveprop == "2d") & (l_temp_setup == "dambreak2d")){
-    std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
-    if(l_solver == "roe") {
-      std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
-      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , true);
-    }else{
-      std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
-      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , false);
-    }
-  }else if((l_waveprop == "1d") & (l_temp_setup != "dambreak2d" )){
-      std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
-        if(l_solver == "roe") {
-          std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true);
-        }else{
-          std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
-        }
-  }else if (((l_waveprop == "2d") & (l_temp_setup != "dambreak2d")) || ((l_waveprop == "1d") &(l_temp_setup == "dambreak2d") )){
-      l_setup = new tsunami_lab::setups::DamBreak2d();
-      std::cout << "\033[1;32m\u2713 Setup : dambreak2d will be choosen \033[0m" << std::endl;
-      if(l_solver == "roe") {
-          std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true);
-      }else{
-          std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
-  
-        }
-    }
-  /*
-   * if we get an arg then it checks what it is:
-   *    if it is the word ROE written in any form (Roe, RoE, etc...) then it uses the Roe Solver
-   *    else it uses the Fwave solver
-   * if there is no arg given then it uses the Fwave solver. 
-   */
+  }
 
-  /*
-    OLD:
-    if (i_argc > 2) {
-      for (char* ptr = i_argv[2]; *ptr; ++ptr) {
-          *ptr = std::tolower(static_cast<unsigned char>(*ptr));
-      }
-      if (std::strstr(i_argv[2], "roe") != nullptr) {
-          std::cout << "ROE Will be Used" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true);
-      } else {
-          std::cout << "FWAVE Will be Used" << std::endl;
-          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
-      }
-  }else{
-    std::cout << "FWAVE Will be Used" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
-  }  
-  */
-
-  //Declaration---------------------------------------------------------------------------END
 
 
   std::cout << "runtime configuration" << std::endl;
@@ -272,17 +217,8 @@ int main() {
   tsunami_lab::t_real l_simTime = 0;
   std::cout << "entering time loop" << std::endl;
 
-/*
-
-  if (std::filesystem::exists("output"))
-  {
-    std::filesystem::remove_all("output");
-  }
-  std::filesystem::create_directory("output");
-*/
-
   
-  
+
   // iterate over time
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);

@@ -1,9 +1,9 @@
 {
     "solver" : "fwave",
     "dimension" : 100,
-    "setup" :  "dambreak2d",
+    "setup" :  "shockshock",
     "nx" : 200,
-    "ny" : 200,
+    "ny" : 1,
     "hu" : 0.0,
     "location" : 5.0,
     "hv":0.0,

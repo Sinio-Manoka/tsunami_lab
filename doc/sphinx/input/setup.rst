@@ -169,7 +169,10 @@ Usage
 
    Feel free to adjust the arguments to suit your needs. 
    And don't forget to build the project after every change.
+   
+.. important:: 
 
+   if you Choose the 2d wavepropagation
    
 
 **3. Navigate to the build directory:**
