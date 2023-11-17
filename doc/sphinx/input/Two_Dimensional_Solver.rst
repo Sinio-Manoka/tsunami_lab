@@ -140,6 +140,7 @@ and we will use the second approach.
                   setGhostOutflow(true);
                     //x-sweep
                   for(t_idx l_ex = 0; l_ex < m_nCells +1;l_ex++){ 
+
                     for(t_idx l_ey = 0; l_ey < m_nCells +1;l_ey++){
                       t_real l_netUpdates[2][2];
                           t_idx l_ceL = getIndex(l_ey,l_ex);
@@ -317,13 +318,13 @@ and we will use the second approach.
                          }
                     }
                 
-                .. important::
+.. important::
 
-                    tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
-                    return (m_nCells+2) * i_iy +i_ix;
-                  }
+      tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+      return (m_nCells+2) * i_iy +i_ix;
+      }
 
-                  where our strid is m_nCells+2
+      where our strid is m_nCells+2
 
 
                         
@@ -409,12 +410,7 @@ We need to generate the following files in setup:   ``DamBreak2d.cpp`` , ``DamBr
 
   .. code-block:: cpp
 
-    /**
-    * @author Alexander Breuer (alex.breuer AT uni-jena.de)
-    *
-     * @section DESCRIPTION
-     * two-dimensional dam break problem.
-     **/
+   
     #include "DamBreak2d.h"
     #include "cmath"
 
@@ -450,12 +446,7 @@ We need to generate the following files in setup:   ``DamBreak2d.cpp`` , ``DamBr
 
 .. code-block:: cpp
 
-        /**
-      * @author Mohamad Kahled Minawe (alex.breuer AT uni-jena.de)
-      *
-      * @section DESCRIPTION
-      * Tests the  circualr dam break setup.
-      **/
+
       #include <catch2/catch.hpp>
       #include "DamBreak2d.h"
 
@@ -498,6 +489,7 @@ Now, we'll model the circular DamBreak, incorporating a reflective boundary.
 
   .. video:: _static/Dambreak2d.mp4
    :width: 700
+   :height: 500
    :autoplay:
 
 
@@ -543,7 +535,7 @@ And don't forget to set the water height to zero wherever the bathymetry is pres
 
   }
 
- .. video:: _static/Dambreak2dWithBathymetry.mp4
+.. video:: _static/Dambreak2dWithBathymetry.mp4
    :width: 700
    :autoplay:
 
@@ -552,7 +544,8 @@ In the simulation, we'll observe how water waves interact and reflect off the ob
 
 
 
-
+Stations
+---------
 
 
 

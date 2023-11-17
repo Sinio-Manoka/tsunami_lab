@@ -115,7 +115,7 @@ Usage
 --------
 **To use the Riemann solver, follow these steps:**
 
-**1. To modify the argument for the initial run, you need to navigate to the "configs" folder.**
+**1. To modify the arguments for the initial run, you need to navigate to the "configs" folder.**
 
    .. code-block:: 
 
@@ -123,23 +123,24 @@ Usage
 
 
 
-**2. Within the folder, locate a JSON file and navigate into it.t:**
+**2. Within the folder, locate a JSON file and navigate into it:**
 
-   .. code-block:: JSON
-   {
-      "solver" : "fwave",
-      "dimension" : 100,
-      "setup" :  "dambreak2d",
-      "nx" : 200,
-      "ny" : 200,
-      "hu" : 0.0,
-      "location" : 5.0,
-      "hv":0.0,
-      "hr": 10,
-      "hl":0,
-      "domain_start" : -50,
-      "wavepropagation" : "2d"
-   }
+   .. code-block:: 
+
+      {
+         "solver" : "fwave",
+         "dimension" : 100,
+         "setup" :  "dambreak2d",
+         "nx" : 200,
+         "ny" : 200,
+         "hu" : 0.0,
+         "location" : 5.0,
+         "hv":0.0,
+         "hr": 10,
+         "hl":0,
+         "domain_start" : -50,
+         "wavepropagation" : "2d"
+      }
 
 .. important::
 
@@ -147,13 +148,11 @@ Usage
 
    hv: momentum in the y direction.
 
-   ny : number of y cells.
-
-   dxy: The distance between one point and another point.
+   ny : number of cell in y-direction.
 
    setup: Select from shockshock, rarerare, tsunamievent1d, dambreak1d, supercritical, subcritical,dambreak2d
 
-   nx: Number of cells.
+   nx: Number of cells in x-direction.
 
    location: location for the setup.
 
@@ -165,14 +164,15 @@ Usage
 
    domain_start: For the circular dam break, the dimension should be set to -50.
 
-   dimension: The dimensions for the circular dam break should be set to 100 for our domain.
+   dimension: width and length of our domain at this point in our project.
 
    Feel free to adjust the arguments to suit your needs. 
    And don't forget to build the project after every change.
    
 .. important:: 
 
-   if you Choose the 2d wavepropagation
+   If you choose the 2D wave propagation and a setup other than "dambreak2d," the program will automatically select "dambreak2d."
+   However, if you choose the 1D wave propagation and "dambreak2d," the program will exit automatically. 
    
 
 **3. Navigate to the build directory:**
