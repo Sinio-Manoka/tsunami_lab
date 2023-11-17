@@ -172,7 +172,8 @@ Usage
    
 .. important:: 
 
-   if you Choose the 2d wavepropagation
+   If you choose the 2D wave propagation and a setup other than "dambreak2d," the program will automatically select "dambreak2d."
+   However, if you choose the 1D wave propagation and "dambreak2d," the program will exit automatically. 
    
 
 **3. Navigate to the build directory:**
