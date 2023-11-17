@@ -1,5 +1,5 @@
 /**
- * @author Alexander Breuer (alex.breuer AT uni-jena.de)
+ * @author Mohamad Khaled Minawe
  *
  * @section DESCRIPTION
  * Tests the dam break setup.
@@ -7,7 +7,7 @@
 #include <catch2/catch.hpp>
 #include "DamBreak2d.h"
 
-TEST_CASE( "Test the tow-dimensional dam break setup.", "[DamBreak2d]" ) {
+TEST_CASE( "Test the two-dimensional dam break setup.", "[DamBreak2d]" ) {
   tsunami_lab::setups::DamBreak2d l_damBreak;
 
   // left side

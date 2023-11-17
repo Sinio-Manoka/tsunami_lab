@@ -72,7 +72,7 @@ int main() {
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver","dimension", "setup","nx","hu","location","hl","hr","ny","domain_start"};
+  std::vector<std::string> keysToCheck = {"solver","dimension", "setup","nx","hu","location","hl","hr","ny","domain_start","wavepropagation"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -141,18 +141,42 @@ int main() {
     }
                                     
   // construct solver
-  tsunami_lab::patches::WavePropagation2d *l_waveProp = nullptr;
+  
   //NEW:: Reading the Solver from the Json file
   std::string l_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
-  if(l_solver == "roe") {
-    std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , true);
-  }else{
-    std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , false);
-  }
+  std::string l_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
+  tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
 
-
+  if((l_waveprop == "2d") & (l_temp_setup == "dambreak2d")){
+    std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
+    if(l_solver == "roe") {
+      std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
+      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , true);
+    }else{
+      std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
+      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , false);
+    }
+  }else if((l_waveprop == "1d") & (l_temp_setup != "dambreak2d" )){
+      std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
+        if(l_solver == "roe") {
+          std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true);
+        }else{
+          std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
+        }
+  }else if (((l_waveprop == "2d") & (l_temp_setup != "dambreak2d")) || ((l_waveprop == "1d") &(l_temp_setup == "dambreak2d") )){
+      l_setup = new tsunami_lab::setups::DamBreak2d();
+      std::cout << "\033[1;32m\u2713 Setup : dambreak2d will be choosen \033[0m" << std::endl;
+      if(l_solver == "roe") {
+          std::cout << "\033[1;32m\u2713 Solver :  Roe\033[0m" << std::endl;
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , true);
+      }else{
+          std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
+          l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , false);
+  
+        }
+    }
   /*
    * if we get an arg then it checks what it is:
    *    if it is the word ROE written in any form (Roe, RoE, etc...) then it uses the Roe Solver

@@ -295,29 +295,25 @@ and we will use the second approach.
 
                                 // Ecken des Gitters aktualisieren 
                                               //[0/0]
-                                      l_b[getIndex(0,0)] = l_b[getIndex(1,1)];
-                                      l_h[getIndex(0,0)] = l_h[getIndex(1,1)];
-                                      l_hu[getIndex(0,0)] = l_hu[getIndex(1,1)];
-                                      l_hv[getIndex(0,0)] = l_hv[getIndex(1,1)];
-      
-                                      //[n/0]
-                                      l_b[getIndex(m_nCells+1,0)] = l_b[getIndex(m_nCells,1)];
-                                      l_h[getIndex(m_nCells+1,0)] = l_h[getIndex(m_nCells,1)];
-                                      l_hu[getIndex(m_nCells+1,0)] = l_hu[getIndex(m_nCells,1)];
-                                      l_hv[getIndex(m_nCells+1,0)] = l_hv[getIndex(m_nCells,1)];
-      
-                                      //[0/n]
-                                      l_b[getIndex(0,m_nCells+1)] = l_b[getIndex(1,m_nCells)];
-                                      l_h[getIndex(0,m_nCells+1)] = l_h[getIndex(1,m_nCells)];
-                                      l_hu[getIndex(0,m_nCells+1)] = l_hu[getIndex(1,m_nCells)];
-                                      l_hv[getIndex(0,m_nCells+1)] = l_hv[getIndex(1,m_nCells)];
-      
-                                      //[n/n]
-                                      l_b[getIndex(m_nCells+1,m_nCells+1)] = l_b[getIndex(m_nCells,m_nCells)];
-                                      l_h[getIndex(m_nCells+1,m_nCells+1)] = l_h[getIndex(m_nCells,m_nCells)];
-                                      l_hu[getIndex(m_nCells+1,m_nCells+1)] = l_hu[getIndex(m_nCells,m_nCells)];
-                                      l_hv[getIndex(m_nCells+1,m_nCells+1)] = l_hv[getIndex(m_nCells,m_nCells)];
-      
+                                l_b[getIndex(0,0)] = l_b[getIndex(1,1)];
+                                l_b[getIndex(m_nCells+1,0)] = l_b[getIndex(m_nCells,1)];
+                                l_b[getIndex(0,m_nCells+1)] = l_b[getIndex(1,m_nCells)];
+                                l_b[getIndex(m_nCells+1,m_nCells+1)] = l_b[getIndex(m_nCells,m_nCells)];
+                                      
+                                l_h[getIndex(0,0)] = l_h[getIndex(1,1)];
+                                l_h[getIndex(m_nCells+1,0)] = l_h[getIndex(m_nCells,1)];
+                                l_h[getIndex(0,mopo_nCells+1)] = l_h[getIndex(1,m_nCells)];
+                                l_h[getIndex(m_nCells+1,m_nCells+1)] = l_h[getIndex(m_nCells,m_nCells)];
+
+                                l_hu[getIndex(0,0)] = l_hu[getIndex(1,1)];
+                                l_hu[getIndex(m_nCells+1,0)] = l_hu[getIndex(m_nCells,1)];
+                                l_hu[getIndex(0,m_nCells+1)] = l_hu[getIndex(1,m_nCells)];
+                                l_hu[getIndex(m_nCells+1,m_nCells+1)] = l_hu[getIndex(m_nCells,m_nCells)];
+
+                                l_hv[getIndex(0,0)] = l_hv[getIndex(1,1)];
+                                l_hv[getIndex(m_nCells+1,0)] = l_hv[getIndex(m_nCells,1)];
+                                l_hv[getIndex(0,m_nCells+1)] = l_hv[getIndex(1,m_nCells)];
+                                l_hv[getIndex(m_nCells+1,m_nCells+1)] = l_hv[getIndex(m_nCells,m_nCells)];
                          }
                     }
                 
@@ -450,7 +446,51 @@ We need to generate the following files in setup:   ``DamBreak2d.cpp`` , ``DamBr
     }
 
 
-3. simulation
+3. now lets implement our test unit for the circular dambreak in the ``DamBreak2d.test.cpp``: 
+
+.. code-block:: cpp
+
+        /**
+      * @author Mohamad Kahled Minawe (alex.breuer AT uni-jena.de)
+      *
+      * @section DESCRIPTION
+      * Tests the  circualr dam break setup.
+      **/
+      #include <catch2/catch.hpp>
+      #include "DamBreak2d.h"
+
+      TEST_CASE( "Test the two-dimensional dam break setup.", "[DamBreak2d]" ) {
+        tsunami_lab::setups::DamBreak2d l_damBreak;
+
+        // left side
+        REQUIRE( l_damBreak.getHeight( 2, 4 ) == 10.0 );
+
+        REQUIRE( l_damBreak.getMomentumX( 2, 0 ) == 0 );
+
+        REQUIRE( l_damBreak.getMomentumY( 2, 0 ) == 0 );
+
+        REQUIRE( l_damBreak.getHeight( 2, 5 ) == 10.0  );
+
+        REQUIRE( l_damBreak.getMomentumX( 2, 5 ) == 0 );
+
+        REQUIRE( l_damBreak.getMomentumY( 2, 2 ) == 0 );
+
+        // right side
+        REQUIRE( l_damBreak.getHeight( 4, 0 ) == 10.0  );
+
+        REQUIRE( l_damBreak.getMomentumX( 4, 0 ) == 0 );
+
+        REQUIRE( l_damBreak.getMomentumY( 4, 0 ) == 0 );
+
+        REQUIRE( l_damBreak.getHeight( 4, 5 ) == 10.0  );
+
+        REQUIRE( l_damBreak.getMomentumX( 4, 5 ) == 0 );
+
+        REQUIRE( l_damBreak.getMomentumY( 4, 2 ) == 0 );  
+      }
+
+
+4. simulation
 
 
 Now, we'll model the circular DamBreak, incorporating a reflective boundary.
@@ -468,7 +508,46 @@ Illustration of the support for bathymetry
 ................................................
 
 
+Include bathymetric data in our circular DamBreak simulation:
 
+First, let's modify our 'getBathymetry' function: 
+
+.. code-block:: cpp
+
+  tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getBathymetry( t_real i_x,
+                                                                    t_real ) const {
+  if( (i_x > 35) &  (i_x < 40) ){
+    return 10 ;
+  }else{
+    return 0;
+    }
+  }
+
+And don't forget to set the water height to zero wherever the bathymetry is present
+
+.. code-block:: cpp
+
+  tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getHeight( t_real i_x,
+                                                                t_real i_y) const {
+
+    if( (i_x > 35) &  (i_x < 40) ){
+      return 0 ;
+    }else{
+
+      if(std::sqrt((i_x*i_x)+(i_y*i_y)) < 10){
+        return 10;
+      } else{
+        return 5;
+      }
+    }
+
+  }
+
+ .. video:: _static/Dambreak2dWithBathymetry.mp4
+   :width: 700
+   :autoplay:
+
+In the simulation, we'll observe how water waves interact and reflect off the obstacle we've introduced.
 
 
 

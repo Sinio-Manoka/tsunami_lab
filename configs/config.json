@@ -9,5 +9,6 @@
     "hv":0.0,
     "hr": 10,
     "hl":0,
-    "domain_start" : -50
+    "domain_start" : -50,
+    "wavepropagation" : "2d"
 }

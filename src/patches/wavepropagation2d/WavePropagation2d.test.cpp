@@ -30,16 +30,15 @@ TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
 
 
   tsunami_lab::patches::WavePropagation2d m_waveProp( 100 , true );
-
   for( std::size_t l_ce = 0; l_ce < 49; l_ce++ ) {
-    for( std::size_t l_cy = 0; l_cy< 49; l_cy++ ) {
+
     m_waveProp.setHeight( l_ce,
-                          l_cy,
+                          0,
                           10 );
     m_waveProp.setMomentumX( l_ce,
-                             l_cy,
+                             0,
                              0 );
-    }
+  
   }
   for( std::size_t l_ce = 50; l_ce < 100; l_ce++ ) {
     m_waveProp.setHeight( l_ce,

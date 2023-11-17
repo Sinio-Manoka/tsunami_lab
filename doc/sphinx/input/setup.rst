@@ -126,10 +126,9 @@ Usage
 **2. Within the folder, locate a JSON file and navigate into it.t:**
 
    .. code-block:: JSON
-
-      {
+   {
       "solver" : "fwave",
-      "dxy" : 100,
+      "dimension" : 100,
       "setup" :  "dambreak2d",
       "nx" : 200,
       "ny" : 200,
@@ -137,8 +136,10 @@ Usage
       "location" : 5.0,
       "hv":0.0,
       "hr": 10,
-      "hl":0
-      }
+      "hl":0,
+      "domain_start" : -50,
+      "wavepropagation" : "2d"
+   }
 
 .. important::
 
@@ -150,7 +151,7 @@ Usage
 
    dxy: The distance between one point and another point.
 
-   setup: Select from shock, rare, tsunamievent1d, dambreak1d, supercritical, subcritical.
+   setup: Select from shockshock, rarerare, tsunamievent1d, dambreak1d, supercritical, subcritical,dambreak2d
 
    nx: Number of cells.
 
@@ -159,6 +160,12 @@ Usage
    hr: right heigts.
 
    hl: left heigts.
+
+   wavepropagation : 1d or 2d
+
+   domain_start: For the circular dam break, the dimension should be set to -50.
+
+   dimension: The dimensions for the circular dam break should be set to 100 for our domain.
 
    Feel free to adjust the arguments to suit your needs. 
    And don't forget to build the project after every change.
