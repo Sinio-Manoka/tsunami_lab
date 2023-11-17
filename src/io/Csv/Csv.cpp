@@ -26,9 +26,8 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   io_stream << "\n";
   
   tsunami_lab::t_real domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domain_start");
-  std::string setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
-
-  if(setup == "dambreak2d" ){
+  std::string l_temp_wavepropagation = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
+  if(l_temp_wavepropagation == "2d" ){
     for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
       for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {//l_ix=0 -> l_ix=1
       // derive coordinates of cell center

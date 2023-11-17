@@ -58,3 +58,26 @@ std::vector<std::string> tsunami_lab::io::Configuration::checkMissingKeys(std::v
 
     return missingKeys;
 }
+
+void tsunami_lab::io::Configuration::readStationsFromJson(std::vector<tsunami_lab::Station> & stations) {
+    std::string filename = "configs/stations.json";
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
+    }
+
+    json json_data;
+    file >> json_data;
+    file.close();
+
+    stations.clear(); 
+
+    for (const auto& station_data : json_data["stations"]) {
+        tsunami_lab::Station station;
+        station.i_name = station_data["i_name"];
+        station.i_x = station_data["i_x"];
+        station.i_y = station_data["i_y"];
+        stations.push_back(station);
+    }
+}

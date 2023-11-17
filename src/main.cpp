@@ -14,6 +14,7 @@
 #include "setups/supercriticalflow/SupercriticalFlow.h"
 #include "setups/tsunamievent1d/TsunamiEvent1d.h"
 #include "io/Csv/Csv.h"
+#include "io/Stations/Station.h"
 #include "io/JsReader/Configuration.h"
 #include <filesystem>
 #include <cstdlib>
@@ -69,28 +70,32 @@ int main() {
   }
   if (std::filesystem::exists("outputs")) std::filesystem::remove_all("outputs");
   std::filesystem::create_directory("outputs");
+
+  if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
+  std::filesystem::create_directory("stations");
   //Errors checking-----------------------------------------------------------------------END
   //Declaration---------------------------------------------------------------------------START
       
   //New:: Reading the length and Width from the Json File
-  tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
-  l_dxy = l_temp_dimension / l_nx;
 
   tsunami_lab::setups::Setup *l_setup = nullptr;
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
-  
-  
-  
+
   //New:: Reading Data from the Json File
   l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
   l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
   std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
   std::string l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
-  std::string l_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
+  std::string l_temp_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
   tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
   tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
   tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
   tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
+  tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
+  std::vector<tsunami_lab::Station> l_stations;
+  tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
+  l_dxy = l_temp_dimension / l_nx;
+
 
   bool l_solver;
   if(l_temp_solver == "roe") {
@@ -107,12 +112,13 @@ int main() {
   // construct solver
   //NEW:: Reading the Solver from the Json file
 
-
-  if(l_waveprop == "2d"){
+  std::cout << l_temp_waveprop << " habibi " << std::endl;
+  if(l_temp_waveprop == "2d"){
+    l_ny = l_nx;
     std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
     l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , l_solver);
     std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
-    l_ny = l_nx;
+
     l_setup = new tsunami_lab::setups::DamBreak2d();
 
   }else{
@@ -231,7 +237,7 @@ int main() {
 
       std::ofstream l_file;
       l_file.open( l_path );
-      
+
       tsunami_lab::io::Csv::write( l_dxy,
                                    l_nx,
                                    l_ny,
@@ -242,6 +248,30 @@ int main() {
                                    l_waveProp->getBathymetry(),
                                    l_file );
       l_file.close();
+
+      //STATIONS_---------------------------------------------START
+
+      
+      for (const auto& station : l_stations) {
+        std::string l_foldername = "stations/"+station.i_name;
+        if (!std::filesystem::exists(l_foldername)){
+              std::filesystem::create_directory(l_foldername);
+        }
+        std::ofstream l_station_file;
+        std::string l_station_path = l_foldername +"/"+ station.i_name+"_"+ std::to_string(l_nOut) + ".csv"; 
+        l_station_file.open( l_station_path );
+        tsunami_lab::io::Station::write(station.i_x,
+                                        l_dxy,
+                                        station.i_y,
+                                        l_nx,
+                                        l_waveProp->getStride(),
+                                        l_ny,
+                                        l_waveProp->getHeight(),
+                                        l_station_file
+                                        );
+        l_station_file.close(); 
+      }
+        
       l_nOut++;
     }
 

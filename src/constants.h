@@ -8,6 +8,7 @@
 #define TSUNAMI_LAB_CONSTANTS_H
 
 #include <cstddef>
+#include <string>
 
 namespace tsunami_lab {
   //! integral type for cell-ids, pointer arithmetic, etc.
@@ -15,12 +16,16 @@ namespace tsunami_lab {
 
   //! floating point type
   typedef float t_real;
+
+  struct Station {
+    std::string i_name;
+    tsunami_lab::t_real i_x,i_y;
+    tsunami_lab::t_real i_water_height;
+    tsunami_lab::t_real i_time;
+  };
+  
 }
 
-struct Cell {
-    int x;
-    int y;
-    int data[2]; // Array of data with size 2
-};
+
 
 #endif
