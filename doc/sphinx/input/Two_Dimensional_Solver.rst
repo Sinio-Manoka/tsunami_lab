@@ -493,7 +493,7 @@ Now, we'll model the circular DamBreak, incorporating a reflective boundary.
    :autoplay:
 
 
-
+In the simulation, we will observe how the waves reflect on the border of our domain.
 
 
 Illustration of the support for bathymetry
@@ -547,8 +547,8 @@ In the simulation, we'll observe how water waves interact and reflect off the ob
 Stations
 ---------
 
-
-
+Add a new class Stations
+........................
 
 
 

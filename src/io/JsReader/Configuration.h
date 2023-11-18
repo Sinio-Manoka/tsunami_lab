@@ -25,5 +25,6 @@ class tsunami_lab::io::Configuration {
         static t_idx readFromConfigIndex(std::string i_configVariable);
         static std::vector<std::string> checkMissingKeys(std::vector<std::string> i_keys);
         static void readStationsFromJson(std::vector<tsunami_lab::Station> & stations);
+        static tsunami_lab::t_real getFrequency();
 };
 #endif

@@ -1,7 +1,6 @@
 {
     "solver" : "fwave",
     "dimension" : 100,
-    "domainstart" : 100,
     "setup" :  "dambreak1d",
     "nx" : 200,
     "ny" : 200,

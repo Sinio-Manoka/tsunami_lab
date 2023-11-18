@@ -140,6 +140,7 @@ Usage
          "hl":0,
          "domain_start" : -50,
          "wavepropagation" : "2d"
+         "endtime" : 20
       }
 
 .. important::
@@ -148,21 +149,23 @@ Usage
 
    hv: momentum in the y direction.
 
-   ny : number of cell in y-direction.
+   ny : number of cell in y-direction. its should be a int number
 
    setup: Select from shockshock, rarerare, tsunamievent1d, dambreak1d, supercritical, subcritical,dambreak2d
 
-   nx: Number of cells in x-direction.
+   nx: Number of cells in x-direction.its should be a int number
 
-   location: location for the setup.
+   location: location for the setup. its should be a float number
 
-   hr: right heigts.
+   hr: right heigts. its should be a number
 
-   hl: left heigts.
+   hl: left heigts.its should be a number
 
    wavepropagation : 1d or 2d
 
-   domain_start: For the circular dam break, the dimension should be set to -50.
+   endtime : end time of the simulation. its should be a float number
+
+   domain_start: For the circular dam break, the dimension should be set to -50. 
 
    dimension: width and length of our domain at this point in our project.
 
@@ -182,14 +185,18 @@ Usage
      cd build
 
 
-**4. To run the Riemann solver, use the following command:**
+**4. To run the the project, use the following command:**
 
 .. code-block:: 
 
     ./tsunami_lab
 
 
+.. important:: 
 
+   After executing ``./tsunami_lab``, the arguments you specify in the JSON file will be automatically incorporated into the project.
+   
+   The solution can be located within a directory named ``outputs``.
 
 
 Documentation
@@ -222,39 +229,16 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 
    
 
-
-
 1. doxygen:
    
-   1.1. To build the Doxygen documentation, first, we need to generate the Doxygen configuration file as follows:
-
-   .. code-block::
-
-      doxygen -g <config-file>
-
-   or
-
-   You can use our configuration file, which is located inside the ``doc\doxygen\data`` directory. Please update the paths accordingly.   
-
-   1.2. Now, open the configuration file and adjust certain paths. Additionally, make sure to enable specific options:
-
-     .. code-block::
-
-         OUTPUT_DIRECTORY       = "../site"
-
-         INPUT                  = "../../../src"
-
-         RECURSIVE              = YES
-
-         EXTRACT_PRIVATE        = YES
    
-   
+You can use our configuration file ``dconfig``, which is located inside the ``doc\doxygen\data`` directory.
 
-   1.3. We need to include the CSS file for the Doxygen documentation.
+now just build the doxygen documentation : 
 
-      .. code-block::
+.. code-block:: 
 
-         HTML_EXTRA_STYLESHEET  = doxygen-style.css
+   doxygen dconfig
 
      
 
@@ -262,22 +246,13 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
 
    2.1. We need to navigate to the ``doc\sphnix\maker\``
 
-
-
-   2.2. Inside, you will find a file called ``Makefile`` Within this file, you will need to modify certain paths:
-
-      .. code-block:: 
-         
-         SOURCEDIR     = ../input
-         BUILDDIR      = ../site
-
-   3.3. Now, navigate to ``doc\sphinx\Sphinx\`` and execute the following command to build our documentation:
+   2.2. execute the following command to build our documentation:
 
        .. code-block:: 
          
          make html
 
-   3.4 The built ``documentation can be found in \tsunami_lab\doc\sphinx\site``.
+   2.3 The built ``documentation can be found in \tsunami_lab\doc\sphinx\site``.
 
 
 

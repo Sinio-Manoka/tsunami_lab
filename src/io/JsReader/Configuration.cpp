@@ -81,3 +81,16 @@ void tsunami_lab::io::Configuration::readStationsFromJson(std::vector<tsunami_la
         stations.push_back(station);
     }
 }
+
+tsunami_lab::t_real  tsunami_lab::io::Configuration::getFrequency(){
+    std::string filename = "configs/stations.json";
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return 0;
+    }
+    json json_data;
+    file >> json_data;
+    file.close();
+    return json_data["frequency"];
+}

@@ -20,8 +20,7 @@ namespace tsunami_lab {
   struct Station {
     std::string i_name;
     tsunami_lab::t_real i_x,i_y;
-    tsunami_lab::t_real i_water_height;
-    tsunami_lab::t_real i_time;
+
   };
   
 }

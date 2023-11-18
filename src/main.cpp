@@ -87,12 +87,13 @@ int main() {
   std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
   std::string l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
   std::string l_temp_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
-  tsunami_lab::t_real l_domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domainstart");
+  tsunami_lab::t_real l_domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domain_start");
   tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
   tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
   tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
   tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
   tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
+  tsunami_lab::t_real l_frequency = tsunami_lab::io::Configuration::getFrequency();
   std::vector<tsunami_lab::Station> l_stations;
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
   l_dxy = l_temp_dimension / l_nx;
@@ -169,16 +170,14 @@ int main() {
   std::cout << "  number of cells in y-direction: " << l_ny << std::endl;
   std::cout << "  cell size:                      " << l_dxy << std::endl;
 
-
-  tsunami_lab::t_real domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domain_start");
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
   // set up solver
   for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ) { 
-    tsunami_lab::t_real l_y = (l_cy * l_dxy) + domain_start; 
+    tsunami_lab::t_real l_y = (l_cy * l_dxy) + l_domain_start; 
 
     for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ) {
-      tsunami_lab::t_real l_x = (l_cx * l_dxy) + domain_start; 
+      tsunami_lab::t_real l_x = (l_cx * l_dxy) + l_domain_start; 
 
       // get initial values of the setup
       tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
@@ -226,8 +225,9 @@ int main() {
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 487;
+  tsunami_lab::t_real l_endTime = 60;
   tsunami_lab::t_real l_simTime = 0;
+  tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "entering time loop" << std::endl;
 
   
@@ -257,22 +257,24 @@ int main() {
       l_nOut++;
     }
     //STATIONS_---------------------------------------------START 
-    for (const auto& station : l_stations) {
+    if(l_current_frequency_time <= l_simTime){
+      for (const auto& station : l_stations) {
         std::string l_foldername = "stations/"+station.i_name;
         if (!std::filesystem::exists(l_foldername)){
               std::filesystem::create_directory(l_foldername);
         }
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
-        tsunami_lab::io::Station::write(station.i_x,
-                                        l_dxy,
-                                        station.i_y,
-                                        l_nx,
+        tsunami_lab::io::Station::write(station.i_x/l_dxy,
+                                        station.i_y/l_dxy,
+                                        l_simTime,
                                         l_waveProp->getStride(),
-                                        l_ny,
                                         l_waveProp->getHeight(),
                                         l_station_path
                                         );
       }
+      l_current_frequency_time = l_current_frequency_time + l_frequency;
+    }
+
       //STATIONS_---------------------------------------------END 
 
     //If true -> reflection boundary is active for the last cell
