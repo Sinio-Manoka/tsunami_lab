@@ -12,6 +12,8 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
                                   t_idx                i_nx,
                                   t_idx                i_ny,
                                   t_idx                i_stride,
+                                  t_real               i_domainstart,
+                                  std::string          i_dem_wavepropagation,
                                   t_real       const * i_h,
                                   t_real       const * i_hu,
                                   t_real       const * i_hv,
@@ -25,14 +27,12 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   if( i_b != nullptr ) io_stream <<  ",bathymetry";
   io_stream << "\n";
   
-  tsunami_lab::t_real domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domain_start");
-  std::string l_temp_wavepropagation = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
-  if(l_temp_wavepropagation == "2d" ){
+  if(i_dem_wavepropagation == "2d" ){
     for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
       for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {//l_ix=0 -> l_ix=1
       // derive coordinates of cell center
-        t_real l_posX = ((l_ix-1 + 0.5) * i_dxy )+ domain_start; //l_ix -> l_ix-1
-        t_real l_posY = ((l_iy-1 + 0.5) * i_dxy )+ domain_start;
+        t_real l_posX = ((l_ix-1 + 0.5) * i_dxy )+ i_domainstart; //l_ix -> l_ix-1
+        t_real l_posY = ((l_iy-1 + 0.5) * i_dxy )+ i_domainstart;
 
         t_idx l_id = l_iy * i_stride + l_ix;
 

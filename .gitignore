@@ -4,4 +4,4 @@ doc/doxygen/site/**
 outputs/**
 stations/**
 .gitignore
-
+.sconsign.dblite

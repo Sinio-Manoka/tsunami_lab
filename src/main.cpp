@@ -87,6 +87,7 @@ int main() {
   std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
   std::string l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
   std::string l_temp_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
+  tsunami_lab::t_real l_domain_start = tsunami_lab::io::Configuration::readFromConfigReal("domainstart");
   tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
   tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
   tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
@@ -242,6 +243,8 @@ int main() {
                                    l_nx,
                                    l_ny,
                                    l_waveProp->getStride(),
+                                   l_domain_start,
+                                   l_temp_waveprop,
                                    l_waveProp->getHeight(),
                                    l_waveProp->getMomentumX(),
                                    l_waveProp->getMomentumY(),
