@@ -79,7 +79,7 @@ int main() {
   //New:: Reading the length and Width from the Json File
 
   tsunami_lab::setups::Setup *l_setup = nullptr;
-  tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
+  
 
   //New:: Reading Data from the Json File
   l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
@@ -104,7 +104,6 @@ int main() {
     std::cout << "\033[1;31m\u2717 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
     std::cout << "freeing memory" << std::endl;
     delete l_setup;
-    delete l_waveProp;
     return EXIT_FAILURE;
   }else{
     std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
@@ -121,7 +120,7 @@ int main() {
     l_solver = false;
   }
   //Setup---------------------------------------------------------------------------------END
-  
+  tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   //NEW:: Reading the Solver from the Json file
   if(l_temp_waveprop == "2d"){
     l_ny = l_nx;
@@ -225,7 +224,7 @@ int main() {
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 60;
+  tsunami_lab::t_real l_endTime = 20;
   tsunami_lab::t_real l_simTime = 0;
   tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "entering time loop" << std::endl;
@@ -263,19 +262,22 @@ int main() {
         if (!std::filesystem::exists(l_foldername)){
               std::filesystem::create_directory(l_foldername);
         }
+        tsunami_lab::t_idx l_ix = (station.i_x - l_domain_start ) / l_dxy ;
+        tsunami_lab::t_idx l_iy = (station.i_y - l_domain_start ) / l_dxy ;
+        tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix; 
+        tsunami_lab::t_real l_water_height =  l_waveProp->getHeight()[l_id];
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
-        tsunami_lab::io::Station::write(station.i_x/l_dxy,
-                                        station.i_y/l_dxy,
+        tsunami_lab::io::Station::write(l_ix,
+                                        l_iy,
                                         l_simTime,
-                                        l_waveProp->getStride(),
-                                        l_waveProp->getHeight(),
+                                        l_water_height,
                                         l_station_path
                                         );
       }
       l_current_frequency_time = l_current_frequency_time + l_frequency;
     }
 
-      //STATIONS_---------------------------------------------END 
+      //STATIONS----------------------------------------------END 
 
     //If true -> reflection boundary is active for the last cell
     l_waveProp->timeStep( l_scaling );

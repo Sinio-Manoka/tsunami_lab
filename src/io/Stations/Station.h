@@ -15,11 +15,10 @@ namespace tsunami_lab {
 
 class tsunami_lab::io::Station{
     public:
-        static void write(tsunami_lab::t_real             i_x,
-                          tsunami_lab::t_real             i_y,
+        static void write(tsunami_lab::t_idx              i_x,
+                          tsunami_lab::t_idx              i_y,
                           tsunami_lab::t_idx              i_time_in_seconds,
-                          tsunami_lab::t_idx              i_stride,
-                          tsunami_lab::t_real const *     i_water_height,
+                          tsunami_lab::t_real             i_water_height,
                           std::string                     i_csv_path);
 };
 
