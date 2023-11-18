@@ -22,7 +22,7 @@ class tsunami_lab::io::Station{
                           tsunami_lab::t_idx              i_stride,
                           tsunami_lab::t_idx              i_ny,
                           tsunami_lab::t_real const *     i_water_height,
-                          std::ostream        &           io_stream);
+                          std::string                     i_csv_path);
 };
 
 #endif

@@ -1,12 +1,12 @@
 {
     "stations": [
         {
-        "i_name": "Dart",
-        "i_x": 0.25,
-        "i_y": -49.75
+            "i_name": "Dart",
+            "i_x": 0.25,
+            "i_y": -49.75
         },
         {
-            "i_name": "Daniel",
+            "i_name": "Habibi",
             "i_x": 0.75,
             "i_y": -49.75
         }

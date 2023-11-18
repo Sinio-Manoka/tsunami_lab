@@ -53,7 +53,7 @@ int main() {
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver","dimension", "setup","nx","hu","location","hl","hr","ny","domain_start","wavepropagation"};
+  std::vector<std::string> keysToCheck = {"solver","dimension", "setup","nx","hu","location","hl","ny","domain_start","wavepropagation"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -96,6 +96,19 @@ int main() {
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
   l_dxy = l_temp_dimension / l_nx;
 
+  //Declaration---------------------------------------------------------------------------END
+  //Errors checking After Declaration-----------------------------------------------------START
+  if(l_temp_waveprop == "1d" && l_temp_setup == "dambreak2d"){
+    std::cout << "\033[1;31m\u2717 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
+    std::cout << "freeing memory" << std::endl;
+    delete l_setup;
+    delete l_waveProp;
+    return EXIT_FAILURE;
+  }else{
+    std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
+  }
+  //Errors checking After Declaration-----------------------------------------------------END
+  //Setup---------------------------------------------------------------------------------START
 
   bool l_solver;
   if(l_temp_solver == "roe") {
@@ -105,14 +118,9 @@ int main() {
     std::cout << "\033[1;32m\u2713 Solver : Fwave\033[0m" << std::endl;
     l_solver = false;
   }
-
-  //Declaration---------------------------------------------------------------------------END
-  //Setup---------------------------------------------------------------------------------START
-
-  // construct solver
+  //Setup---------------------------------------------------------------------------------END
+  
   //NEW:: Reading the Solver from the Json file
-
-  std::cout << l_temp_waveprop << " habibi " << std::endl;
   if(l_temp_waveprop == "2d"){
     l_ny = l_nx;
     std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
@@ -121,7 +129,7 @@ int main() {
 
     l_setup = new tsunami_lab::setups::DamBreak2d();
 
-  }else if((l_waveprop == "1d") && (l_temp_setup != "dambreak2d") ){
+  }else if((l_temp_waveprop == "1d") && (l_temp_setup != "dambreak2d") ){
       std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
       l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
       if(l_temp_setup == "tsunamievent1d"){
@@ -151,13 +159,7 @@ int main() {
         std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
       }
-    }else{
-    std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
-    std::cout << "freeing memory" << std::endl;
-    delete l_setup;
-    delete l_waveProp;
-    return EXIT_SUCCESS;
-  }
+    }
 
 
 
@@ -223,22 +225,16 @@ int main() {
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 20;
+  tsunami_lab::t_real l_endTime = 487;
   tsunami_lab::t_real l_simTime = 0;
   std::cout << "entering time loop" << std::endl;
 
   
-
   // iterate over time
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
     if( l_timeStep % 25 == 0 ) {
-      std::cout << "  simulation time / #time steps: "
-                << l_simTime << " / " << l_timeStep << std::endl;
-
       std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
-      std::cout << "  writing wave field to " << l_path << std::endl;
-
       std::ofstream l_file;
       l_file.open( l_path );
 
@@ -253,17 +249,17 @@ int main() {
                                    l_file );
       l_file.close();
 
-      //STATIONS_---------------------------------------------START
 
-      
-      for (const auto& station : l_stations) {
+        
+      l_nOut++;
+    }
+    //STATIONS_---------------------------------------------START 
+    for (const auto& station : l_stations) {
         std::string l_foldername = "stations/"+station.i_name;
         if (!std::filesystem::exists(l_foldername)){
               std::filesystem::create_directory(l_foldername);
         }
-        std::ofstream l_station_file;
-        std::string l_station_path = l_foldername +"/"+ station.i_name+"_"+ std::to_string(l_nOut) + ".csv"; 
-        l_station_file.open( l_station_path );
+        std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
         tsunami_lab::io::Station::write(station.i_x,
                                         l_dxy,
                                         station.i_y,
@@ -271,13 +267,10 @@ int main() {
                                         l_waveProp->getStride(),
                                         l_ny,
                                         l_waveProp->getHeight(),
-                                        l_station_file
+                                        l_station_path
                                         );
-        l_station_file.close(); 
       }
-        
-      l_nOut++;
-    }
+      //STATIONS_---------------------------------------------END 
 
     //If true -> reflection boundary is active for the last cell
     l_waveProp->timeStep( l_scaling );
@@ -285,15 +278,13 @@ int main() {
     l_timeStep++;
     l_simTime += l_dt;
   }
-
-  std::cout << "finished time loop" << std::endl;
-
+  std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
+  std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
-  std::cout << "freeing memory" << std::endl;
+  std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
   delete l_setup;
   delete l_waveProp;
-
-  std::cout << "finished, exiting" << std::endl;
+  std::cout << "\033[1;32m\u2713 finished, exiting \033[0m " << std::endl;
   return EXIT_SUCCESS;
 
 }

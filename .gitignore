@@ -1,5 +1,7 @@
 build/**
 doc/sphinx/site/**
 doc/doxygen/site/**
+outputs/**
+stations/**
 .gitignore
 
