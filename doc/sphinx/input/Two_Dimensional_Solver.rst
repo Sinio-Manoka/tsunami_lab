@@ -616,8 +616,151 @@ Stations
 Add a new class Stations
 ........................
 
+
+There are numerous methods for implementing a station class, but we chose to implement it using a struct object for the station. Initially, we create a struct object for the station and include it in the ``constant.h`` file.
+
+.. code-block:: cpp
+
+  struct Station {
+    std::string i_name;
+    tsunami_lab::t_real i_x,i_y;
+    }; 
+
+
+To retrieve user data for the station, we first created a JSON file named ``stations.json`` in the ``config`` folder.
+
+.. code-block::
+
+      {
+        "frequency": 2,
+        "stations": [
+            {
+                "i_name": "Dart",
+                "i_x": 1000,
+                "i_y": 1000
+            },
+            {
+                "i_name": "Habibi",
+                "i_x": 0.75,
+                "i_y": -49.75
+            }
+        ]
+    }
+
+.. important::
+
+  You have the option to include station data in the JSON file, and upon running
+  the code, the stations will be automatically written to the ``station`` folder. 
+  
+Now, we need to create functions in the ``\tsunami_lab\src\io\JsReader\Configuration.cpp`` file to read data from a JSON file. One function should be implemented
+to retrieve the coordinates of the stations, and another one to retrieve the frequency.
+
+  .. code-block:: cpp
+
+      void tsunami_lab::io::Configuration::readStationsFromJson(std::vector<tsunami_lab::Station> & stations) {
+      std::string filename = "configs/stations.json";
+      std::ifstream file(filename);
+      if (!file.is_open()) {
+          std::cerr << "Error opening file: " << filename << std::endl;
+          return;
+      }
+
+      json json_data;
+      file >> json_data;
+      file.close();
+
+      stations.clear(); 
+
+      for (const auto& station_data : json_data["stations"]) {
+          tsunami_lab::Station station;
+          station.i_name = station_data["i_name"];
+          station.i_x = station_data["i_x"];
+          station.i_y = station_data["i_y"];
+          stations.push_back(station);
+      }
+    }
+
+    tsunami_lab::t_real  tsunami_lab::io::Configuration::getFrequency(){
+        std::string filename = "configs/stations.json";
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Error opening file: " << filename << std::endl;
+            return 0;
+        }
+        json json_data;
+        file >> json_data;
+        file.close();
+        return json_data["frequency"];
+    }
+
+
 lets now add a Stations class in the io folder. for the Stations class we will need to creat the following files : ``Station.cpp``
 , ``Station.h`` and ``Station.test.cpp``.
+
+
+2. lets implement the ``Station.h`` : 
+
+  .. code-block:: cpp
+
+      #ifndef TSUNAMI_LAB_IO_STATIONS
+      #define TSUNAMI_LAB_IO_STATIONS
+
+      #include "../../constants.h"
+      #include "../JsReader/Configuration.h"
+      #include "string"
+      #include <fstream>
+      #include <vector>
+
+      namespace tsunami_lab {
+        namespace io {
+          class Station;
+        }
+      }
+
+      class tsunami_lab::io::Station{
+          public:
+              static void write(tsunami_lab::t_idx              i_x,
+                                tsunami_lab::t_idx              i_y,
+                                tsunami_lab::t_idx              i_time_in_seconds,
+                                tsunami_lab::t_real             i_water_height,
+                                std::string                     i_csv_path);
+      };
+
+    #endif
+
+every station has an x , y coordinates and a frequence which is i_time_in_seconds.
+
+
+3. now lets implement ``Station.cpp`` file : 
+
+.. code-block:: cpp
+
+     #include "Station.h"
+
+      void tsunami_lab::io::Station::write(tsunami_lab::t_idx         i_x,
+                                      tsunami_lab::t_idx              i_y,
+                                      tsunami_lab::t_idx              i_time_in_seconds,
+                                      tsunami_lab::t_real             i_water_height,
+                                      std::string                     i_csv_path){
+
+
+          std::ofstream io_stream(i_csv_path,std::ios::app);
+          if (!io_stream.is_open()) {
+              std::cerr << "Error opening file: " << i_csv_path << std::endl;
+              return ; 
+          }
+          std::uintmax_t fileSize = std::filesystem::file_size(i_csv_path);
+          if(fileSize == 0){
+              io_stream << "x,y,water_height,time_in_seconds";
+          }
+          io_stream << "\n";
+          io_stream << i_x << "," << i_y << "," << i_water_height << "," << i_time_in_seconds;
+          io_stream << std::flush;
+
+      }
+
+
+
 
 
 

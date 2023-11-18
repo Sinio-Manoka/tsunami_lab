@@ -169,10 +169,10 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
     t_real l_fdelta[2];
     flux(i_hL,i_hR,i_huL,i_huR,l_fdelta);
     
-    t_real l_b = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
+    t_real l_bathymetry = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
 
     t_real l_eigencoefficients[2];
-    eigencoefficientAlpha(l_inverse,l_fdelta,l_b,l_eigencoefficients);
+    eigencoefficientAlpha(l_inverse,l_fdelta,l_bathymetry,l_eigencoefficients);
 
    
     t_real l_eigens[2] = {l_sL,l_sR};

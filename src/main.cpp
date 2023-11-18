@@ -53,7 +53,7 @@ int main() {
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver","dimension", "setup","nx","hu","location","hl","ny","domain_start","wavepropagation"};
+  std::vector<std::string> keysToCheck = {"solver","dimension", "setup","nx","hu","location","hl","ny","domain_start","wavepropagation","endtime"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -94,6 +94,7 @@ int main() {
   tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
   tsunami_lab::t_real l_temp_dimension =  tsunami_lab::io::Configuration::readFromConfigReal("dimension");
   tsunami_lab::t_real l_frequency = tsunami_lab::io::Configuration::getFrequency();
+  tsunami_lab::t_real l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
   std::vector<tsunami_lab::Station> l_stations;
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
   l_dxy = l_temp_dimension / l_nx;
@@ -224,7 +225,7 @@ int main() {
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = 20;
+  tsunami_lab::t_real l_endTime = l_temp_endtime;
   tsunami_lab::t_real l_simTime = 0;
   tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "entering time loop" << std::endl;
