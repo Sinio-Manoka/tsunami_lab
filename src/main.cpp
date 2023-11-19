@@ -108,6 +108,7 @@ int main() {
   }else{
     std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
   }
+
   //Errors checking After Declaration-----------------------------------------------------END
   //Setup---------------------------------------------------------------------------------START
 
@@ -228,8 +229,22 @@ int main() {
   tsunami_lab::t_real l_simTime = 0;
   tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "entering time loop" << std::endl;
-
   
+  //removing out of boundary stations
+  l_stations.erase(
+  std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
+      if (station.i_x < l_domain_start || station.i_x > l_temp_dimension + l_domain_start ||
+          station.i_y < l_domain_start || station.i_y > l_temp_dimension + l_domain_start) {
+          std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
+          return true; // Remove the station
+      }else{
+          std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
+      }
+      return false; // Keep the station
+  }),
+  l_stations.end());
+
+
   // iterate over time
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
@@ -262,17 +277,18 @@ int main() {
         if (!std::filesystem::exists(l_foldername)){
               std::filesystem::create_directory(l_foldername);
         }
-        tsunami_lab::t_idx l_ix = (station.i_x - l_domain_start ) / l_dxy ;
-        tsunami_lab::t_idx l_iy = (station.i_y - l_domain_start ) / l_dxy ;
+        tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start ) / l_dxy )+1;
+        tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start ) / l_dxy )+1;
         tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix; 
-        tsunami_lab::t_real l_water_height =  l_waveProp->getHeight()[l_id];
+        const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,
-                                        l_water_height,
+                                        l_water_height[l_id],
                                         l_station_path
                                         );
+
       }
       l_current_frequency_time = l_current_frequency_time + l_frequency;
     }
