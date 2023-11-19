@@ -12,7 +12,7 @@
 #include "Csv.h"
 #undef public
 
-TEST_CASE( "Test the CSV-writer for 2D settings. Example 1", "[CsvWrite1d]" ) {
+TEST_CASE( "Test the CSV-writer for 1D settings. Example 1", "[CsvWrite1d]" ) {
   // define a simple example
   tsunami_lab::t_real l_h[7]  = { 0, 1, 2, 3, 4, 5, 6 };
   tsunami_lab::t_real l_hu[7] = { 6, 5, 4, 3, 2, 1, 0 };
@@ -23,7 +23,7 @@ TEST_CASE( "Test the CSV-writer for 2D settings. Example 1", "[CsvWrite1d]" ) {
                                1,
                                7,
                                -50,
-                               "2d",
+                               "1d",
                                l_h+1,
                                l_hu+1,
                                0,
@@ -31,18 +31,18 @@ TEST_CASE( "Test the CSV-writer for 2D settings. Example 1", "[CsvWrite1d]" ) {
                                l_stream0 );
 
   std::string l_ref0 = R"V0G0N(x,y,height,momentum_x
--49.75,-49.75,5,0
--49.25,-49.75,4,0
--48.75,-49.75,3,0
--48.25,-49.75,2,0
--47.75,-49.75,1,0
+0.25,0.25,1,5
+0.75,0.25,2,4
+1.25,0.25,3,3
+1.75,0.25,4,2
+2.25,0.25,5,1
 )V0G0N";
 
   REQUIRE( l_stream0.str().size() == l_ref0.size() );
   REQUIRE( l_stream0.str() == l_ref0 );
 }
 
-TEST_CASE( "Test the CSV-writer for 2D settings. Example 2", "[CsvWrite2d]" ) {
+TEST_CASE( "Test the CSV-writer for 2D settings. Example 1", "[CsvWrite2d]" ) {
   // define a simple example
   tsunami_lab::t_real l_h[16]  = {  0,  1,  2,  3,
                                     4,  5,  6,  7,
@@ -91,7 +91,7 @@ TEST_CASE( "Test the CSV-reader for 1D settings.", "[CsvRead1d]" ) {
   REQUIRE(selectedColumn[1] == Approx(-5.16040036612));
 }
 
-TEST_CASE( "Test the CSV-writer for 1D settings. Example 1", "[CsvWrite1d]" ) {
+TEST_CASE( "Test the CSV-writer for 1D settings. Example 2", "[CsvWrite1d]" ) {
   // define a simple example
   tsunami_lab::t_real l_h[7]  = { 0, 1, 2, 3, 4, 5, 6 };
   tsunami_lab::t_real l_hu[7] = { 6, 5, 4, 3, 2, 1, 0 };
@@ -121,7 +121,7 @@ TEST_CASE( "Test the CSV-writer for 1D settings. Example 1", "[CsvWrite1d]" ) {
   REQUIRE( l_stream0.str() == l_ref0 );
 }
 
-TEST_CASE( "Test the CSV-writer for 1D settings. Example 2", "[CsvWrite2d]" ) {
+TEST_CASE( "Test the CSV-writer for 1D settings. Example 3", "[CsvWrite2d]" ) {
   // define a simple example
   tsunami_lab::t_real l_h[16]  = {  0,  1,  2,  3,
                                     4,  5,  6,  7,

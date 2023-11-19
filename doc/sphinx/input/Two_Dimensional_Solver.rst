@@ -631,28 +631,34 @@ To retrieve user data for the station, we first created a JSON file named ``stat
 
 .. code-block::
 
-      {
+    {
         "frequency": 2,
         "stations": [
             {
                 "i_name": "Dart",
-                "i_x": 1000,
-                "i_y": 1000
+                "i_x": -51,
+                "i_y": -51
             },
             {
                 "i_name": "Habibi",
                 "i_x": 0.75,
-                "i_y": -49.75
+                "i_y": 30.75
             }
         ]
     }
+  
 
 .. important::
 
   You have the option to include station data in the JSON file, and upon running
-  the code, the stations will be automatically written to the ``station`` folder. 
+  the code, the stations will be automatically written to the ``station`` folder.
+
+  The station's coordinates must fall within our designated boundary, in our case within the range of :math:`[-50, 50]^2`.
+  If the coordinates lie outside this boundary, they will not be saved in the station folder.
+
+  the boundary can be effected throguh the following inputs (dimension  domain_start) thats can be found in the ``config.json`` file.
   
-Now, we need to create functions in the ``\tsunami_lab\src\io\JsReader\Configuration.cpp`` file to read data from a JSON file. One function should be implemented
+Now, we need to create functions in the ``\tsunami_lab\src\io\JsReader\Configuration.cpp`` file to read data from a JSON file and . One function should be implemented
 to retrieve the coordinates of the stations, and another one to retrieve the frequency.
 
   .. code-block:: cpp
@@ -694,7 +700,7 @@ to retrieve the coordinates of the stations, and another one to retrieve the fre
     }
 
 
-lets now add a Stations class in the io folder. for the Stations class we will need to creat the following files : ``Station.cpp``
+lets now add a Station class in the io folder. for the Station class we will need to creat the following files : ``Station.cpp``
 , ``Station.h`` and ``Station.test.cpp``.
 
 
@@ -702,78 +708,116 @@ lets now add a Stations class in the io folder. for the Stations class we will n
 
   .. code-block:: cpp
 
-      #ifndef TSUNAMI_LAB_IO_STATIONS
-      #define TSUNAMI_LAB_IO_STATIONS
+    #ifndef TSUNAMI_LAB_IO_STATIONS
+    #define TSUNAMI_LAB_IO_STATIONS
 
-      #include "../../constants.h"
-      #include "../JsReader/Configuration.h"
-      #include "string"
-      #include <fstream>
-      #include <vector>
+    #include "../../constants.h"
+    #include "../JsReader/Configuration.h"
+    #include "string"
+    #include <fstream>
+    #include <vector>
 
-      namespace tsunami_lab {
-        namespace io {
-          class Station;
-        }
+    namespace tsunami_lab {
+      namespace io {
+        class Station;
       }
+    }
 
-      class tsunami_lab::io::Station{
-          public:
-              static void write(tsunami_lab::t_idx              i_x,
-                                tsunami_lab::t_idx              i_y,
-                                tsunami_lab::t_idx              i_time_in_seconds,
-                                tsunami_lab::t_real             i_water_height,
-                                std::string                     i_csv_path);
-      };
+    class tsunami_lab::io::Station{
+        public:
+            static void write(tsunami_lab::t_idx              i_x,
+                              tsunami_lab::t_idx              i_y,
+                              tsunami_lab::t_idx              i_time_in_seconds,
+                              tsunami_lab::t_real             i_water_height,
+                              std::string                     i_csv_path);
+    };
 
     #endif
 
-every station has an x , y coordinates and a frequence which is i_time_in_seconds.
+every station has an x , y coordinate , a frequence which is i_time_in_seconds and a name.
 
 
 3. now lets implement ``Station.cpp`` file : 
 
 .. code-block:: cpp
 
-     #include "Station.h"
+  #include "Station.h"
 
-      void tsunami_lab::io::Station::write(tsunami_lab::t_idx         i_x,
+  void tsunami_lab::io::Station::write(tsunami_lab::t_idx              i_x,
                                       tsunami_lab::t_idx              i_y,
                                       tsunami_lab::t_idx              i_time_in_seconds,
                                       tsunami_lab::t_real             i_water_height,
                                       std::string                     i_csv_path){
 
 
-          std::ofstream io_stream(i_csv_path,std::ios::app);
-          if (!io_stream.is_open()) {
-              std::cerr << "Error opening file: " << i_csv_path << std::endl;
-              return ; 
-          }
-          std::uintmax_t fileSize = std::filesystem::file_size(i_csv_path);
-          if(fileSize == 0){
-              io_stream << "x,y,water_height,time_in_seconds";
-          }
-          io_stream << "\n";
-          io_stream << i_x << "," << i_y << "," << i_water_height << "," << i_time_in_seconds;
-          io_stream << std::flush;
+      std::ofstream io_stream(i_csv_path,std::ios::app);
+      if (!io_stream.is_open()) {
+          std::cerr << "Error opening file: " << i_csv_path << std::endl;
+          return ; 
+      }
+      std::uintmax_t fileSize = std::filesystem::file_size(i_csv_path);
+      if(fileSize == 0){
+          io_stream << "x,y,water_height,time_in_seconds";
+      }
+      io_stream << "\n";
+      io_stream << i_x << "," << i_y << "," << i_water_height << "," << i_time_in_seconds;
+      io_stream << std::flush;
+
+  }
+
+implementation of a time step-independent output frequency for the stations.
+............................................................................
+
+To provide names and locations for our solver, we will utilize the station JSON file. Each station will have its dedicated folder within the station directory, containing its respective CSV solution.
+Before implementing this, let's establish a boundary for our stations. If a station falls outside of this boundary, its solution will not be saved in the station folder.
+
+.. code-block:: cpp
+
+  l_stations.erase(
+  std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
+      if (station.i_x < l_domain_start || station.i_x > l_temp_dimension + l_domain_start ||
+          station.i_y < l_domain_start || station.i_y > l_temp_dimension + l_domain_start) {
+          std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
+          return true; // Remove the station
+      }else{
+          std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
+      }
+      return false; // Keep the station
+  }),
+  l_stations.end());
+
+
+Now, let's implement a time step-independent output frequency for the stations in main.cpp. We will use the following function.
+To calculate the index of the x and y coordinates, we will use the following formula:
+
+.. important::
+
+      tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start ) / l_dxy )+1;
+      tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start ) / l_dxy )+1;
+  
+.. code-block:: cpp
+
+      if(l_current_frequency_time <= l_simTime){
+      for (const auto& station : l_stations) {
+        std::string l_foldername = "stations/"+station.i_name;
+        if (!std::filesystem::exists(l_foldername)){
+              std::filesystem::create_directory(l_foldername);
+        }
+        tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start ) / l_dxy )+1;
+        tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start ) / l_dxy )+1;
+        tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix; 
+        const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
+        std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
+        tsunami_lab::io::Station::write(l_ix,
+                                        l_iy,
+                                        l_simTime,
+                                        l_water_height[l_id],
+                                        l_station_path
+                                        );
 
       }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      l_current_frequency_time = l_current_frequency_time + l_frequency;
+    }
 
 
 

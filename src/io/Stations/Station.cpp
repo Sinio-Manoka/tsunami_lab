@@ -1,10 +1,10 @@
 #include "Station.h"
 
-void tsunami_lab::io::Station::write(tsunami_lab::t_idx         i_x,
-                                tsunami_lab::t_idx              i_y,
-                                tsunami_lab::t_idx              i_time_in_seconds,
-                                tsunami_lab::t_real             i_water_height,
-                                std::string                     i_csv_path){
+void tsunami_lab::io::Station::write(tsunami_lab::t_idx              i_x,
+                                     tsunami_lab::t_idx              i_y,
+                                     tsunami_lab::t_idx              i_time_in_seconds,
+                                     tsunami_lab::t_real             i_water_height,
+                                     std::string                     i_csv_path){
 
 
     std::ofstream io_stream(i_csv_path,std::ios::app);
