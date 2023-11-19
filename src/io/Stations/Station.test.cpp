@@ -21,7 +21,6 @@ TEST_CASE( "Test the Station IO", "[Station]" ) {
     std::filesystem::create_directory("tests");
     std::string l_csv_path = "tests/test_station_io.csv";
     
-    
     tsunami_lab::io::Station::write(l_x,
                                     l_y,
                                     l_time,
@@ -40,6 +39,4 @@ TEST_CASE( "Test the Station IO", "[Station]" ) {
     REQUIRE( csvStream.str() == l_ref0 );
     
     if (std::filesystem::exists("tests")) std::filesystem::remove_all("tests");
-
-
 }

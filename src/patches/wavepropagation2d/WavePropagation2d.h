@@ -75,10 +75,15 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     t_idx getStride(){
       return m_nCells+2;
     }
-
+    /**
+     * @brief leftest column contains ghostcells so we skip it
+     */
     t_idx getGhostcellX(){
       return 1;
     } 
+    /**
+     * @brief bottom row contains ghostcells so we skip it
+     */
     t_idx getGhostcellY(){
       return 1;
     }
