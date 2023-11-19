@@ -242,9 +242,8 @@ int main() {
         station.i_y < l_domain_start || station.i_y >= l_temp_dimension + l_domain_start) {
         std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
         return true; // Remove the station
-    }else{
-        std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
     }
+    std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
     return false; // Keep the station
     }),
     l_stations.end());
@@ -255,9 +254,8 @@ int main() {
     if (station.i_x < l_domain_start || station.i_x >= l_temp_dimension + l_domain_start) {
         std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
         return true; // Remove the station
-    }else{
-        std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
     }
+    std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
     return false; // Keep the station
     }),
     l_stations.end());

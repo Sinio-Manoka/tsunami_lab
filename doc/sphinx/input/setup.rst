@@ -87,7 +87,7 @@ Installation
 
 
 
-**4. How build the project:**
+**4. How to build the project:**
 
 
    4.1. Navigate to the project directory:
@@ -145,7 +145,9 @@ Usage
 
 .. important::
 
-      solver: Choose between Fwave or Roe.
+      All values have to be written in small letters!!
+
+      solver: Choose between fwave or roe.
 
       hv: Momentum in the y-direction. should be a number.
 
@@ -183,7 +185,7 @@ Usage
 
    For supercritical and subcritical setups, relevant inputs include (nx, wavepropagation, dimension, solver, endtime).
 
-   For tsunamievent1d setups, relevant inputs include (dimension=440500.0, endtime, nx, wavepropagation=, solver).
+   For tsunamievent1d setups, relevant inputs include (dimension=440500.0, endtime, nx, wavepropagation=1d, solver).
 
    For dambreak2d setups, relevant inputs include (nx, ny, endtime, dimension, wavepropagation=2d, domain_start, solver).
 
@@ -232,7 +234,7 @@ To build our documentation, you need to install Sphinx and Doxygen on your Linux
        
 .. Important::
 
-   to build our project in Sphnix we need to install tow things:
+   to build our project in Sphnix we need to install two things:
 
    .. code-block::
 

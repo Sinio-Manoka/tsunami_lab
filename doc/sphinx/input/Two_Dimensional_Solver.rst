@@ -34,7 +34,7 @@ We need to transition from wavepropagation1d to wavepropagation2d.
 
 and we will use the second approach.
 
-2. Now, we will need to create two files. : ``WavePropagation2d.h`` , ``WavePropagation2d.cpp`` and ``WavePropagation2d.test.cpp`` :
+2. Now, we will need to create three files. : ``WavePropagation2d.h`` , ``WavePropagation2d.cpp`` and ``WavePropagation2d.test.cpp`` :
 
     2.1. Let's begin with our ``WavePropagation2d.h``. Our  ``WavePropagation2d.h`` will resemble the 1D version but with some modifications to the following functions:
 
@@ -627,7 +627,7 @@ There are numerous methods for implementing a station class, but we chose to imp
     }; 
 
 
-To retrieve user data for the station, we first created a JSON file named ``stations.json`` in the ``config`` folder.
+To retrieve user data for the station, we first created a JSON file named ``stations.json`` in the ``configs`` folder.
 
 .. code-block::
 
@@ -700,7 +700,7 @@ to retrieve the coordinates of the stations, and another one to retrieve the fre
     }
 
 
-lets now add a Station class in the io folder. for the Station class we will need to creat the following files : ``Station.cpp``
+lets now add a Station class in the io folder. for the Station class we will need to create the following files : ``Station.cpp``
 , ``Station.h`` and ``Station.test.cpp``.
 
 
@@ -734,7 +734,7 @@ lets now add a Station class in the io folder. for the Station class we will nee
 
     #endif
 
-every station has an x , y coordinate , a frequence which is i_time_in_seconds and a name.
+every station has an x , y coordinate , a frequency (which is in seconds and all stations share same Frequency) and a name.
 
 
 3. now lets implement ``Station.cpp`` file : 
@@ -769,20 +769,18 @@ implementation of a time step-independent output frequency for the stations.
 ............................................................................
 
 To provide names and locations for our solver, we will utilize the station JSON file. Each station will have its dedicated folder within the station directory, containing its respective CSV solution.
-Before implementing this, let's establish a boundary for our stations. If a station falls outside of this boundary, its solution will not be saved in the station folder.
+Before implementing this, let's establish a boundary for our stations. If a station falls outside of this boundary, it will be ignored.
 
 .. code-block:: cpp
 
   l_stations.erase(
   std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
-      if (station.i_x < l_domain_start || station.i_x > l_temp_dimension + l_domain_start ||
-          station.i_y < l_domain_start || station.i_y > l_temp_dimension + l_domain_start) {
-          std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
-          return true; // Remove the station
-      }else{
-          std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
-      }
-      return false; // Keep the station
+  if (station.i_x < l_domain_start || station.i_x >= l_temp_dimension + l_domain_start) {
+      std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
+      return true; // Remove the station
+  }
+  std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
+  return false; // Keep the station
   }),
   l_stations.end());
 
@@ -793,6 +791,7 @@ To calculate the index of the x and y coordinates, we will use the following for
 .. important::
 
       tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start ) / l_dxy )+1;
+      
       tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start ) / l_dxy )+1;
   
 .. code-block:: cpp
@@ -828,7 +827,7 @@ for the wavepropagation1d we will choose the following station settings:
 
 .. code-block::
 
-{
+  {
     "frequency": 1,
     "stations": [
         {
@@ -837,13 +836,13 @@ for the wavepropagation1d we will choose the following station settings:
             "i_y": 0
         }
     ]
+  }
 
-}
 and the following initial settings : 
 
-.. ciode-block:: 
+.. code-block:: 
 
-{
+  {
     "solver" : "fwave",
     "dimension" : 100,
     "setup" :  "dambreak2d",
@@ -857,8 +856,7 @@ and the following initial settings :
     "domain_start" : -50,
     "wavepropagation" : "2d",
     "endtime" : 40
-
-}
+  }
   
 For wavepropagation2d, we'll select identical station and initial configurations as those chosen for wavepropagation1d. 
 
@@ -869,16 +867,15 @@ lets simulate the station data for the both wavepropagation:
 
 
 .. image:: _static/stationcompersion.png
-   :width: 700px
-   :height: 700px
+   :width: 740px
+   :height: 330px
    :scale: 100 %
-   :alt: alternate text
-   :align: right
+   :align: center
 
 
 
 
-During the simulation, it becomes apparent that the heights of the 1D wave propagation with dambreak2D start higher than those of the 2D wave propagation. The former reaches a
+During the simulation, it becomes apparent that the height of the 1D wave propagation with dambreak2D start higher than those of the 2D wave propagation. The former reaches a
 steady state, while the latter exhibits a non-steady chart.
 
 
