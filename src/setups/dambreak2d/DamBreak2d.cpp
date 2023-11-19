@@ -10,6 +10,7 @@
 
 tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getHeight( t_real i_x,
                                                                 t_real i_y) const {
+    //std::cout << "getHeight" << i_y <<std::endl;
     if(std::sqrt((i_x*i_x)+(i_y*i_y)) < 10){
       return 10;
     } else{
