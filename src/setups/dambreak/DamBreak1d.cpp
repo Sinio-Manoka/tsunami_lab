@@ -16,7 +16,7 @@ tsunami_lab::setups::DamBreak1d::DamBreak1d( t_real i_heightLeft,
 }
 
 tsunami_lab::t_real tsunami_lab::setups::DamBreak1d::getHeight( t_real i_x,
-                                                                t_real      ) const {
+                                                                t_real     ) const {
   if( i_x < m_locationDam ) {
     return m_heightLeft;
   }
@@ -25,8 +25,8 @@ tsunami_lab::t_real tsunami_lab::setups::DamBreak1d::getHeight( t_real i_x,
   }
 }
 
-tsunami_lab::t_real tsunami_lab::setups::DamBreak1d::getMomentumX( t_real,
-                                                                   t_real ) const {
+tsunami_lab::t_real tsunami_lab::setups::DamBreak1d::getMomentumX( t_real i_x,
+                                                                   t_real) const {
  return 0;
 }
 

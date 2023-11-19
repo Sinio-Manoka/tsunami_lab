@@ -102,13 +102,20 @@ int main() {
   //Declaration---------------------------------------------------------------------------END
   //Errors checking After Declaration-----------------------------------------------------START
   if(l_temp_waveprop == "1d" && l_temp_setup == "dambreak2d"){
-    std::cout << "\033[1;31m\u2717 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
+    std::cout << "\033[1;31m\u2717 Avoid selecting a 2D setup paired with a 1D solver \033[0m" << std::endl;
     std::cout << "freeing memory" << std::endl;
     delete l_setup;
     return EXIT_FAILURE;
+  }else if(l_temp_waveprop == "1d" && l_ny != 1 ){
+    std::cout << "\033[1;31m\u2717 The y-coordinates should be set to 1 in accordance with the one-dimensional wave propagation \033[0m" << std::endl;
+    std::cout << "freeing memory" << std::endl;
+    delete l_setup;
+    return EXIT_FAILURE;
+
   }else{
-    std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
+    std::cout << "\033[1;32m\u2713 Error checking done \033[0m" << std::endl;
   }
+
 
   //Errors checking After Declaration-----------------------------------------------------END
   //Setup---------------------------------------------------------------------------------START
@@ -124,17 +131,19 @@ int main() {
   //Setup---------------------------------------------------------------------------------END
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   //NEW:: Reading the Solver from the Json file
+
   if(l_temp_waveprop == "2d"){
     l_ny = l_nx;
     std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
     l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , l_solver);
-    std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
-
-    l_setup = new tsunami_lab::setups::DamBreak2d();
-
-  }else if((l_temp_waveprop == "1d") && (l_temp_setup != "dambreak2d") ){
+  }else{
       std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
       l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
+  }
+  if(l_temp_setup == "dambreak2d"){
+    std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
+    l_setup = new tsunami_lab::setups::DamBreak2d();
+  }else if((l_temp_waveprop == "1d") && (l_temp_setup != "dambreak2d") ){
       if(l_temp_setup == "tsunamievent1d"){
         std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
@@ -245,14 +254,16 @@ int main() {
   }),
   l_stations.end());
 
-
+ 
   // iterate over time
   while( l_simTime < l_endTime ){
+     
     l_waveProp->setGhostOutflow(true);
     if( l_timeStep % 25 == 0 ) {
       std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
       std::ofstream l_file;
       l_file.open( l_path );
+      
 
       tsunami_lab::io::Csv::write( l_dxy,
                                    l_nx,
@@ -265,17 +276,19 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
+
       l_file.close();
-        
       l_nOut++;
     }
     //STATIONS_---------------------------------------------START 
+    
     if(l_current_frequency_time <= l_simTime){
       for (const auto& station : l_stations) {
         std::string l_foldername = "stations/"+station.i_name;
         if (!std::filesystem::exists(l_foldername)){
               std::filesystem::create_directory(l_foldername);
         }
+       
         tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start ) / l_dxy )+1;
         tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start ) / l_dxy )+1;
         tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix; 

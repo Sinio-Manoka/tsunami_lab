@@ -147,7 +147,7 @@ Usage
 
       solver: Choose between Fwave or Roe.
 
-      hv: Momentum in the y-direction.
+      hv: Momentum in the y-direction. should be a number.
 
       ny: Number of cells in the y-direction; should be an integer.
 
@@ -174,23 +174,23 @@ Usage
    
 .. important:: 
 
-   If you choose the 2D wave propagation and a setup other than "dambreak2d," the program will automatically select "dambreak2d."
-   However, if you choose the 1D wave propagation and "dambreak2d," the program will exit automatically. 
+   Any one-dimensional setup can be resolved using our two-dimensional wave propagation but make sure to set ny to 1 . However, if you opt
+   for the combination of one-dimensional wave propagation and "dambreak2d," the program will exit automatically. 
 
-   For shockshock and rarerare setups, relevant inputs include (hl, hu, location, nx, wavepropagation=1d, dimension, solver, endtime).
+   For shockshock and rarerare setups, relevant inputs include (hl, hu, location, nx, wavepropagation, dimension, solver, endtime).
 
-   For dambreak1d setups, relevant inputs include (hl, hr, location, nx, wavepropagation=1d, dimension, solver, endtime).
+   For dambreak1d setups, relevant inputs include (hl, hr, location, nx, wavepropagation, dimension, solver, endtime).
 
-   For supercritical and subcritical setups, relevant inputs include (nx, wavepropagation=1d, dimension, solver, endtime).
+   For supercritical and subcritical setups, relevant inputs include (nx, wavepropagation, dimension, solver, endtime).
 
-   For tsunamievent1d setups, relevant inputs include (dimension=440500.0, endtime, nx, wavepropagation=1d, solver).
+   For tsunamievent1d setups, relevant inputs include (dimension=440500.0, endtime, nx, wavepropagation=, solver).
 
    For dambreak2d setups, relevant inputs include (nx, ny, endtime, dimension, wavepropagation=2d, domain_start, solver).
 
    For each setup, choose the necessary inputs to modify, as other inputs will not affect the setup.
 
+ 
 
-   
 **3. Navigate to the build directory:**
 
 .. code-block:: 

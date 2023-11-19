@@ -3,13 +3,14 @@
     "dimension" : 100,
     "setup" :  "dambreak1d",
     "nx" : 200,
-    "ny" : 200,
+    "ny" : 1,
     "hu" : 1,
     "location" : 5.0,
     "hv":0.0,
     "hr": 10,
-    "hl":1,
+    "hl":7,
     "domain_start" : -50,
-    "wavepropagation" : "2d",
+    "wavepropagation" : "1d",
     "endtime" : 20 
+
 }
