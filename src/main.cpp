@@ -88,7 +88,8 @@ int main() {
   l_dxy = l_temp_dimension / l_nx;
   //Declaration---------------------------------------------------------------------------END
   //Errors checking After Declaration-----------------------------------------------------START
-  if(l_temp_waveprop == "1d" && l_temp_setup == "dambreak2d"){
+  /*
+    if(l_temp_waveprop == "1d" && l_temp_setup == "dambreak2d"){
     std::cout << "\033[1;31m\u2717 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
     std::cout << "freeing memory" << std::endl;
     delete l_setup;
@@ -96,6 +97,7 @@ int main() {
   }else{
     std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
   }
+  */
   //Errors checking After Declaration-----------------------------------------------------END
   //Setup---------------------------------------------------------------------------------START
   bool l_solver;
@@ -115,7 +117,7 @@ int main() {
     l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx , l_solver);
     std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
     l_setup = new tsunami_lab::setups::DamBreak2d();
-  }else if((l_temp_waveprop == "1d") && (l_temp_setup != "dambreak2d") ){
+  }else if(l_temp_waveprop == "1d"){
       std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
       l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
       if(l_temp_setup == "tsunamievent1d"){
@@ -144,6 +146,12 @@ int main() {
         
         std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
+
+      }else if(l_temp_setup == "dambreak2d"){
+
+        std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
+        l_setup = new tsunami_lab::setups::DamBreak2d(); 
+      
       }
     }
   std::cout << "runtime configuration" << std::endl;
@@ -168,6 +176,7 @@ int main() {
       tsunami_lab::t_real l_bv = l_setup->getBathymetry(l_x,
                                                         l_y );                                       
       // set initial values in wave propagation solver
+      //std::cout << "  cell: " << l_cx << " " << l_cy << std::endl;
       l_waveProp->setHeight( l_cx,
                              l_cy,
                              l_h );
@@ -278,7 +287,7 @@ int main() {
         tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix; 
         const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
-        std::cout << l_ix << " " << l_iy << " " << l_id << " "<< std::endl;
+        //std::cout << l_ix << " " << l_iy << " " << l_id << " "<< std::endl;
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,
