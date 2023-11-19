@@ -30,9 +30,12 @@ class tsunami_lab::io::Csv {
      * @param i_nx number of cells in x-direction.
      * @param i_ny number of cells in y-direction.
      * @param i_stride stride of the data arrays in y-direction (x is assumed to be stride-1).
+     * @param i_domainstart the offset of the domain.
+     * @param i_dem_wavepropagation tells us whether we use 1D or 2D.
      * @param i_h water height of the cells; optional: use nullptr if not required.
      * @param i_hu momentum in x-direction of the cells; optional: use nullptr if not required.
      * @param i_hv momentum in y-direction of the cells; optional: use nullptr if not required.
+     * @param i_b bathymetry of the cell
      * @param io_stream stream to which the CSV-data is written.
      **/
     static void write( t_real               i_dxy,

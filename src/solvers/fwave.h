@@ -83,12 +83,14 @@ class tsunami_lab::solvers::fwave {
   /**
      * @brief Computes both deltaQ.
      *
-     * @param i_hL height of the left side.
-     * @param i_hR height of the right side.
-     * @param i_huL momentum of the leftside.
-     * @param i_huR momentum of the right side.
-     * @param o_minus_A_deltaQ will be set to the net-updates for the left side; 0: height, 1: momentum.
-     * @param o_plus_A_deltaQ  will be set to the net-updates for the right side; 0: height, 1: momentum. 
+     * @param i_hL height of the left/bottom side.
+     * @param i_hR height of the right/top side.
+     * @param i_huL momentum of the left/bottom side.
+     * @param i_huR momentum of the right/top side.
+     * @param i_bL bathymetry of the left/bottom side.
+     * @param i_bR bathymetry of the right/top side.
+     * @param o_minus_A_deltaQ will be set to the net-updates for the left/bottom side; 0: height, 1: momentum.
+     * @param o_plus_A_deltaQ  will be set to the net-updates for the right/top side; 0: height, 1: momentum. 
      **/
     static void netUpdates( t_real   i_hL,
                             t_real   i_hR,
@@ -99,5 +101,4 @@ class tsunami_lab::solvers::fwave {
                             t_real   o_minus_A_deltaQ[2],
                             t_real   o_plus_A_deltaQ[2] );                               
 };
-
 #endif

@@ -40,7 +40,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
      * @param i_choice which solver to choice from (true means Roe and false means our Fwave).
      * @param i_nCells number of cells.
      **/
-    WavePropagation1d( t_idx i_nCellsm, bool i_choice );
+    WavePropagation1d( t_idx i_nCells, bool i_choice );
 
     /**
      * @brief Destructor which frees all allocated memory.

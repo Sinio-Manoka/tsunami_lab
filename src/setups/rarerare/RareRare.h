@@ -33,7 +33,6 @@ class tsunami_lab::setups::RareRare: public Setup {
   public:
     /**
      * @brief Constructor of RareRare.
-     *
      * @param i_height water height 
      * @param i_hu momentum
      * @param i_locationDam location (x-coordinate) .    
