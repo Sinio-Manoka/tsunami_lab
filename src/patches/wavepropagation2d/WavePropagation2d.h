@@ -1,8 +1,7 @@
 /**
- * @author Alexander Breuer (alex.breuer AT uni-jena.de)
- *
+ * @author Ward Tammaa, Mohamad khaled Minawe
  * @section DESCRIPTION
- * One-dimensional wave propagation patch.
+ * tow-dimensional wave propagation patch.
  **/
 #ifndef TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION_2D
 #define TSUNAMI_LAB_PATCHES_WAVE_PROPAGATION_2D

@@ -1,8 +1,7 @@
 /**
- * @author Alexander Breuer (alex.breuer AT uni-jena.de)
- *
+ * @author Ward Tammaa, Mohamad khaled Minawe
  * @section DESCRIPTION
- * One-dimensional wave propagation patch.
+ * tow-dimensional wave propagation patch.
  **/
 #include "WavePropagation2d.h"
 #include "../../solvers/Roe.h"

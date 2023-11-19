@@ -88,18 +88,6 @@ int main() {
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
   l_dxy = l_temp_dimension / l_nx;
   //Declaration---------------------------------------------------------------------------END
-  //Errors checking After Declaration-----------------------------------------------------START
-  /*
-    if(l_temp_waveprop == "1d" && l_temp_setup == "dambreak2d"){
-    std::cout << "\033[1;31m\u2717 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
-    std::cout << "freeing memory" << std::endl;
-    delete l_setup;
-    return EXIT_FAILURE;
-  }else{
-    std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
-  }
-  */
-  //Errors checking After Declaration-----------------------------------------------------END
   //Reading the Solver from the Json file-------------------------------------------------START
    
   bool l_solver;
@@ -191,7 +179,6 @@ int main() {
       tsunami_lab::t_real l_bv = l_setup->getBathymetry(l_x,
                                                         l_y );                                       
       // set initial values in wave propagation solver
-      //std::cout << "  cell: " << l_cx << " " << l_cy << std::endl;
       l_waveProp->setHeight( l_cx,
                              l_cy,
                              l_h );
@@ -303,7 +290,6 @@ int main() {
         tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix;
         const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
-        //std::cout << l_ix << " " << l_iy << " " << l_id << " "<< std::endl;
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,

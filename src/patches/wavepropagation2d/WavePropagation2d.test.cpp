@@ -1,8 +1,7 @@
 /**
- * @author Mohamad Khaled Minawe
- *
+ * @author Ward Tammaa, Mohamad khaled Minawe
  * @section DESCRIPTION
- * Unit tests for the 2d-dimensional wave propagation patch.
+ * tow-dimensional wave propagation patch.
  **/
 #include <catch2/catch.hpp>
 #include "WavePropagation2d.h"

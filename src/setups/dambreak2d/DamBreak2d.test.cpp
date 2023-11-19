@@ -2,7 +2,7 @@
  * @author Mohamad Khaled Minawe
  *
  * @section DESCRIPTION
- * Tests the dam break setup.
+ * Tests the circular dam break setup.
  **/
 #include <catch2/catch.hpp>
 #include "DamBreak2d.h"
