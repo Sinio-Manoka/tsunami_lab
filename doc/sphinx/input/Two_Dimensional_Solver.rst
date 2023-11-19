@@ -821,7 +821,65 @@ To calculate the index of the x and y coordinates, we will use the following for
 
 
 
+Comparison of the two-dimensional solver to our one-dimensional solver at a set of stations
+............................................................................................
 
+for the wavepropagation1d we will choose the following station settings: 
+
+.. code-block::
+
+{
+    "frequency": 1,
+    "stations": [
+        {
+            "i_name": "Dam2+WP2",
+            "i_x": 8,
+            "i_y": 0
+        }
+    ]
+
+}
+and the following initial settings : 
+
+.. ciode-block:: 
+
+{
+    "solver" : "fwave",
+    "dimension" : 100,
+    "setup" :  "dambreak2d",
+    "nx" : 100,
+    "ny" : 1,
+    "hu" : 1,
+    "location" : 3.0,
+    "hv":0.0,
+    "hr": 55,
+    "hl": 25,
+    "domain_start" : -50,
+    "wavepropagation" : "2d",
+    "endtime" : 40
+
+}
+  
+For wavepropagation2d, we'll select identical station and initial configurations as those chosen for wavepropagation1d. 
+
+Next, navigate to the station directory and generate plots for the station CSV file corresponding to each wavepropagation scenario.
+
+lets simulate the station data for the both wavepropagation:
+
+
+
+.. image:: _static/stationcompersion.png
+   :width: 700px
+   :height: 700px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
+
+
+During the simulation, it becomes apparent that the heights of the 1D wave propagation with dambreak2D start higher than those of the 2D wave propagation. The former reaches a
+steady state, while the latter exhibits a non-steady chart.
 
 
 Personal Contribution
