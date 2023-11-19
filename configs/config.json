@@ -2,15 +2,25 @@
     "solver" : "fwave",
     "dimension" : 100,
     "setup" :  "dambreak2d",
+<<<<<<< HEAD
     "nx" : 100,
+=======
+    "nx" : 200,
+>>>>>>> b153e150963dda0e2f4bab36efa5431f66874030
     "ny" : 1,
     "hu" : 1,
     "location" : 3.0,
     "hv":0.0,
     "hr": 55,
     "hl": 25,
+<<<<<<< HEAD
     "domain_start" : 0,
     "wavepropagation" : "2d",
     "endtime" : 20
+=======
+    "domain_start" : -50,
+    "wavepropagation" : "2d",
+    "endtime" : 67
+>>>>>>> b153e150963dda0e2f4bab36efa5431f66874030
 
 }

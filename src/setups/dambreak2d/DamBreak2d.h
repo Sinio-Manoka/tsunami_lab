@@ -1,8 +1,8 @@
 /**
- * @author Alexander Breuer (alex.breuer AT uni-jena.de)
+ * @author Ward Tammaa
  *
  * @section DESCRIPTION
- * One-dimensional dam break problem.
+ * circular dam break problem.
  **/
 #ifndef TSUNAMI_LAB_SETUPS_DAM_BREAK_2D_H
 #define TSUNAMI_LAB_SETUPS_DAM_BREAK_2D_H
@@ -16,7 +16,7 @@ namespace tsunami_lab {
 }
 
 /**
- * 1d dam break setup.
+ * circular dam break setup.
  **/
 class tsunami_lab::setups::DamBreak2d: public Setup {
 
