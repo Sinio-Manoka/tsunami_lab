@@ -76,6 +76,13 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
       return m_nCells+2;
     }
 
+    t_idx getGhostcellX(){
+      return 1;
+    } 
+    t_idx getGhostcellY(){
+      return 1;
+    }
+
     /**
      * @brief Gets the cells water heights.
      * @return Water heights.

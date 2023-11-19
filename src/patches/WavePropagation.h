@@ -70,6 +70,12 @@ class tsunami_lab::patches::WavePropagation {
      **/
     virtual t_real const * getBathymetry() = 0;
 
+
+    virtual t_idx getGhostcellX() = 0;
+    
+    virtual t_idx getGhostcellY() = 0;
+
+
     /**
      * Sets the height of the cell to the given value.
      *

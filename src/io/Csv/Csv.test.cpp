@@ -31,11 +31,11 @@ TEST_CASE( "Test the CSV-writer for 1D settings. Example 1", "[CsvWrite1d]" ) {
                                l_stream0 );
 
   std::string l_ref0 = R"V0G0N(x,y,height,momentum_x
-0.25,0.25,1,5
-0.75,0.25,2,4
-1.25,0.25,3,3
-1.75,0.25,4,2
-2.25,0.25,5,1
+-49.75,0.25,1,5
+-49.25,0.25,2,4
+-48.75,0.25,3,3
+-48.25,0.25,4,2
+-47.75,0.25,5,1
 )V0G0N";
 
   REQUIRE( l_stream0.str().size() == l_ref0.size() );

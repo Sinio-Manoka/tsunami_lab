@@ -3,15 +3,9 @@
     "stations": [
         {
             "i_name": "Dart",
-            "i_x": -50,
-            "i_y": 1
-        },
-        {
-            "i_name": "Habibi",
-            "i_x": 5,
-            "i_y": 1
+            "i_x": -49,
+            "i_y": 0
         }
     ]
 
 }
-  

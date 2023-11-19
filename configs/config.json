@@ -1,16 +1,16 @@
 {
     "solver" : "fwave",
-    "dimension" : 100,
+    "dimension" : 50,
     "setup" :  "dambreak1d",
-    "nx" : 200,
+    "nx" : 10,
     "ny" : 1,
     "hu" : 1,
-    "location" : 5.0,
+    "location" : 3.0,
     "hv":0.0,
-    "hr": 10,
-    "hl":7,
-    "domain_start" : -50,
+    "hr": 55,
+    "hl": 25,
+    "domain_start" : -100,
     "wavepropagation" : "1d",
-    "endtime" : 20 
+    "endtime" : 200
 
 }
