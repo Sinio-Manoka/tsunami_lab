@@ -20,11 +20,6 @@ namespace tsunami_lab {
   struct Station {
     std::string i_name;
     tsunami_lab::t_real i_x,i_y;
-
   };
-  
 }
-
-
-
 #endif
