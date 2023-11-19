@@ -145,39 +145,52 @@ Usage
 
 .. important::
 
-   solver: Choose between Fwave or Roe.
+      solver: Choose between Fwave or Roe.
 
-   hv: momentum in the y direction.
+      hv: Momentum in the y-direction.
 
-   ny : number of cell in y-direction. its should be a int number
+      ny: Number of cells in the y-direction; should be an integer.
 
-   setup: Select from shockshock, rarerare, tsunamievent1d, dambreak1d, supercritical, subcritical,dambreak2d
+      setup: Select from shockshock, rarerare, tsunamievent1d, dambreak1d, supercritical, subcritical, dambreak2d.
 
-   nx: Number of cells in x-direction.its should be a int number
+      nx: Number of cells in the x-direction; should be an integer.
 
-   location: location for the setup. its should be a float number
+      location: Location for the setup; should be a float number.
 
-   hr: right heigts. its should be a number
+      hr: Right heights; should be a number.
 
-   hl: left heigts.its should be a number
+      hl: Left heights; should be a number.
 
-   wavepropagation : 1d or 2d
+      wavepropagation: Choose between 1d or 2d.
 
-   endtime : end time of the simulation. its should be a float number
+      endtime: End time of the simulation; should be a float number.
 
-   domain_start: For the circular dam break, the dimension should be set to -50. 
+      domain_start: Starting point of our domain. For the circular dam break, set the dimension to -50.
 
-   dimension: width and length of our domain at this point in our project.
+      dimension: Width and length of our domain at this point in our project. l_dxy = dimension / l_nx; 
 
-   Feel free to adjust the arguments to suit your needs. 
-   And don't forget to build the project after every change.
+      Feel free to adjust the arguments to suit your needs. 
+      And don't forget to build the project after every change.
    
 .. important:: 
 
    If you choose the 2D wave propagation and a setup other than "dambreak2d," the program will automatically select "dambreak2d."
    However, if you choose the 1D wave propagation and "dambreak2d," the program will exit automatically. 
-   
 
+   For shockshock and rarerare setups, relevant inputs include (hl, hu, location, nx, wavepropagation=1d, dimension, solver, endtime).
+
+   For dambreak1d setups, relevant inputs include (hl, hr, location, nx, wavepropagation=1d, dimension, solver, endtime).
+
+   For supercritical and subcritical setups, relevant inputs include (nx, wavepropagation=1d, dimension, solver, endtime).
+
+   For tsunamievent1d setups, relevant inputs include (dimension=440500.0, endtime, nx, wavepropagation=1d, solver).
+
+   For dambreak2d setups, relevant inputs include (nx, ny, endtime, dimension, wavepropagation=2d, domain_start, solver).
+
+   For each setup, choose the necessary inputs to modify, as other inputs will not affect the setup.
+
+
+   
 **3. Navigate to the build directory:**
 
 .. code-block:: 

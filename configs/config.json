@@ -10,5 +10,6 @@
     "hr": 10,
     "hl":1,
     "domain_start" : -50,
-    "wavepropagation" : "2d"
+    "wavepropagation" : "2d",
+    "endtime" : 20 
 }

@@ -318,13 +318,79 @@ and we will use the second approach.
                          }
                     }
                 
-.. important::
+      .. important::
 
-      tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
-      return (m_nCells+2) * i_iy +i_ix;
-      }
+        tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+        return (m_nCells+2) * i_iy +i_ix;
+        }
 
-      where our strid is m_nCells+2
+        where our strid is m_nCells+2
+
+
+      finally lets implement the ``WavePropagation2d.test.cpp``: 
+
+      .. code-block:: cpp
+
+            
+            #include <catch2/catch.hpp>
+            #include "WavePropagation2d.h"
+            TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
+            
+
+
+              tsunami_lab::patches::WavePropagation2d m_waveProp( 100 , true );
+
+              std::size_t  l_ce;
+
+              for( std::size_t l_ce = 0; l_ce < 100+1; l_ce++ ) {
+                for( std::size_t l_cy = 0; l_cy < 100+1; l_cy++ ){
+                  
+              
+                m_waveProp.setHeight( l_ce,
+                                      l_cy,
+                                      5 );
+                m_waveProp.setMomentumX( l_ce,
+                                        l_cy,
+                                        0 );
+                m_waveProp.setMomentumY( l_ce,
+                                        l_cy,
+                                        0 );
+
+                m_waveProp.setGhostOutflow(true);                         
+              
+                }
+              }
+
+              // set outflow boundary condition
+
+              // perform a time step
+            
+                m_waveProp.setGhostOutflow(true);
+                m_waveProp.timeStep(0.1);
+              
+
+              // steady state
+              for( std::size_t l_cy = 1; l_cy < 50  ; l_cy++ ) {  
+                for( std::size_t l_cx = 1; l_cx < 100 ; l_cx++ ) {
+                  l_ce = (l_cx+1)  + (l_cy+1 ) * (100+2); 
+                REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx( 5.0f) );
+                REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx( 0 ) );
+                  }
+                }
+
+              REQUIRE( m_waveProp.getHeight()[49]   == Approx(5.0) );
+              REQUIRE( m_waveProp.getMomentumX()[49] == Approx( 0.0 ));
+
+              REQUIRE( m_waveProp.getHeight()[50]   == Approx(5.0) );
+              REQUIRE( m_waveProp.getMomentumX()[50] == Approx(0.0) );
+
+              // steady state
+              for( std::size_t l_ce = 50; l_ce < 100; l_ce++ ) {
+                REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx(5.0) );
+                REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx(0.0) );
+              }
+
+            }
 
 
                         
@@ -549,6 +615,154 @@ Stations
 
 Add a new class Stations
 ........................
+
+
+There are numerous methods for implementing a station class, but we chose to implement it using a struct object for the station. Initially, we create a struct object for the station and include it in the ``constant.h`` file.
+
+.. code-block:: cpp
+
+  struct Station {
+    std::string i_name;
+    tsunami_lab::t_real i_x,i_y;
+    }; 
+
+
+To retrieve user data for the station, we first created a JSON file named ``stations.json`` in the ``config`` folder.
+
+.. code-block::
+
+      {
+        "frequency": 2,
+        "stations": [
+            {
+                "i_name": "Dart",
+                "i_x": 1000,
+                "i_y": 1000
+            },
+            {
+                "i_name": "Habibi",
+                "i_x": 0.75,
+                "i_y": -49.75
+            }
+        ]
+    }
+
+.. important::
+
+  You have the option to include station data in the JSON file, and upon running
+  the code, the stations will be automatically written to the ``station`` folder. 
+  
+Now, we need to create functions in the ``\tsunami_lab\src\io\JsReader\Configuration.cpp`` file to read data from a JSON file. One function should be implemented
+to retrieve the coordinates of the stations, and another one to retrieve the frequency.
+
+  .. code-block:: cpp
+
+      void tsunami_lab::io::Configuration::readStationsFromJson(std::vector<tsunami_lab::Station> & stations) {
+      std::string filename = "configs/stations.json";
+      std::ifstream file(filename);
+      if (!file.is_open()) {
+          std::cerr << "Error opening file: " << filename << std::endl;
+          return;
+      }
+
+      json json_data;
+      file >> json_data;
+      file.close();
+
+      stations.clear(); 
+
+      for (const auto& station_data : json_data["stations"]) {
+          tsunami_lab::Station station;
+          station.i_name = station_data["i_name"];
+          station.i_x = station_data["i_x"];
+          station.i_y = station_data["i_y"];
+          stations.push_back(station);
+      }
+    }
+
+    tsunami_lab::t_real  tsunami_lab::io::Configuration::getFrequency(){
+        std::string filename = "configs/stations.json";
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Error opening file: " << filename << std::endl;
+            return 0;
+        }
+        json json_data;
+        file >> json_data;
+        file.close();
+        return json_data["frequency"];
+    }
+
+
+lets now add a Stations class in the io folder. for the Stations class we will need to creat the following files : ``Station.cpp``
+, ``Station.h`` and ``Station.test.cpp``.
+
+
+2. lets implement the ``Station.h`` : 
+
+  .. code-block:: cpp
+
+      #ifndef TSUNAMI_LAB_IO_STATIONS
+      #define TSUNAMI_LAB_IO_STATIONS
+
+      #include "../../constants.h"
+      #include "../JsReader/Configuration.h"
+      #include "string"
+      #include <fstream>
+      #include <vector>
+
+      namespace tsunami_lab {
+        namespace io {
+          class Station;
+        }
+      }
+
+      class tsunami_lab::io::Station{
+          public:
+              static void write(tsunami_lab::t_idx              i_x,
+                                tsunami_lab::t_idx              i_y,
+                                tsunami_lab::t_idx              i_time_in_seconds,
+                                tsunami_lab::t_real             i_water_height,
+                                std::string                     i_csv_path);
+      };
+
+    #endif
+
+every station has an x , y coordinates and a frequence which is i_time_in_seconds.
+
+
+3. now lets implement ``Station.cpp`` file : 
+
+.. code-block:: cpp
+
+     #include "Station.h"
+
+      void tsunami_lab::io::Station::write(tsunami_lab::t_idx         i_x,
+                                      tsunami_lab::t_idx              i_y,
+                                      tsunami_lab::t_idx              i_time_in_seconds,
+                                      tsunami_lab::t_real             i_water_height,
+                                      std::string                     i_csv_path){
+
+
+          std::ofstream io_stream(i_csv_path,std::ios::app);
+          if (!io_stream.is_open()) {
+              std::cerr << "Error opening file: " << i_csv_path << std::endl;
+              return ; 
+          }
+          std::uintmax_t fileSize = std::filesystem::file_size(i_csv_path);
+          if(fileSize == 0){
+              io_stream << "x,y,water_height,time_in_seconds";
+          }
+          io_stream << "\n";
+          io_stream << i_x << "," << i_y << "," << i_water_height << "," << i_time_in_seconds;
+          io_stream << std::flush;
+
+      }
+
+
+
+
+
 
 
 
