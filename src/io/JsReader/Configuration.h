@@ -50,7 +50,7 @@ class tsunami_lab::io::Configuration {
          */
         static void readStationsFromJson(std::vector<tsunami_lab::Station> & stations);
         /**
-         * @return "frequency" value tell us after how many secons the next time step is.
+         * @return frequency value tells us after how many secons the next time step is.
          */
         static tsunami_lab::t_real getFrequency();
 };

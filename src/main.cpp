@@ -108,7 +108,6 @@ int main() {
     std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
     l_setup = new tsunami_lab::setups::DamBreak2d();
   }else if(l_temp_waveprop == "1d"){
-  }else if(l_temp_waveprop == "1d"){
       std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
       l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
       if(l_temp_setup == "tsunamievent1d"){
@@ -267,9 +266,6 @@ int main() {
                                    l_waveProp->getBathymetry(),
                                    l_file );
       l_file.close();
-
-
-
       l_nOut++;
     }
     //STATIONS_---------------------------------------------START 
@@ -277,7 +273,7 @@ int main() {
       for (const auto& station : l_stations) {
         std::string l_foldername = "stations/"+station.i_name;
         if (!std::filesystem::exists(l_foldername)){
-              std::filesystem::create_directory(l_foldername);
+          std::filesystem::create_directory(l_foldername);
         }
         //compute cell IDs
         tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start ) / l_dxy )+ l_waveProp->getGhostcellX();

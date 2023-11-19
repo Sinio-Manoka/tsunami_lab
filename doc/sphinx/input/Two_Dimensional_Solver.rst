@@ -828,11 +828,11 @@ for the wavepropagation1d we will choose the following station settings:
 .. code-block::
 
   {
-    "frequency": 1,
+    "frequency": 2,
     "stations": [
         {
-            "i_name": "Dam2+WP2",
-            "i_x": 8,
+            "i_name": "Dam2+WP1",
+            "i_x": 5,
             "i_y": 0
         }
     ]
@@ -844,16 +844,16 @@ and the following initial settings :
 
   {
     "solver" : "fwave",
-    "dimension" : 100,
+    "dimension" : 40,
     "setup" :  "dambreak2d",
-    "nx" : 100,
+    "nx" : 40,
     "ny" : 1,
     "hu" : 1,
-    "location" : 3.0,
+    "location" : 0,
     "hv":0.0,
     "hr": 55,
     "hl": 25,
-    "domain_start" : -50,
+    "domain_start" : -20,
     "wavepropagation" : "2d",
     "endtime" : 40
   }
