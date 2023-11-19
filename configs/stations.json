@@ -3,8 +3,8 @@
     "stations": [
         {
             "i_name": "Dart",
-            "i_x": -50,
-            "i_y": 1
+            "i_x": 0,
+            "i_y": 2
         },
         {
             "i_name": "Habibi",

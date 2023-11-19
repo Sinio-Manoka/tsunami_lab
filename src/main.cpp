@@ -111,9 +111,8 @@ int main() {
     std::cout << "freeing memory" << std::endl;
     delete l_setup;
     return EXIT_FAILURE;
-
   }else{
-    std::cout << "\033[1;32m\u2713 Error checking done \033[0m" << std::endl;
+    std::cout << "\033[1;32m\u2713 Avoid selecting a 2D setup paired with a 1D solver \033[0m" << std::endl;
   }
 
 
@@ -240,20 +239,32 @@ int main() {
  tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "entering time loop" << std::endl;
   
+
+  // Checking if the Y of each Station is set 1, else delete it from the
+  if(l_temp_waveprop == "1d" && l_stations.size() != 0){
+    l_stations.erase(
+    std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
+        if (station.i_y != 1) {
+            std::cout << "\033[1;31m\u2717 " << station.i_name << " has to have the Y set to 1 \033[0m " << std::endl;
+            return true;
+        }
+        return false; 
+    }),
+    l_stations.end());
+  }
+
   //removing out of boundary stations
   l_stations.erase(
   std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
       if (station.i_x < l_domain_start || station.i_x > l_temp_dimension + l_domain_start ||
           station.i_y < l_domain_start || station.i_y > l_temp_dimension + l_domain_start) {
           std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
-          return true; // Remove the station
-      }else{
-          std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
+          return true;
       }
-      return false; // Keep the station
+      std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
+      return false; 
   }),
   l_stations.end());
-
  
   // iterate over time
   while( l_simTime < l_endTime ){

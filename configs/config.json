@@ -9,7 +9,7 @@
     "hv":0.0,
     "hr": 10,
     "hl":7,
-    "domain_start" : -50,
+    "domain_start" : 0,
     "wavepropagation" : "1d",
     "endtime" : 20 
 
