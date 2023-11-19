@@ -36,29 +36,20 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     t_real * m_hv[2] = { nullptr, nullptr };
 
     /**
-     * @brief Get the Index object
-     * 
-     * @param i_ix 
-     * @param i_iy 
-     * @return tsunami_lab::t_idx 
+     * @param i_ix id of the cell in x-direction.
+     * @param i_ix id of the cell in x-direction.
+     * @return Gets the Index of the cell.
      */
     tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
       return (m_nCells+2) * i_iy +i_ix;
     }
-    /*
-     * @brief Set the GhostoutFlowfor Edges 
-     *  void setGhostoutFlowforEdges();
-     */
-   
-
-
   public:
     /**
      * @brief Constructs the 1d wave propagation solver.
      * @param i_choice which solver to choice from (true means Roe and false means our Fwave).
      * @param i_nCells number of cells.
      **/
-    WavePropagation2d( t_idx i_nCellsm, bool i_choice );
+    WavePropagation2d( t_idx i_nCells, bool i_choice );
 
     /**
      * @brief Destructor which frees all allocated memory.
@@ -74,13 +65,12 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
 
     /**
      * @brief Sets the values of the ghost cells according to outflow boundary conditions.
+     * @param m_choiceBoundry true : reflecting boundary, false : outflow conditions.
      **/
     void setGhostOutflow(bool m_choiceBoundry);
 
     /**
-     * @brief Gets the stride in y-direction. x-direction is stride-1.
-     *
-     * @return stride in y-direction.
+     * @return amount of cells in one column/row.
      **/
     t_idx getStride(){
       return m_nCells+2;
@@ -88,7 +78,6 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
 
     /**
      * @brief Gets the cells water heights.
-     *
      * @return Water heights.
      */
     t_real const * getHeight(){
@@ -97,7 +86,6 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
 
     /**
      * @brief Gets cells' Bathymetry.
-     *
      * @return Bathymetry.
      */
    t_real const * getBathymetry(){
@@ -105,16 +93,16 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     }
 
     /**
-     * @brief Gets the cells' momenta in x-direction.
-     *
+     * @brief Gets the cell's momenta in x-direction.
      * @return momenta in x-direction.
      **/
     t_real const * getMomentumX(){
       return m_hu[m_step];
     }
 
-    /**
-     * @brief Dummy function which returns a nullptr.
+     /**
+     * @brief Gets the cell's momenta in y-direction.
+     * @return momenta in y-direction.
      **/
     t_real const * getMomentumY(){
       return m_hv[m_step];
@@ -135,8 +123,8 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
 
     /**
      * @brief Sets the Bathymetry of the cell to the given value.
-     *
      * @param i_ix id of the cell in x-direction.
+     * @param i_iy id of the cell in y-direction.
      * @param i_b Bathymetry.
      **/
     void setBathymetry(t_idx  i_ix,
@@ -147,8 +135,8 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
 
     /**
      * @brief Sets the momentum in x-direction to the given value.
-     *
      * @param i_ix id of the cell in x-direction.
+     * @param i_iy id of the cell in y-direction.
      * @param i_hu momentum in x-direction.
      **/
     void setMomentumX( t_idx  i_ix,
@@ -157,8 +145,11 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
       m_hu[m_step][getIndex(i_ix+1,i_iy+1)] = i_hu;
     }
 
-    /**
-     * @brief Dummy function since there is no y-momentum in the 1d solver.
+   /**
+     * @brief Sets the momentum in y-direction to the given value.
+     * @param i_ix id of the cell in x-direction.
+     * @param i_iy id of the cell in y-direction.
+     * @param i_hu momentum in y-direction.
      **/
     void setMomentumY( t_idx  i_ix,
                        t_idx  i_iy,

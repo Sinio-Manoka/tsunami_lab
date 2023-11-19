@@ -30,7 +30,8 @@ class tsunami_lab::patches::WavePropagation {
     virtual void timeStep(t_real i_scaling) = 0;
 
     /**
-     * Sets the values of the ghost cells according to outflow boundary conditions.
+     * @brief Sets the values of the ghost cells according to outflow boundary conditions
+     * true : reflecting boundary , false : outflow conditions.
      **/
     virtual void setGhostOutflow(bool m_choiceBoundry) = 0;
 
