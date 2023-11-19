@@ -6,22 +6,15 @@
  **/
 #include "DamBreak2d.h"
 #include "cmath"
+#include <iostream>
 
 tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getHeight( t_real i_x,
                                                                 t_real i_y) const {
-
-  if( (i_x > 35) &  (i_x < 40) ){
-    return 0 ;
-  }else{
-
     if(std::sqrt((i_x*i_x)+(i_y*i_y)) < 10){
       return 10;
     } else{
       return 5;
     }
-  }
-
-  
 
 }
 
@@ -37,11 +30,7 @@ tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getMomentumY( t_real ,
   return 0;
 }
 
-tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getBathymetry( t_real i_x,
+tsunami_lab::t_real tsunami_lab::setups::DamBreak2d::getBathymetry( t_real ,
                                                                     t_real ) const {
-  if( (i_x > 35) &  (i_x < 40) ){
-    return 10 ;
-  }else{
-    return 0;
-  }
+  return 0;
 }

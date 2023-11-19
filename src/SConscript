@@ -41,7 +41,8 @@ l_tests = [ 'tests.cpp',
             'setups/subcriticalflow/SubcriticalFlow.test.cpp',
             'setups/supercriticalflow/SupercriticalFlow.test.cpp',
             'setups/dambreak2d/DamBreak2d.test.cpp',
-            'patches/wavepropagation2d/WavePropagation2d.test.cpp'
+            'patches/wavepropagation2d/WavePropagation2d.test.cpp',
+            'setups/tsunamievent1d/TsunamiEvent1d.test.cpp'
             ]
 
 for l_te in l_tests:
