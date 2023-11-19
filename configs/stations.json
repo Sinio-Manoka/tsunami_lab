@@ -3,10 +3,9 @@
     "stations": [
         {
             "i_name": "Dart",
-            "i_x": 9,
+            "i_x": -49,
             "i_y": 0
         }
     ]
 
 }
-  

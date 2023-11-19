@@ -197,19 +197,48 @@ int main() {
   tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "entering time loop" << std::endl;
   
+  // Checking if the Y of each Station is set 0, else delete it from the
+  if(l_temp_waveprop == "1d" && l_stations.size() != 0){
+    l_stations.erase(
+    std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
+        if (station.i_y != 0) {
+            std::cout << "\033[1;31m\u2717 " << station.i_name << " has to have the Y set to 0 \033[0m " << std::endl;
+            return true;
+        }
+        return false; 
+    }),
+    l_stations.end());
+  }
+
   //removing out of boundary stations
-  l_stations.erase(
-  std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
-      if (station.i_x < l_domain_start || station.i_x >= l_temp_dimension + l_domain_start ||
-          station.i_y < l_domain_start || station.i_y >= l_temp_dimension + l_domain_start) {
-          std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
-          return true; // Remove the station
-      }else{
-          std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
-      }
-      return false; // Keep the station
-  }),
-  l_stations.end());
+  if(l_temp_waveprop == "2d"){
+    l_stations.erase(
+    std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
+    if (station.i_x < l_domain_start || station.i_x >= l_temp_dimension + l_domain_start ||
+        station.i_y < l_domain_start || station.i_y >= l_temp_dimension + l_domain_start) {
+        std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
+        return true; // Remove the station
+    }else{
+        std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
+    }
+    return false; // Keep the station
+    }),
+    l_stations.end());
+  
+  }else{
+    l_stations.erase(
+    std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
+    if (station.i_x < l_domain_start || station.i_x >= l_temp_dimension + l_domain_start) {
+        std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
+        return true; // Remove the station
+    }else{
+        std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
+    }
+    return false; // Keep the station
+    }),
+    l_stations.end());
+
+  }
   // iterate over time
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
@@ -243,10 +272,13 @@ int main() {
         }
         tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start ) / l_dxy )+ l_waveProp->getGhostcellX();
         tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start ) / l_dxy )+ l_waveProp->getGhostcellY();
+        if(l_temp_waveprop == "1d"){
+          l_iy = 0;
+        }
         tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix; 
         const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
-        std::cout << l_ix << " " << l_iy << " " << l_id << " " <<l_water_height[l_id]<< std::endl;
+        std::cout << l_ix << " " << l_iy << " " << l_id << " "<< std::endl;
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,
