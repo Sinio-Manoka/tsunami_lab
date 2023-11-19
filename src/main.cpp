@@ -266,8 +266,6 @@ int main() {
                                    l_waveProp->getBathymetry(),
                                    l_file );
       l_file.close();
-
-
         
       l_nOut++;
     }
