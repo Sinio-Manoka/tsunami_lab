@@ -123,7 +123,7 @@ Usage
 
 
 
-**2. Within the folder, locate a JSON file and navigate into it:**
+**2. Within the folder, locate config.json file and navigate into it:**
 
    .. code-block:: 
 
@@ -174,8 +174,8 @@ Usage
    
 .. important:: 
 
-   Any one-dimensional setup can be resolved using our two-dimensional wave propagation but make sure to set ny to 1 . However, if you opt
-   for the combination of one-dimensional wave propagation and "dambreak2d," the program will exit automatically. 
+
+   If you opt for wavepropagation1d, go to the "stations.json" file located in the "config" directory, and confirm that all y-coordinates are configured to 0.   
 
    For shockshock and rarerare setups, relevant inputs include (hl, hu, location, nx, wavepropagation, dimension, solver, endtime).
 
