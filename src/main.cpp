@@ -109,6 +109,7 @@ int main() {
   }else{
     std::cout << "\033[1;32m\u2713 Avoid selecting a 1D setup paired with a 2D solver \033[0m" << std::endl;
   }
+
   //Errors checking After Declaration-----------------------------------------------------END
   //Setup---------------------------------------------------------------------------------START
 
@@ -265,8 +266,6 @@ int main() {
                                    l_waveProp->getBathymetry(),
                                    l_file );
       l_file.close();
-
-
         
       l_nOut++;
     }
