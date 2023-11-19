@@ -2,11 +2,11 @@
 #define TSUNAMI_LAB_IO_STATIONS
 
 #include "../../constants.h"
-#include "../JsReader/Configuration.h"
 #include "string"
 #include <fstream>
 #include <vector>
-
+#include <iostream>
+#include <filesystem>
 namespace tsunami_lab {
   namespace io {
     class Station;
@@ -15,7 +15,7 @@ namespace tsunami_lab {
 
 class tsunami_lab::io::Station{
     public:
-        static void write(tsunami_lab::t_idx              i_x,
+        static bool write(tsunami_lab::t_idx              i_x,
                           tsunami_lab::t_idx              i_y,
                           tsunami_lab::t_idx              i_time_in_seconds,
                           tsunami_lab::t_real             i_water_height,
