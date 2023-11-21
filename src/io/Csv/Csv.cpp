@@ -6,7 +6,6 @@
  **/
 #include "Csv.h"
 #include "../JsReader/Configuration.h"
-#include <fstream>
 
 void tsunami_lab::io::Csv::write( t_real               i_dxy,
                                   t_idx                i_nx,

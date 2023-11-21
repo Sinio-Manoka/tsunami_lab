@@ -9,6 +9,7 @@
 #include "setups/supercriticalflow/SupercriticalFlow.h"
 #include "setups/tsunamievent1d/TsunamiEvent1d.h"
 #include "io/Csv/Csv.h"
+#include "io/NetCdf/NetCdf.h"
 #include "io/Stations/Station.h"
 #include "io/JsReader/Configuration.h"
 #include <filesystem>
@@ -59,6 +60,7 @@ int main() {
     }
       std::cout << "\033[0m"; //reset the Terminal color From Green to White
   }
+  
   if (std::filesystem::exists("outputs")) std::filesystem::remove_all("outputs");
   std::filesystem::create_directory("outputs");
   if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
@@ -249,7 +251,7 @@ int main() {
   }
   // iterate over time
   while( l_simTime < l_endTime ){
-    l_waveProp->setGhostOutflow(false);
+    l_waveProp->setGhostOutflow(true);
     if( l_timeStep % 25 == 0 ) {
       std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
       std::ofstream l_file;
@@ -265,6 +267,12 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
+     tsunami_lab::io::NetCdf::write(l_nx,
+                                     l_ny,
+                                     l_waveProp->getHeight(),
+                                     l_waveProp->getMomentumX(),
+                                     l_waveProp->getMomentumY(),
+                                     l_waveProp->getBathymetry());
       l_file.close();
       l_nOut++;
     }

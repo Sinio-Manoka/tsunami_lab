@@ -20,7 +20,8 @@ l_sources = [ 'solvers/Roe.cpp',
               'setups/subcriticalflow/SubcriticalFlow.cpp',
               'setups/supercriticalflow/SupercriticalFlow.cpp',
               'setups/tsunamievent1d/TsunamiEvent1d.cpp',
-              'io/JsReader/Configuration.cpp']
+              'io/JsReader/Configuration.cpp',
+              'io/NetCdf/NetCdf.cpp']
 
 
 for l_so in l_sources:

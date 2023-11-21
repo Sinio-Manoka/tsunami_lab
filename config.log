@@ -1,0 +1,55 @@
+file /home/winter/tsunami_lab/SConstruct,line 67:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for C library z... 
+scons: Configure: ".sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.c" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.c <-
+  |  |
+  |  |
+  |  |
+  |  |int
+  |  |main() {
+  |  |  
+  |  |return 0;
+  |  |}
+  |  |
+  |
+scons: Configure: ".sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.o" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o .sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.o -c .sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.c
+  |
+scons: Configure: ".sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0_4191377144c3dc0788576de2bbabc3fb" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o .sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0_4191377144c3dc0788576de2bbabc3fb .sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.o -lz
+  |
+scons: Configure: (cached) yes
+
+
+file /home/winter/tsunami_lab/SConstruct,line 74:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for C library netcdf... 
+scons: Configure: ".sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0.c" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0.c <-
+  |  |
+  |  |
+  |  |#include "netcdf.h"
+  |  |
+  |  |int
+  |  |main() {
+  |  |  
+  |  |return 0;
+  |  |}
+  |  |
+  |
+scons: Configure: ".sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0.o" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o .sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0.o -c .sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0.c
+  |
+scons: Configure: ".sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0_020fc5d0c2a7de5a7c2fd0433743da1e" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o .sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0_020fc5d0c2a7de5a7c2fd0433743da1e .sconf_temp/conftest_292a485a87739177f630f5f17109eb40_0.o -lz -lnetcdf
+  |
+scons: Configure: (cached) yes
+
+

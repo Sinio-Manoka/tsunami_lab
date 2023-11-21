@@ -62,11 +62,27 @@ if 'san' in  env['mode']:
                             '-fsanitize=address',
                             '-fsanitize=undefined' ] )
 
+
+netcdf_lib = env.Append(LIBS=['netcdf'])
+
+zlib_lib = env.Append(LIBS=['z'])
+
+hdf5_lib = env.Append(LIBS=['hdf5_serial'])
+
+if 'LD_LIBRARY_PATH' not in env['ENV']:
+    env['ENV']['LD_LIBRARY_PATH'] = ''
+
+env['ENV']['LD_LIBRARY_PATH'] = '/usr/lib/x86_64-linux-gnu' + env['ENV']['LD_LIBRARY_PATH']
+
 # add Catch2
-env.Append( CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
+env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
 
 # add nlohmann json 
-env.Append( CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
+env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
+
+env.Append(CPPPATH=['/usr/include/hdf5/serial'])
+
+env.Append(LIBPATH=['/usr/lib/x86_64-linux-gnu', '/usr/lib'])
 
 # get source files
 VariantDir( variant_dir = 'build/src',
