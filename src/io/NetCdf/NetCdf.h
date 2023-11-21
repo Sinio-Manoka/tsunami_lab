@@ -38,16 +38,13 @@ class tsunami_lab::io::NetCdf {
      * @param i_hv momentum in y-direction of the cells; optional: use nullptr if not required.
      * @param i_b bathymetry of the cell
      **/
-    static void write(t_idx         i_nx,
-                                    t_idx         i_ny, 
-      t_real       const * i_h,
+    static void write( t_idx                i_nx,
+                       t_idx                i_ny, 
+                       t_real       const * i_h,
                        t_real       const * i_hu,
                        t_real       const * i_hv,
                        t_real       const * i_b);
     
-
-
-
 
 };
 
