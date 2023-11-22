@@ -31,8 +31,8 @@ class tsunami_lab::io::NetCdf {
     NetCdf();
     ~NetCdf();
     void saveData();
-    void generateFile(t_idx                i_nx,
-                      t_idx                i_ny,
+    void generateFile(t_idx        const   i_nx,
+                      t_idx        const   i_ny,
                       t_idx                i_stride,
                       t_real       const * i_h);
 
