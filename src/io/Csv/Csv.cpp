@@ -7,11 +7,13 @@
 #include "Csv.h"
 #include "../JsReader/Configuration.h"
 
-void tsunami_lab::io::Csv::write( t_real               i_dxy,
+void tsunami_lab::io::Csv::write( t_real               i_dx,
+                                  t_real               i_dy,                      
                                   t_idx                i_nx,
                                   t_idx                i_ny,
                                   t_idx                i_stride,
-                                  t_real               i_domainstart,
+                                  t_real               i_domainstart_x,
+                                  t_real               i_domainstart_y,
                                   std::string          i_dem_wavepropagation,
                                   t_real       const * i_h,
                                   t_real       const * i_hu,
@@ -28,10 +30,10 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   
   if(i_dem_wavepropagation == "2d" ){
     for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
-      for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {//l_ix=0 -> l_ix=1
-      // derive coordinates of cell center
-        t_real l_posX = ((l_ix-1 + 0.5) * i_dxy )+ i_domainstart; //l_ix -> l_ix-1
-        t_real l_posY = ((l_iy-1 + 0.5) * i_dxy )+ i_domainstart;
+      for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
+      // derive coordinates
+        t_real l_posX = ((l_ix-1 + 0.5) * i_dx )+ i_domainstart_x; 
+        t_real l_posY = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
 
         t_idx l_id = l_iy * i_stride + l_ix;
 
@@ -48,8 +50,8 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
     for (t_idx l_iy = 0; l_iy < i_ny; l_iy++){
       for (t_idx l_ix = 0; l_ix < i_nx; l_ix++){
         // derive coordinates of cell center
-        t_real l_posX = (l_ix + 0.5) * i_dxy + i_domainstart;
-        t_real l_posY = (l_iy + 0.5) * i_dxy;
+        t_real l_posX = (l_ix + 0.5) * i_dx + i_domainstart_x;
+        t_real l_posY = (l_iy + 0.5) * i_dy;
 
         t_idx l_id = l_iy * i_stride + l_ix;
 
