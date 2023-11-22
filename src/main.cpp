@@ -281,6 +281,14 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
+      l_netCdf->generateFile( l_dy,
+                              l_dx,
+                              l_nx,
+                              l_ny,
+                              l_domain_start_x,
+                              l_domain_start_y,
+                              l_waveProp->getStride(),
+                              l_waveProp->getHeight());
 
       l_file.close();
       l_nOut++;
@@ -318,10 +326,7 @@ int main() {
   
   }
   
-  l_netCdf->generateFile( l_nx,
-                          l_ny,
-                          l_waveProp->getStride(),
-                          l_waveProp->getHeight());
+
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory

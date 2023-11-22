@@ -70,50 +70,48 @@ void tsunami_lab::io::NetCdf::saveData(){
 }
 
 
-void tsunami_lab::io::NetCdf::generateFile( t_idx                   i_nx,
+void tsunami_lab::io::NetCdf::generateFile( t_real                  i_dy,
+                                            t_real                  i_dx,
+                                            t_idx                   i_nx,  
                                             t_idx                   i_ny,
-                                            t_idx                i_stride,
-                                            t_real       const * i_h
+                                            t_real                  i_domainstart_x,
+                                            t_real                  i_domainstart_y,
+                                            t_idx                   i_stride,
+                                            t_real          const * i_h
                                             ) {
 
     std::cout << "generating netcdf-file habibi.nc" << std::endl;
 
-     //tsunami_lab::t_idx l_nx =  tsunami_lab::io::Configuration::readFromConfigFloat("nx");
-     //tsunami_lab::t_idx l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_height(i_nx, i_ny);
+    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_y(i_ny,1);
+    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_x(i_nx,1);
 
-    /*tsunami_lab::t_real** l_data_height_flat;
-    l_data_height_flat = new tsunami_lab::t_real*[10];
-     for (tsunami_lab::t_idx i = 0; i < 10; i++) {
-        l_data_height_flat[i] = new tsunami_lab::t_real[10];
-    }
+    for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
+        for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
+            tsunami_lab::t_idx l_id = l_ix + i_stride * l_iy;
+            t_real l_posY = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
+            t_real l_posX = ((l_ix-1 + 0.5) * i_dx )+ i_domainstart_x; 
+                        
+            if(!l_data_x.all()){
+                l_data_x(l_ix-1) = l_posX;
+            }
 
-    for (tsunami_lab::t_idx l_x = 0; l_x < 10; l_x++) { 
-        for (tsunami_lab::t_idx l_y = 0; l_y < 10; l_y++) {
-            t_idx l_id = l_x * i_stride + l_y;
-            l_data_height_flat[l_x][l_y] = i_h[l_id];
+            if(!l_data_y.all()){
+                l_data_y(l_iy-1) = l_posY;
+            }
+
+            l_data_height(l_ix-1, l_iy-1) = i_h[l_id];
         }
-    }*/
-
-    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_height_flat(i_nx, i_ny);
-
-    for (tsunami_lab::t_idx l_x = 0; l_x < i_nx; l_x++) {
-        for (tsunami_lab::t_idx l_y = 0; l_y < i_ny; l_y++) {
-            tsunami_lab::t_idx l_id = l_x * i_stride + l_y;
-            std::cout<< i_h[l_id] << std::endl;
-            l_data_height_flat(l_x, l_y) = i_h[l_id];
-        }
+        
+ 
     }
-
-
-
-
 
     int l_ncId;
     // Dimensions x, y, time 
     int l_dimXId, l_dimYId;
 
     //variables  
-    int l_varIdX, l_varIdY,  l_varIdHeight;
+    int l_varIdX, l_varIdY,  l_varIdHeight, l_varIdTime;
     int l_err;
     int l_dimIds[2];
 
@@ -138,7 +136,6 @@ void tsunami_lab::io::NetCdf::generateFile( t_idx                   i_nx,
     nc_put_att_text(l_ncId, l_varIdX, "axis", strlen(axis_attribute_x), axis_attribute_x);
 
 
-
     l_err = nc_def_var(l_ncId, "y", NC_FLOAT, 1, &l_dimYId, &l_varIdY);
     checkNcErr(l_err);
     const char* units_attribute_y = "meters";
@@ -159,9 +156,14 @@ void tsunami_lab::io::NetCdf::generateFile( t_idx                   i_nx,
     checkNcErr( l_err );
 
 
-    l_err =    nc_put_var_float(l_ncId, l_varIdHeight, l_data_height_flat.data());
+    l_err =    nc_put_var_float(l_ncId, l_varIdHeight, l_data_height.data());
     checkNcErr(l_err);
 
+    l_err =    nc_put_var_float(l_ncId, l_varIdY, l_data_y.data());
+    checkNcErr(l_err);
+
+    l_err =    nc_put_var_float(l_ncId, l_varIdX, l_data_x.data());
+    checkNcErr(l_err);
 
 
     // close file
