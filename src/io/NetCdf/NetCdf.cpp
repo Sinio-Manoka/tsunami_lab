@@ -1,4 +1,5 @@
 #include "NetCdf.h"
+#include <eigen3/Eigen/Dense>
 
 tsunami_lab::io::NetCdf::NetCdf(){
 }
@@ -69,31 +70,50 @@ void tsunami_lab::io::NetCdf::saveData(){
 }
 
 
-void tsunami_lab::io::NetCdf::generateFile( t_idx        const  i_nx,
-                                            t_idx        const  i_ny,
+void tsunami_lab::io::NetCdf::generateFile( t_idx                   i_nx,
+                                            t_idx                   i_ny,
                                             t_idx                i_stride,
                                             t_real       const * i_h
                                             ) {
 
-
     std::cout << "generating netcdf-file habibi.nc" << std::endl;
-    // Using a fixed-size 2D array
-    const t_real habibi
-    t_real l_data_height [][i_ny];
 
-    for (t_idx l_x = 0; l_x < i_nx; l_x++) { 
-        for (t_idx l_y = 0; l_y < i_ny; l_y++) {
-            t_idx l_id = l_y * i_stride + l_x;
-            l_data_height[l_x][l_y] = i_h[l_id];
+     //tsunami_lab::t_idx l_nx =  tsunami_lab::io::Configuration::readFromConfigFloat("nx");
+     //tsunami_lab::t_idx l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+
+    /*tsunami_lab::t_real** l_data_height_flat;
+    l_data_height_flat = new tsunami_lab::t_real*[10];
+     for (tsunami_lab::t_idx i = 0; i < 10; i++) {
+        l_data_height_flat[i] = new tsunami_lab::t_real[10];
+    }
+
+    for (tsunami_lab::t_idx l_x = 0; l_x < 10; l_x++) { 
+        for (tsunami_lab::t_idx l_y = 0; l_y < 10; l_y++) {
+            t_idx l_id = l_x * i_stride + l_y;
+            l_data_height_flat[l_x][l_y] = i_h[l_id];
+        }
+    }*/
+
+    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_height_flat(i_nx, i_ny);
+
+    for (tsunami_lab::t_idx l_x = 0; l_x < i_nx; l_x++) {
+        for (tsunami_lab::t_idx l_y = 0; l_y < i_ny; l_y++) {
+            tsunami_lab::t_idx l_id = l_x * i_stride + l_y;
+            std::cout<< i_h[l_id] << std::endl;
+            l_data_height_flat(l_x, l_y) = i_h[l_id];
         }
     }
+
+
+
+
 
     int l_ncId;
     // Dimensions x, y, time 
     int l_dimXId, l_dimYId;
 
     //variables  
-    int l_varIdHeight;
+    int l_varIdX, l_varIdY,  l_varIdHeight;
     int l_err;
     int l_dimIds[2];
 
@@ -103,22 +123,46 @@ void tsunami_lab::io::NetCdf::generateFile( t_idx        const  i_nx,
                       &l_ncId);      
     checkNcErr(l_err);
 
-    l_err = nc_def_dim(l_ncId, "x", i_nx, &l_dimXId);
-    l_err = nc_def_dim(l_ncId, "y", i_ny, &l_dimYId);
-
+    l_err = nc_def_dim(l_ncId, "x", i_nx, &l_dimXId); // 3 elements for "x"
     checkNcErr(l_err);
 
-    l_dimIds[1] =l_dimXId;
-    l_dimIds[0] =l_dimYId;
+    l_err = nc_def_dim(l_ncId, "y", i_ny, &l_dimYId); // 8 elements for "y"
+    checkNcErr(l_err);
+
+    
+    l_err = nc_def_var(l_ncId, "x", NC_FLOAT, 1, &l_dimXId, &l_varIdX);
+    checkNcErr(l_err);
+    const char* units_attribute_x = "meters";
+    nc_put_att_text(l_ncId, l_varIdX, "units", strlen(units_attribute_x), units_attribute_x);
+    const char* axis_attribute_x = "X";
+    nc_put_att_text(l_ncId, l_varIdX, "axis", strlen(axis_attribute_x), axis_attribute_x);
+
+
+
+    l_err = nc_def_var(l_ncId, "y", NC_FLOAT, 1, &l_dimYId, &l_varIdY);
+    checkNcErr(l_err);
+    const char* units_attribute_y = "meters";
+    nc_put_att_text(l_ncId, l_varIdY, "units", strlen(units_attribute_y), units_attribute_y);
+    const char* axis_attribute_y = "Y";
+    nc_put_att_text(l_ncId, l_varIdY, "axis", strlen(axis_attribute_y), axis_attribute_y);
+
+
+    l_dimIds[0] =l_dimXId;
+    l_dimIds[1] =l_dimYId;
 
     l_err = nc_def_var(l_ncId, "h", NC_FLOAT, 2, l_dimIds, &l_varIdHeight);
     checkNcErr(l_err);
+    const char* units_attribute_height = "meters";
+    nc_put_att_text(l_ncId, l_varIdHeight, "units", strlen(units_attribute_height), units_attribute_height);
 
     l_err = nc_enddef( l_ncId ); // ncid
     checkNcErr( l_err );
 
-    l_err = nc_put_var_float(l_ncId, l_varIdHeight,&l_data_height[0][0]);    
+
+    l_err =    nc_put_var_float(l_ncId, l_varIdHeight, l_data_height_flat.data());
     checkNcErr(l_err);
+
+
 
     // close file
     l_err = nc_close(l_ncId);

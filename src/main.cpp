@@ -205,7 +205,7 @@ int main() {
  
   tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
   
-  tsunami_lab::t_real l_dt = std::min((0.5 * l_dy / l_speedMax) , (0.5 * l_dy / l_speedMax));
+  tsunami_lab::t_real l_dt = std::min((0.5 * l_dx / l_speedMax) , (0.5 * l_dy / l_speedMax));
   tsunami_lab::t_real l_scaling = std::min(l_dt/l_dx,l_dt/l_dy);
   
   
@@ -318,8 +318,8 @@ int main() {
   
   }
   
-  l_netCdf->generateFile( &l_nx,
-                          &l_ny,
+  l_netCdf->generateFile( l_nx,
+                          l_ny,
                           l_waveProp->getStride(),
                           l_waveProp->getHeight());
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
