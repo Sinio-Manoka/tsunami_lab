@@ -232,7 +232,8 @@ int main() {
     }),
     l_stations.end());
   }
-
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf();  
+    //l_netCdf->saveData();
   //removing out of boundary stations
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
@@ -280,7 +281,11 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
-     
+
+      l_netCdf->generateFile( l_nx,
+                              l_ny,
+                              l_waveProp->getStride(),
+                              l_waveProp->getHeight());
       l_file.close();
       l_nOut++;
     }
@@ -322,6 +327,7 @@ int main() {
   std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
   delete l_setup;
   delete l_waveProp;
+  delete l_netCdf;
   std::cout << "\033[1;32m\u2713 finished, exiting \033[0m " << std::endl;
   return EXIT_SUCCESS;
 }
