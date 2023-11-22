@@ -1,5 +1,5 @@
 #include "NetCdf.h"
-#include <eigen3/Eigen/Dense>
+
 
 tsunami_lab::io::NetCdf::NetCdf(){
 }
@@ -82,10 +82,15 @@ void tsunami_lab::io::NetCdf::generateFile( t_real                  i_dy,
 
     std::cout << "generating netcdf-file habibi.nc" << std::endl;
 
-    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_height(i_nx, i_ny);
+    
     Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_y(i_ny,1);
     Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_x(i_nx,1);
-
+    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_time(5,1);
+    l_data_time(0) = 0;
+    l_data_time(1) = 1;
+    l_data_time(2) = 2;
+    l_data_time(3) = 3;
+    l_data_time(4) = 4;
     for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
         for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
             tsunami_lab::t_idx l_id = l_ix + i_stride * l_iy;
@@ -108,12 +113,12 @@ void tsunami_lab::io::NetCdf::generateFile( t_real                  i_dy,
 
     int l_ncId;
     // Dimensions x, y, time 
-    int l_dimXId, l_dimYId;
+    int l_dimXId, l_dimYId,l_dimTimeId ;
 
     //variables  
     int l_varIdX, l_varIdY,  l_varIdHeight, l_varIdTime;
     int l_err;
-    int l_dimIds[2];
+    int l_dimIds[3];
 
     //------------------------------------------------------------------------------
     l_err = nc_create("output.nc",
@@ -121,10 +126,13 @@ void tsunami_lab::io::NetCdf::generateFile( t_real                  i_dy,
                       &l_ncId);      
     checkNcErr(l_err);
 
-    l_err = nc_def_dim(l_ncId, "x", i_nx, &l_dimXId); // 3 elements for "x"
+    l_err = nc_def_dim(l_ncId, "x", i_nx, &l_dimXId);
     checkNcErr(l_err);
 
-    l_err = nc_def_dim(l_ncId, "y", i_ny, &l_dimYId); // 8 elements for "y"
+    l_err = nc_def_dim(l_ncId, "y", i_ny, &l_dimYId); 
+    checkNcErr(l_err);
+
+    l_err = nc_def_dim(l_ncId, "time", l_data_time.size(), &l_dimTimeId); 
     checkNcErr(l_err);
 
     
@@ -143,9 +151,15 @@ void tsunami_lab::io::NetCdf::generateFile( t_real                  i_dy,
     const char* axis_attribute_y = "Y";
     nc_put_att_text(l_ncId, l_varIdY, "axis", strlen(axis_attribute_y), axis_attribute_y);
 
+    l_err = nc_def_var(l_ncId, "time", NC_FLOAT, 1, &l_dimTimeId, &l_varIdTime);
+    checkNcErr(l_err);
+    const char* units_attribute_time = "seconds";
+    nc_put_att_text(l_ncId, l_varIdTime, "units", strlen(units_attribute_time), units_attribute_time);
+
 
     l_dimIds[0] =l_dimXId;
     l_dimIds[1] =l_dimYId;
+    l_dimIds[2] =l_dimTimeId;
 
     l_err = nc_def_var(l_ncId, "h", NC_FLOAT, 2, l_dimIds, &l_varIdHeight);
     checkNcErr(l_err);
@@ -155,16 +169,17 @@ void tsunami_lab::io::NetCdf::generateFile( t_real                  i_dy,
     l_err = nc_enddef( l_ncId ); // ncid
     checkNcErr( l_err );
 
-
-    l_err =    nc_put_var_float(l_ncId, l_varIdHeight, l_data_height.data());
-    checkNcErr(l_err);
-
     l_err =    nc_put_var_float(l_ncId, l_varIdY, l_data_y.data());
     checkNcErr(l_err);
 
     l_err =    nc_put_var_float(l_ncId, l_varIdX, l_data_x.data());
     checkNcErr(l_err);
 
+    l_err =    nc_put_var_float(l_ncId, l_varIdTime, l_data_time.data());
+    checkNcErr(l_err);
+
+    l_err =    nc_put_var_float(l_ncId, l_varIdHeight, l_data_height.data());
+    checkNcErr(l_err);
 
     // close file
     l_err = nc_close(l_ncId);

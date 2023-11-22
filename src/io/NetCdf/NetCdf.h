@@ -16,6 +16,7 @@
 #include <cstddef> 
 #include <netcdf.h>
 #include <string>
+#include <eigen3/Eigen/Dense>
 
 namespace tsunami_lab {
   namespace io {
@@ -25,8 +26,8 @@ namespace tsunami_lab {
 
 class tsunami_lab::io::NetCdf {
   private:
+    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> l_data_height(i_nx, i_ny);
     static void checkNcErr( int i_err);
-
   public:
     NetCdf();
     ~NetCdf();
