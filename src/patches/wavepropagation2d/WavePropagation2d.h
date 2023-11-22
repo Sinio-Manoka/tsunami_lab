@@ -25,7 +25,8 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     bool m_choiceBoundry = false;
 
     //! number of cells discretizing the computational domain
-    t_idx m_nCells = 0;
+    t_idx m_xCells = 0;
+    t_idx m_yCells = 0;
     t_real * m_b = nullptr;
     //! water heights for the current and next time step for all cells
     t_real * m_h[2] = { nullptr, nullptr };
@@ -40,7 +41,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return Gets the Index of the cell.
      */
     tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
-      return (m_nCells+2) * i_iy +i_ix;
+      return (m_xCells+2) * i_iy +i_ix;
     }
   public:
     /**
@@ -48,20 +49,20 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @param i_choice which solver to choice from (true means Roe and false means our Fwave).
      * @param i_nCells number of cells.
      **/
-    WavePropagation2d( t_idx i_nCells, bool i_choice );
+    WavePropagation2d( t_idx i_xCells, t_idx i_yCells, bool i_choice );
 
     /**
      * @brief Destructor which frees all allocated memory.
      **/
     ~WavePropagation2d();
-
+    
     /**
      * @brief Performs a time step.
      *
      * @param i_scaling scaling of the time step (dt / dx).
      **/
-    void timeStep( t_real i_scaling );
-
+    void timeStep( t_real i_scaling_x);
+   
     /**
      * @brief Sets the values of the ghost cells according to outflow boundary conditions.
      * @param m_choiceBoundry true : reflecting boundary, false : outflow conditions.
@@ -72,7 +73,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return amount of cells in one column/row.
      **/
     t_idx getStride(){
-      return m_nCells+2;
+      return m_xCells+2;
     }
     /**
      * @brief leftest column contains ghostcells so we skip it

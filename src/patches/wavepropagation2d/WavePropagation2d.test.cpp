@@ -7,9 +7,7 @@
 #include "WavePropagation2d.h"
 TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
   
-  tsunami_lab::patches::WavePropagation2d m_waveProp( 100 , true );
-
-   std::size_t  l_ce;
+  tsunami_lab::patches::WavePropagation2d m_waveProp( 100 ,100 , true );
 
   for( std::size_t l_ce = 0; l_ce < 100+1; l_ce++ ) {
     for( std::size_t l_cy = 0; l_cy < 100+1; l_cy++ ){
@@ -41,7 +39,7 @@ TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
   // steady state
    for( std::size_t l_cy = 1; l_cy < 50  ; l_cy++ ) {  
     for( std::size_t l_cx = 1; l_cx < 100 ; l_cx++ ) {
-      l_ce = (l_cx+1)  + (l_cy+1 ) * (100+2); 
+    tsunami_lab::t_idx l_ce = (l_cx+1)  + (l_cy+1 ) * (100+2); 
     REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx( 5.0f) );
     REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx( 0.0 ) );
     }
@@ -59,5 +57,4 @@ TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
     REQUIRE( m_waveProp.getHeight()[l_ce]   == Approx(5.0) );
     REQUIRE( m_waveProp.getMomentumX()[l_ce] == Approx(0.0) );
   }
-
 }
