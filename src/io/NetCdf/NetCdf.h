@@ -13,10 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <cstddef> 
 #include <netcdf.h>
-#include <string>
-#include <eigen3/Eigen/Dense>
 
 namespace tsunami_lab {
   namespace io {
@@ -28,27 +25,11 @@ class tsunami_lab::io::NetCdf {
   private:
     static void checkNcErr( int i_err);
   public:
-    std::vector<Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic>> m_data_height;
-    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> m_data_x;
-    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> m_data_y;
-    Eigen::Matrix<tsunami_lab::t_real, Eigen::Dynamic, Eigen::Dynamic> m_data_bathymetry;
-    
-    NetCdf(t_idx                   i_nx,  
-           t_idx                   i_ny);
+    NetCdf();
 
-    void saveData(t_idx                i_nx,
-                  t_idx                i_ny,
-                  t_idx                i_stride,
-                  t_real       const * i_h);
+    void saveData();
 
-    void generateFile(t_real               i_dy,
-                      t_real               i_dx,
-                      t_idx                i_nx,
-                      t_idx                i_ny,
-                      t_real               i_domainstart_x,
-                      t_real               i_domainstart_y,
-                      t_idx                i_stride,
-                      t_real       const * i_b);
+    void generateFile();
 
 };
 

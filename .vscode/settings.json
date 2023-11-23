@@ -67,5 +67,5 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
-  "cmake.sourceDirectory": "/wsl.localhost/Ubuntu-22.04/home/winter/tsunami_lab/submodules/json"
+  "cmake.sourceDirectory": "/home/winter/tsunami_lab/submodules/Catch2/.conan/test_package"
 }

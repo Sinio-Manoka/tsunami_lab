@@ -232,7 +232,7 @@ int main() {
     }),
     l_stations.end());
   }
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny);  
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf();  
   //removing out of boundary stations
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
@@ -280,10 +280,7 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
-      l_netCdf->saveData( l_nx,
-                          l_ny,
-                          l_waveProp->getStride(),
-                          l_waveProp->getHeight());
+
       l_file.close();
       l_nOut++;
     }
@@ -319,14 +316,8 @@ int main() {
       l_simTime += l_dt;
   
   }
-  l_netCdf->generateFile( l_dy,
-                        l_dx,
-                        l_nx,
-                        l_ny,
-                        l_domain_start_x,
-                        l_domain_start_y,
-                        l_waveProp->getStride(),
-                        l_waveProp->getBathymetry());
+  l_netCdf->generateFile();
+  l_netCdf->saveData();
 
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
