@@ -2,8 +2,41 @@
 #include <netcdf.h>
 #include <iostream>
 
-tsunami_lab::io::NetCdf::NetCdf(){
+void tsunami_lab::io::NetCdf::fillXandY(t_idx                   i_nx,
+                                        t_idx                   i_ny,
+                                        t_real                  i_dx,
+                                        t_real                  i_dy,
+                                        t_real                  i_domainstart_x,
+                                        t_real                  i_domainstart_y
+                                                                           ){
 
+int l_ncId,l_err;
+l_err = nc_open("output.nc",
+                NC_WRITE,
+                &l_ncId);
+
+std::vector<tsunami_lab::t_real> l_coordinatX(i_nx);
+std::vector<tsunami_lab::t_real> l_coordinatY(i_ny);
+
+std::vector<size_t> startp = {0};
+std::vector<size_t> endpX = {i_nx};
+std::vector<size_t> endpY = {i_ny};
+std::vector<ptrdiff_t> stridep = {1};
+
+ for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
+        for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
+            l_coordinatX[l_ix-1] = ((l_ix-1 + 0.5) * i_dx )+ i_domainstart_x;
+            l_coordinatY[l_iy-1] = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
+        }
+    }
+
+    l_err = nc_put_vars_float(l_ncId, m_varIdX, startp.data(), endpX.data(), stridep.data(), &l_coordinatX[0]);
+    checkNcErr(l_err);
+    l_err = nc_put_vars_float(l_ncId, m_varIdY, startp.data(), endpY.data(), stridep.data(), &l_coordinatY[0]);
+    checkNcErr(l_err);
+
+    l_err = nc_close(l_ncId);
+    checkNcErr(l_err);
 
 }
 
@@ -37,13 +70,13 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
     }
     
     std::vector<size_t> l_startp     = {m_time_step,0,0};
-    std::vector<size_t> l_endp       = {1,3,3};
+    std::vector<size_t> l_endp       = {1,i_ny,i_nx};
     std::vector<ptrdiff_t> l_stridep = {1,1,1}; // Stride
     
     l_err = nc_put_vars_float(l_ncId, m_varIdHeight, l_startp.data(), l_endp.data(), l_stridep.data(), l_temp_data_height.data());
     checkNcErr(l_err);
     std::vector<size_t> l_start_bathymetry     = {0,0};
-    std::vector<size_t> l_end_bathymetry       = {3,3};
+    std::vector<size_t> l_end_bathymetry       = {i_ny,i_nx};
     l_err = nc_put_vars_float(l_ncId, m_varIdBathymetry, l_start_bathymetry.data(), l_end_bathymetry.data(), l_stridep.data(), l_temp_data_bathymetry.data());
     checkNcErr(l_err);
         
@@ -62,28 +95,24 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
 }
 
 void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
-void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     
     int l_ncId,l_err;
     // Dimensions x, y, time 
     int l_dimXId,l_dimYId,l_dimTimeId;
     int l_dimIds[3];
 
-    std::cout << "generating netcdf-file habibi.nc " << std::endl;
+    std::cout << "generating netcdf-file output.nc " << std::endl;
     l_err = nc_create("output.nc",
                       NC_CLOBBER,    
                       &l_ncId);      
     checkNcErr(l_err);
 
     l_err = nc_def_dim(l_ncId, "x", l_nx, &l_dimXId);
-    l_err = nc_def_dim(l_ncId, "x", l_nx, &l_dimXId);
     checkNcErr(l_err);
 
     l_err = nc_def_dim(l_ncId, "y", l_ny, &l_dimYId);
-    l_err = nc_def_dim(l_ncId, "y", l_ny, &l_dimYId);
     checkNcErr(l_err);
 
-    l_err = nc_def_dim(l_ncId, "time", NC_UNLIMITED, &l_dimTimeId);
     l_err = nc_def_dim(l_ncId, "time", NC_UNLIMITED, &l_dimTimeId);
     checkNcErr(l_err);
 

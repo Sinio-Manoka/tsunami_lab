@@ -263,7 +263,6 @@ int main() {
     l_stations.end());
 
   }
-  l_netCdf->generateFile(l_nx,l_ny);
   // iterate over time
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
