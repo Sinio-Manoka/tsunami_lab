@@ -62,6 +62,7 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
 }
 
 void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
+void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     
     int l_ncId,l_err;
     // Dimensions x, y, time 
@@ -75,11 +76,14 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     checkNcErr(l_err);
 
     l_err = nc_def_dim(l_ncId, "x", l_nx, &l_dimXId);
+    l_err = nc_def_dim(l_ncId, "x", l_nx, &l_dimXId);
     checkNcErr(l_err);
 
     l_err = nc_def_dim(l_ncId, "y", l_ny, &l_dimYId);
+    l_err = nc_def_dim(l_ncId, "y", l_ny, &l_dimYId);
     checkNcErr(l_err);
 
+    l_err = nc_def_dim(l_ncId, "time", NC_UNLIMITED, &l_dimTimeId);
     l_err = nc_def_dim(l_ncId, "time", NC_UNLIMITED, &l_dimTimeId);
     checkNcErr(l_err);
 

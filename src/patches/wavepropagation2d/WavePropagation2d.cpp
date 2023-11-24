@@ -37,12 +37,20 @@ tsunami_lab::patches::WavePropagation2d::WavePropagation2d( t_idx i_xCells,t_idx
 }
  //free memory
 tsunami_lab::patches::WavePropagation2d::~WavePropagation2d() {
+  std::cout<<"hallo ich bin der destruktor"<<std::endl;
+    std::cout<<"TEST 1"<<std::endl;
   delete[] m_b;
+    std::cout<<"TEST 2"<<std::endl;
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
+    std::cout<<"TEST 3"<<std::endl;
     delete[] m_hv[l_st];
+    std::cout<<"TEST 4"<<std::endl;
     delete[] m_h[l_st];
+  std::cout<<"TEST 5"<<std::endl;
     delete[] m_hu[l_st];
+    std::cout<<"TEST 6"<<std::endl;
   }
+  std::cout<<"hallo ich bin das ende des destruktors"<<std::endl;
 }
 
 void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
@@ -68,8 +76,8 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
   for(t_idx l_ex = 0; l_ex < m_yCells +1;l_ex++){ 
     for(t_idx l_ey = 0; l_ey < m_xCells +1;l_ey++){
       t_real l_netUpdates[2][2];
-      t_idx l_ceL = getIndex(l_ey,l_ex);
-      t_idx l_ceR = getIndex(l_ey+1,l_ex);
+      t_idx l_ceL = getIndex(l_ex,l_ex);
+      t_idx l_ceR = getIndex(l_ex,l_ex+1);
       if(m_choice){
         solvers::Roe::netUpdates(l_hOld[l_ceL],
                                 l_hOld[l_ceR],
