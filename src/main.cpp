@@ -205,7 +205,7 @@ int main() {
  
   tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
   
-  tsunami_lab::t_real l_dt = std::min((0.5 * l_dx / l_speedMax) , (0.5 * l_dy / l_speedMax));
+  tsunami_lab::t_real l_dt = std::min((0.5 * l_dy / l_speedMax) , (0.5 * l_dy / l_speedMax));
   tsunami_lab::t_real l_scaling = std::min(l_dt/l_dx,l_dt/l_dy);
   
   
@@ -232,7 +232,10 @@ int main() {
     }),
     l_stations.end());
   }
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf();  
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(); 
+    l_netCdf->generateFile( l_nx,l_ny); 
+    l_netCdf->fillXandY(l_nx,l_ny,l_dx,l_dy,l_domain_start_x,l_domain_start_y);
+
   //removing out of boundary stations
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
@@ -280,7 +283,7 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
-
+     
       l_file.close();
       l_nOut++;
     }
@@ -316,16 +319,12 @@ int main() {
       l_simTime += l_dt;
   
   }
-  l_netCdf->generateFile();
-  l_netCdf->saveData();
-
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
   std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
   delete l_setup;
   delete l_waveProp;
-  delete l_netCdf;
   std::cout << "\033[1;32m\u2713 finished, exiting \033[0m " << std::endl;
   return EXIT_SUCCESS;
 }

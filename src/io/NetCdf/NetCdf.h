@@ -24,12 +24,30 @@ namespace tsunami_lab {
 class tsunami_lab::io::NetCdf {
   private:
     static void checkNcErr( int i_err);
+        //variables
+    int l_varIdX, l_varIdY,  l_varIdHeight, l_varIdTime, l_varIdBathymetry, l_varIdImpulsX, l_varIdImpulsY;
+    int l_err;
+    int l_dimIds[3];
+
   public:
     NetCdf();
 
     void saveData();
 
-    void generateFile();
+    void generateFile(t_real l_nx,t_real l_ny);
+
+    void fillXandY(t_idx                   i_nx,  
+                   t_idx                   i_ny,
+                   t_real                  i_dx,
+                  t_real                    i_dy,
+                   t_real                  i_domainstart_x,
+                   t_real                  i_domainstart_y);
+
+
+
+
+
+                                
 
 };
 

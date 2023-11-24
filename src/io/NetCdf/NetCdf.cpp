@@ -6,59 +6,56 @@ tsunami_lab::io::NetCdf::NetCdf(){
 
 }
 
-void tsunami_lab::io::NetCdf::saveData( ){
-    const std::string file_path = "output.nc";  // replace with your NetCDF file path
 
-    // Open the NetCDF file for reading
-    netcdf::NcFile ncFile(file_path, NcFile::read);
-    // Get the dimensions
-    size_t x_size = ncFile.getDim("x").getSize();
-    size_t y_size = ncFile.getDim("y").getSize();
-    size_t time_size = ncFile.getDim("time").getSize();
+void tsunami_lab::io::NetCdf::fillXandY(t_idx                   i_nx,  
+                                        t_idx                   i_ny,
+                                        t_real                  i_dx,
+                                        t_real                  i_dy,
+                                        t_real                  i_domainstart_x,
+                                        t_real                  i_domainstart_y
+                                                                           ){
 
-    // Read the x and y variables
-    std::vector<float> x_values(x_size);
-    std::vector<float> y_values(y_size);
+int l_ncId;
+l_err = nc_open("output.nc",
+                NC_WRITE,
+                &l_ncId);
 
-    ncFile.getVar("x").getVar(&x_values[0]);
-    ncFile.getVar("y").getVar(&y_values[0]);
+std::vector<tsunami_lab::t_real> l_coordinatX(i_nx);
+std::vector<tsunami_lab::t_real> l_coordinatY(i_ny);
 
-    // Add x and y
-    // Assuming here that the addition is element-wise
-    // You might need to adjust this based on the actual operation you want to perform
-    std::vector<float> h_values(x_size * y_size * time_size, 0.0);
+std::vector<size_t> startp = {0};
+std::vector<size_t> endpX = {i_nx};
+std::vector<size_t> endpY = {i_ny};
+std::vector<ptrdiff_t> stridep = {1};
 
-    for (size_t t = 0; t < time_size; ++t) {
-        for (size_t y = 0; y < y_size; ++y) {
-            for (size_t x = 0; x < x_size; ++x) {
-                size_t index = t * (x_size * y_size) + y * x_size + x;
-                h_values[index] = x_values[x] + y_values[y];
-            }
+ for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
+        for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
+            l_coordinatX[l_ix-1] = ((l_ix-1 + 0.5) * i_dx )+ i_domainstart_x;
+            l_coordinatY[l_iy-1] = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
+            std::cout << "l_cordiantX[" << l_ix << "]: " << l_coordinatX[l_ix] << "\t";
+            std::cout << "l_cordiantY[" << l_iy << "]: " << l_coordinatY[l_iy] << "\t";
+
         }
     }
 
-    // Access the h variable and print some values
-    netCDF::NcVar h_var = ncFile.getVar("h");
-    std::vector<float> h_data(x_size * y_size);
-    h_var.getVar(h_data.data());
+    l_err = nc_put_vars_float(l_ncId, l_varIdX, startp.data(), endpX.data(), stridep.data(), &l_coordinatX[0]);
+    checkNcErr(l_err);
+    l_err = nc_put_vars_float(l_ncId, l_varIdY, startp.data(), endpY.data(), stridep.data(), &l_coordinatY[0]);
+    checkNcErr(l_err);
 
-    // Print the first few values of h
-    for (size_t i = 0; i < 10; ++i) {
-        std::cout << "h[" << i << "] = " << h_data[i] << std::endl;
-    }
+    l_err = nc_close(l_ncId);
+    checkNcErr(l_err);
 
 }
 
 
-void tsunami_lab::io::NetCdf::generateFile() {
+
+
+void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     
-    int l_ncId;
+   int l_ncId;
     // Dimensions x, y, time 
-    int l_dimXId, l_dimYId,l_dimTimeId ;
-    //variables  
-    int l_varIdX, l_varIdY,  l_varIdHeight, l_varIdTime, l_varIdBathymetry, l_varIdImpolseX, l_varIdImpolseY;
-    int l_err;
-    int l_dimIds[3];
+    int l_dimXId,l_dimYId,l_dimTimeId;
 
 
     std::cout << "generating netcdf-file habibi.nc " << std::endl;
@@ -67,13 +64,13 @@ void tsunami_lab::io::NetCdf::generateFile() {
                       &l_ncId);      
     checkNcErr(l_err);
 
-    l_err = nc_def_dim(l_ncId, "x", 10, &l_dimXId);
+    l_err = nc_def_dim(l_ncId, "x", l_nx, &l_dimXId);
     checkNcErr(l_err);
 
-    l_err = nc_def_dim(l_ncId, "y", 10, &l_dimYId); 
+    l_err = nc_def_dim(l_ncId, "y", l_ny, &l_dimYId);
     checkNcErr(l_err);
 
-    l_err = nc_def_dim(l_ncId, "time", 5, &l_dimTimeId); 
+    l_err = nc_def_dim(l_ncId, "time", NC_UNLIMITED, &l_dimTimeId);
     checkNcErr(l_err);
 
     
@@ -127,14 +124,13 @@ void tsunami_lab::io::NetCdf::generateFile() {
 
     l_err = nc_enddef( l_ncId ); // ncid
     checkNcErr( l_err );
-
-    // close file
+}
+   /* // close file
     l_err = nc_close(l_ncId);
     checkNcErr(l_err);
 
     std::cout << "finished writing habibi.nc" << std::endl
-              << "use ncdump to view its contents" << std::endl;
-}
+    << "use ncdump to view its contents" << std::endl; */
 
 void tsunami_lab::io::NetCdf::checkNcErr(int i_err) {
     if (i_err) {
