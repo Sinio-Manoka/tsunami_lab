@@ -1,13 +1,8 @@
 #include "NetCdf.h"
 #include <netcdf.h>
+#include <iostream>
 
-tsunami_lab::io::NetCdf::NetCdf(){
-
-
-}
-
-
-void tsunami_lab::io::NetCdf::fillXandY(t_idx                   i_nx,  
+void tsunami_lab::io::NetCdf::fillXandY(t_idx                   i_nx,
                                         t_idx                   i_ny,
                                         t_real                  i_dx,
                                         t_real                  i_dy,
@@ -15,7 +10,7 @@ void tsunami_lab::io::NetCdf::fillXandY(t_idx                   i_nx,
                                         t_real                  i_domainstart_y
                                                                            ){
 
-int l_ncId;
+int l_ncId,l_err;
 l_err = nc_open("output.nc",
                 NC_WRITE,
                 &l_ncId);
@@ -32,15 +27,12 @@ std::vector<ptrdiff_t> stridep = {1};
         for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
             l_coordinatX[l_ix-1] = ((l_ix-1 + 0.5) * i_dx )+ i_domainstart_x;
             l_coordinatY[l_iy-1] = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
-            std::cout << "l_cordiantX[" << l_ix << "]: " << l_coordinatX[l_ix] << "\t";
-            std::cout << "l_cordiantY[" << l_iy << "]: " << l_coordinatY[l_iy] << "\t";
-
         }
     }
 
-    l_err = nc_put_vars_float(l_ncId, l_varIdX, startp.data(), endpX.data(), stridep.data(), &l_coordinatX[0]);
+    l_err = nc_put_vars_float(l_ncId, m_varIdX, startp.data(), endpX.data(), stridep.data(), &l_coordinatX[0]);
     checkNcErr(l_err);
-    l_err = nc_put_vars_float(l_ncId, l_varIdY, startp.data(), endpY.data(), stridep.data(), &l_coordinatY[0]);
+    l_err = nc_put_vars_float(l_ncId, m_varIdY, startp.data(), endpY.data(), stridep.data(), &l_coordinatY[0]);
     checkNcErr(l_err);
 
     l_err = nc_close(l_ncId);
@@ -48,17 +40,68 @@ std::vector<ptrdiff_t> stridep = {1};
 
 }
 
+void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
+                                         t_idx                i_ny,
+                                         t_idx                i_stride,
+                                         t_real               i_time,
+                                         t_real       const * i_h,
+                                         t_real       const * i_hu,
+                                         t_real       const * i_hv,
+                                         t_real       const * i_b){
+    
+    int l_ncId, l_err;    
+    l_err = nc_open("output.nc",
+                      NC_WRITE,    
+                      &l_ncId); 
 
+    checkNcErr(l_err);
+    std::vector<t_real> l_temp_data_height(i_ny * i_nx);
+    std::vector<t_real> l_temp_data_bathymetry(i_ny *i_nx);
+    std::vector<t_real> l_temp_data_momentum_x(i_ny * i_nx);
+    std::vector<t_real> l_temp_data_momentum_y(i_ny * i_nx);
+    for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
+      for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
+        t_idx l_id = l_iy * i_stride + l_ix;
+        l_temp_data_height[(l_iy-1) * i_ny + (l_ix-1)] = i_h[l_id];
+        l_temp_data_bathymetry[(l_iy-1) * i_ny + (l_ix-1)] = i_hu[l_id];
+        l_temp_data_momentum_x[(l_iy-1) * i_ny + (l_ix-1)] = i_hv[l_id];
+        l_temp_data_momentum_y[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
+      }
+    }
+    
+    std::vector<size_t> l_startp     = {m_time_step,0,0};
+    std::vector<size_t> l_endp       = {1,i_ny,i_nx};
+    std::vector<ptrdiff_t> l_stridep = {1,1,1}; // Stride
+    
+    l_err = nc_put_vars_float(l_ncId, m_varIdHeight, l_startp.data(), l_endp.data(), l_stridep.data(), l_temp_data_height.data());
+    checkNcErr(l_err);
+    std::vector<size_t> l_start_bathymetry     = {0,0};
+    std::vector<size_t> l_end_bathymetry       = {i_ny,i_nx};
+    l_err = nc_put_vars_float(l_ncId, m_varIdBathymetry, l_start_bathymetry.data(), l_end_bathymetry.data(), l_stridep.data(), l_temp_data_bathymetry.data());
+    checkNcErr(l_err);
+        
+    l_err = nc_put_vars_float(l_ncId, m_varIdImpolseX, l_startp.data(), l_endp.data(), l_stridep.data(), l_temp_data_momentum_x.data());
+    checkNcErr(l_err);
+        
+    l_err = nc_put_vars_float(l_ncId, m_varIdImpolseY, l_startp.data(), l_endp.data(), l_stridep.data(), l_temp_data_momentum_y.data());
+    checkNcErr(l_err);
 
+    l_err = nc_put_var1_float(l_ncId, m_varIdTime, &m_time_step, &i_time);
+    checkNcErr(l_err);
+
+    l_err = nc_close(l_ncId);
+    checkNcErr(l_err);
+    m_time_step ++;
+}
 
 void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     
-   int l_ncId;
+    int l_ncId,l_err;
     // Dimensions x, y, time 
     int l_dimXId,l_dimYId,l_dimTimeId;
+    int l_dimIds[3];
 
-
-    std::cout << "generating netcdf-file habibi.nc " << std::endl;
+    std::cout << "generating netcdf-file output.nc " << std::endl;
     l_err = nc_create("output.nc",
                       NC_CLOBBER,    
                       &l_ncId);      
@@ -74,63 +117,57 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     checkNcErr(l_err);
 
     
-    l_err = nc_def_var(l_ncId, "x", NC_FLOAT, 1, &l_dimXId, &l_varIdX);
+    l_err = nc_def_var(l_ncId, "x", NC_FLOAT, 1, &l_dimXId, &m_varIdX);
     checkNcErr(l_err);
     const char* units_attribute_x = "meters";
-    nc_put_att_text(l_ncId, l_varIdX, "units", strlen(units_attribute_x), units_attribute_x);
+    nc_put_att_text(l_ncId, m_varIdX, "units", strlen(units_attribute_x), units_attribute_x);
     const char* axis_attribute_x = "X";
-    nc_put_att_text(l_ncId, l_varIdX, "axis", strlen(axis_attribute_x), axis_attribute_x);
+    nc_put_att_text(l_ncId, m_varIdX, "axis", strlen(axis_attribute_x), axis_attribute_x);
 
 
-    l_err = nc_def_var(l_ncId, "y", NC_FLOAT, 1, &l_dimYId, &l_varIdY);
+    l_err = nc_def_var(l_ncId, "y", NC_FLOAT, 1, &l_dimYId, &m_varIdY);
     checkNcErr(l_err);
     const char* units_attribute_y = "meters";
-    nc_put_att_text(l_ncId, l_varIdY, "units", strlen(units_attribute_y), units_attribute_y);
+    nc_put_att_text(l_ncId, m_varIdY, "units", strlen(units_attribute_y), units_attribute_y);
     const char* axis_attribute_y = "Y";
-    nc_put_att_text(l_ncId, l_varIdY, "axis", strlen(axis_attribute_y), axis_attribute_y);
+    nc_put_att_text(l_ncId, m_varIdY, "axis", strlen(axis_attribute_y), axis_attribute_y);
 
-    l_err = nc_def_var(l_ncId, "time", NC_FLOAT, 1, &l_dimTimeId, &l_varIdTime);
+    l_err = nc_def_var(l_ncId, "time", NC_FLOAT, 1, &l_dimTimeId, &m_varIdTime);
     checkNcErr(l_err);
     const char* units_attribute_time = "seconds";
-    nc_put_att_text(l_ncId, l_varIdTime, "units", strlen(units_attribute_time), units_attribute_time);
+    nc_put_att_text(l_ncId, m_varIdTime, "units", strlen(units_attribute_time), units_attribute_time);
 
     l_dimIds[0] =l_dimYId;
     l_dimIds[1] =l_dimXId;
 
-    l_err = nc_def_var(l_ncId, "b", NC_FLOAT, 2, l_dimIds, &l_varIdBathymetry);
+    l_err = nc_def_var(l_ncId, "b", NC_FLOAT, 2, l_dimIds, &m_varIdBathymetry);
     checkNcErr(l_err);
     const char* units_attribute_Bathymetry = "meters";
-    nc_put_att_text(l_ncId, l_varIdBathymetry, "units", strlen(units_attribute_Bathymetry), units_attribute_Bathymetry);
+    nc_put_att_text(l_ncId, m_varIdBathymetry, "units", strlen(units_attribute_Bathymetry), units_attribute_Bathymetry);
     
     l_dimIds[0] =l_dimTimeId;
     l_dimIds[1] =l_dimYId;
     l_dimIds[2] =l_dimXId;
 
-    l_err = nc_def_var(l_ncId, "h", NC_FLOAT, 3, l_dimIds, &l_varIdHeight);
+    l_err = nc_def_var(l_ncId, "h", NC_FLOAT, 3, l_dimIds, &m_varIdHeight);
     checkNcErr(l_err);
     const char* units_attribute_height = "meters";
-    nc_put_att_text(l_ncId, l_varIdHeight, "units", strlen(units_attribute_height), units_attribute_height);
+    nc_put_att_text(l_ncId, m_varIdHeight, "units", strlen(units_attribute_height), units_attribute_height);
 
-    l_err = nc_def_var(l_ncId, "hu", NC_FLOAT, 3, l_dimIds, &l_varIdImpolseX);
+    l_err = nc_def_var(l_ncId, "hu", NC_FLOAT, 3, l_dimIds, &m_varIdImpolseX);
     checkNcErr(l_err);
     const char* units_attribute_impulseX = "meters";
-    nc_put_att_text(l_ncId, l_varIdImpolseX, "units", strlen(units_attribute_impulseX), units_attribute_impulseX);
+    nc_put_att_text(l_ncId, m_varIdImpolseX, "units", strlen(units_attribute_impulseX), units_attribute_impulseX);
 
-    l_err = nc_def_var(l_ncId, "hv", NC_FLOAT, 3, l_dimIds, &l_varIdImpolseY);
+    l_err = nc_def_var(l_ncId, "hv", NC_FLOAT, 3, l_dimIds, &m_varIdImpolseY);
     checkNcErr(l_err);
     const char* units_attribute_impulseY = "meters";
-    nc_put_att_text(l_ncId, l_varIdImpolseY, "units", strlen(units_attribute_impulseY), units_attribute_impulseY);
+    nc_put_att_text(l_ncId, m_varIdImpolseY, "units", strlen(units_attribute_impulseY), units_attribute_impulseY);
 
 
     l_err = nc_enddef( l_ncId ); // ncid
     checkNcErr( l_err );
 }
-   /* // close file
-    l_err = nc_close(l_ncId);
-    checkNcErr(l_err);
-
-    std::cout << "finished writing habibi.nc" << std::endl
-    << "use ncdump to view its contents" << std::endl; */
 
 void tsunami_lab::io::NetCdf::checkNcErr(int i_err) {
     if (i_err) {

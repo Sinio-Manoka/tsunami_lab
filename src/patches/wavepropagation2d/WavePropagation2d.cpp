@@ -37,20 +37,12 @@ tsunami_lab::patches::WavePropagation2d::WavePropagation2d( t_idx i_xCells,t_idx
 }
  //free memory
 tsunami_lab::patches::WavePropagation2d::~WavePropagation2d() {
-  std::cout<<"hallo ich bin der destruktor"<<std::endl;
-    std::cout<<"TEST 1"<<std::endl;
   delete[] m_b;
-    std::cout<<"TEST 2"<<std::endl;
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
-    std::cout<<"TEST 3"<<std::endl;
     delete[] m_hv[l_st];
-    std::cout<<"TEST 4"<<std::endl;
     delete[] m_h[l_st];
-  std::cout<<"TEST 5"<<std::endl;
     delete[] m_hu[l_st];
-    std::cout<<"TEST 6"<<std::endl;
   }
-  std::cout<<"hallo ich bin das ende des destruktors"<<std::endl;
 }
 
 void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {

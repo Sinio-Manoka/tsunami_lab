@@ -283,7 +283,15 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
-     
+      l_netCdf->updateFile( l_nx,
+                            l_ny,
+                            l_waveProp->getStride(),
+                            l_simTime,
+                            l_waveProp->getHeight(),
+                            l_waveProp->getMomentumX(),
+                            l_waveProp->getMomentumY(),
+                            l_waveProp->getBathymetry());
+
       l_file.close();
       l_nOut++;
     }
