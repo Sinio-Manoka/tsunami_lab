@@ -232,10 +232,7 @@ int main() {
     }),
     l_stations.end());
   }
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(); 
-    l_netCdf->generateFile( l_nx,l_ny);
-
-
+  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf( l_nx,l_ny); 
   //removing out of boundary stations
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
@@ -329,7 +326,10 @@ int main() {
   
   }
   //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x"); 
-  l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
+  //l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
+  std::vector<tsunami_lab::t_real> data;
+  l_netCdf ->read("data/artificialtsunami_bathymetry_1000.nc","z", data);
+
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory

@@ -41,9 +41,9 @@ class tsunami_lab::io::NetCdf {
                     t_real       const * i_hu,
                     t_real       const * i_hv);
                     
-    void generateFile(t_real l_nx,t_real l_ny);
+    NetCdf(t_real l_nx,t_real l_ny);
 
-    void fillConstants(t_idx                   i_nx,  
+    void fillConstants(t_idx                  i_nx,  
                       t_idx                   i_ny,
                       t_real                  i_dx,
                       t_real                  i_dy,
@@ -53,13 +53,9 @@ class tsunami_lab::io::NetCdf {
                       t_real          const * i_b);
 
 
-
-
-  std::vector<tsunami_lab::t_real> readNetCdfDim(std::string filePath , std::string variableName );
-
-  size_t getsizeOfDimension(std::string filePath , std::string variableName);
-
-  std::vector<tsunami_lab::t_real> readNetCdfbathAndDis(std::string filePath );
+    int read( const char* filename,
+              const char* varname,
+              std::vector<t_real> &data);
                                 
 };
 
