@@ -1,16 +1,16 @@
 /**
- * @author Ward Tammaa 
+ 
  *
  * @section DESCRIPTION
  * The Shock Shock problem.
  **/
-#include "TsunamiEvent1d.h"
+#include "TsunamiEvent2d.h"
 #include "../../io/Csv/Csv.h"
 #include <cmath>
 #include <cstddef> 
 
 
-tsunami_lab::setups::TsunamiEvent1d::TsunamiEvent1d(t_real i_delta){
+tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta){
 
     m_delta = i_delta;
 
@@ -20,12 +20,12 @@ tsunami_lab::setups::TsunamiEvent1d::TsunamiEvent1d(t_real i_delta){
     
 }
 
-tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getBathymetry( t_real i_x,
-                                                                        t_real) const {
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetry( t_real i_x,
+                                                                        t_real i_y) const {
     t_real l_bin = getBathymetryCsv(i_x);
-    if(l_bin < 0 ){
+    if(l_bin < 0 ){    
         if( l_bin < -m_delta){
-            return l_bin    + displacement(i_x);
+            return l_bin    + displacement(i_x);  
         }else{
             return -m_delta + displacement(i_x);
         }
@@ -38,8 +38,8 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getBathymetry( t_real i
     } 
 }
 
-tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getHeight( t_real i_x,
-                                                                    t_real      )const{
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getHeight( t_real i_x,
+                                                                    t_real i_y     )const{
     t_real l_bin = getBathymetryCsv(i_x);                           
     if(l_bin < 0 ){
         if( -l_bin < m_delta){
@@ -52,30 +52,34 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getHeight( t_real i_x,
     }                                                                                                                                                                                     
 }
 
-tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::displacement( t_real i_x) const{
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_x,t_real i_y) const{
 
-    if(i_x > 175000 && i_x < 250000){
-        return 10* sin(((i_x-175000)/(37500))* M_PI + M_PI);
-    }else{
-        return 0;
-    }
+    return 5 * fFunction(i_x) * gFunction(i_y);
+
 }
 
-tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getBathymetryCsv(t_real i_x) const{
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetrynetCdf(t_real i_x) const{
     //i_x gets divided by 250 because every cell is in 250m steps
     std::size_t l_index = i_x /250; 
     return m_bathymetry_values[l_index];
 }
 
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::fFunction(t_real i_x) const{
+    return sin(((i_x/500)+1)* M_PI );
+}
 
-tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getMomentumY(  t_real,
-                                                                        t_real)const{
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::gFunction(t_real i_y) const{
+    return -((i_y/500)*(i_y/500))+1;
+}
+
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumY(  t_real i_x,
+                                                                        t_real i_y)const{
     return 0;                                                                                                                                                                      
 }
 
 
 
-tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent1d::getMomentumX(  t_real ,
-                                                                        t_real)const{
+tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumX(  t_real i_x,
+                                                                        t_real i_y)const{
     return 0;                                                                                                                       
 }
