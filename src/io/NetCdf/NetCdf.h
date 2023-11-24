@@ -23,7 +23,7 @@ namespace tsunami_lab {
 
 class tsunami_lab::io::NetCdf {
   private:
-    int m_varIdX, m_varIdY,  m_varIdHeight, m_varIdTime, m_varIdBathymetry, m_varIdImpolseX, m_varIdImpolseY;
+    int m_varIdX, m_varIdY,  m_varIdHeight, m_varIdTime, m_varIdBathymetry, m_varIdImpolseX, m_varIdImpolseY, m_varIdZ;
     t_idx m_time_step = 0;
 
     static void checkNcErr( int i_err);

@@ -334,6 +334,7 @@ int main() {
   std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
   delete l_setup;
   delete l_waveProp;
+  delete l_netCdf;
   std::cout << "\033[1;32m\u2713 finished, exiting \033[0m " << std::endl;
   return EXIT_SUCCESS;
 }

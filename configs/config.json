@@ -13,5 +13,5 @@
     "domain_start_x" : -50,
     "domain_start_y" : -40,
     "wavepropagation" : "2d",
-    "endtime" : 30
+    "endtime" : 60
 }

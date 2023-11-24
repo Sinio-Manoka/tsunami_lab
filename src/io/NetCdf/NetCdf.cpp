@@ -19,6 +19,7 @@ l_err = nc_open("output.nc",
 std::vector<tsunami_lab::t_real> l_coordinatX(i_nx);
 std::vector<tsunami_lab::t_real> l_coordinatY(i_ny);
 std::vector<t_real> l_temp_data_bathymetry(i_ny *i_nx);
+std::vector<t_real> l_temp_data_z(i_ny *i_nx);
 
 std::vector<size_t> startp = {0};
 std::vector<size_t> endpX = {i_nx};
@@ -31,7 +32,7 @@ std::vector<ptrdiff_t> stridep = {1};
             l_coordinatY[l_iy-1] = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
             t_idx l_id = l_iy * i_stride + l_ix;
             l_temp_data_bathymetry[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
-
+            l_temp_data_z[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
         }
     }
 
@@ -69,9 +70,9 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
     for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
       for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
         t_idx l_id = l_iy * i_stride + l_ix;
-        l_temp_data_height[(l_iy-1) * i_ny + (l_ix-1)] = i_h[l_id];
-        l_temp_data_momentum_x[(l_iy-1) * i_ny + (l_ix-1)] = i_hu[l_id];
-        l_temp_data_momentum_y[(l_iy-1) * i_ny + (l_ix-1)] = i_hv[l_id];
+        l_temp_data_height[(l_iy-1) * i_nx + (l_ix-1)] = i_h[l_id];
+        l_temp_data_momentum_x[(l_iy-1) * i_nx + (l_ix-1)] = i_hu[l_id];
+        l_temp_data_momentum_y[(l_iy-1) * i_nx + (l_ix-1)] = i_hv[l_id];
       }
     }
     
@@ -142,6 +143,12 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     l_dimIds[0] =l_dimYId;
     l_dimIds[1] =l_dimXId;
 
+    l_err = nc_def_var(l_ncId, "z", NC_FLOAT, 2, l_dimIds, &m_varIdZ);
+    checkNcErr(l_err);
+    const char* units_attribute_Z = "meters";
+    nc_put_att_text(l_ncId, m_varIdZ, "units", strlen(units_attribute_Z), units_attribute_Z);
+    
+
     l_err = nc_def_var(l_ncId, "b", NC_FLOAT, 2, l_dimIds, &m_varIdBathymetry);
     checkNcErr(l_err);
     const char* units_attribute_Bathymetry = "meters";
@@ -165,7 +172,6 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     checkNcErr(l_err);
     const char* units_attribute_impulseY = "meters";
     nc_put_att_text(l_ncId, m_varIdImpolseY, "units", strlen(units_attribute_impulseY), units_attribute_impulseY);
-
 
     l_err = nc_enddef( l_ncId ); // ncid
     checkNcErr( l_err );
