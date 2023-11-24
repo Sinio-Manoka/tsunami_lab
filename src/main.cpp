@@ -328,7 +328,8 @@ int main() {
       l_simTime += l_dt;
   
   }
-  l_netCdf->readNetCdf(); 
+  //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x"); 
+  l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory

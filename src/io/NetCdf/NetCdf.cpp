@@ -181,25 +181,47 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     checkNcErr( l_err );
 }
 
-std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdf(){
+size_t tsunami_lab::io::NetCdf::getsizeOfDimension(std::string filePath , std::string variableName){
+    int l_ncId,l_err , l_dimId;
+    size_t l_dim_length;
+    const char* file_path = filePath.c_str();
+    const char* variable_name = variableName.c_str();
+
+        l_err = nc_open(file_path,
+                      NC_NOWRITE,
+                      &l_ncId);
+
+        checkNcErr(l_err);
+        l_err = nc_inq_dimid(l_ncId, variable_name, &l_dimId);
+        checkNcErr(l_err);
+
+        l_err = nc_inq_dimlen(l_ncId, l_dimId ,&l_dim_length);
+        checkNcErr(l_err);
+
+    return l_dim_length;
+}
+
+
+std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdfDim( std::string filePath , std::string variableName ){
 
     int l_ncId,l_err, varid ;
 
-    std::vector<tsunami_lab::t_real> data(1000 * 1000);
+    const char* file_path = filePath.c_str();
+    const char* variable_name = variableName.c_str();
+
+    std::vector<tsunami_lab::t_real> data(getsizeOfDimension(filePath,variableName));
     
-    l_err = nc_open("data/artificialtsunami_b.nc",
+    l_err = nc_open(file_path,
                       NC_NOWRITE,    
                       &l_ncId);
 
     checkNcErr(l_err);
 
-    
 
-    l_err = nc_inq_varid(l_ncId, "z" , &varid);
+    l_err = nc_inq_varid(l_ncId, variable_name , &varid);
     checkNcErr(l_err);
 
     
-    std::cout << "im  here" << std :: endl;
     l_err = nc_get_var_float(l_ncId, varid , &data[0]);
     checkNcErr(l_err);
     
@@ -217,8 +239,37 @@ std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdf(){
 
 }
 
+std::vector<tsunami_lab::t_real>  tsunami_lab::io::NetCdf::readNetCdfbathAndDis(std::string filePath){
 
+     int l_ncId,l_err, varid ;
 
+    const char* file_path = filePath.c_str();
+
+    std::vector<tsunami_lab::t_real> data(getsizeOfDimension(filePath,"x") * getsizeOfDimension(filePath,"y"));
+    
+    l_err = nc_open(file_path,
+                      NC_NOWRITE,    
+                      &l_ncId);
+
+    checkNcErr(l_err);
+
+    l_err = nc_inq_varid(l_ncId, "z" , &varid);
+    checkNcErr(l_err);
+
+    
+    l_err = nc_get_var_float(l_ncId, varid , &data[0]);
+    checkNcErr(l_err);
+       
+    l_err = nc_close(l_ncId);
+
+    for (tsunami_lab::t_real value : data) {
+        std::cout << value << " ";
+    }
+
+    return data;
+    
+
+}
 
 
 void tsunami_lab::io::NetCdf::checkNcErr(int i_err) {

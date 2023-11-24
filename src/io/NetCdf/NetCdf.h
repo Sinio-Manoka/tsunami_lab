@@ -25,10 +25,14 @@ class tsunami_lab::io::NetCdf {
   private:
     int m_varIdX, m_varIdY,  m_varIdHeight, m_varIdTime, m_varIdBathymetry, m_varIdImpolseX, m_varIdImpolseY, m_varIdZ;
     t_idx m_time_step = 0;
-
+  /**
+  * @param i_err 
+  *
+  */
     static void checkNcErr( int i_err);
 
   public:
+  
     void updateFile(t_idx                i_nx,
                     t_idx                i_ny,
                     t_idx                i_stride,
@@ -51,7 +55,11 @@ class tsunami_lab::io::NetCdf {
 
 
 
-  std::vector<tsunami_lab::t_real> readNetCdf();
+  std::vector<tsunami_lab::t_real> readNetCdfDim(std::string filePath , std::string variableName );
+
+  size_t getsizeOfDimension(std::string filePath , std::string variableName);
+
+  std::vector<tsunami_lab::t_real> readNetCdfbathAndDis(std::string filePath );
                                 
 };
 
