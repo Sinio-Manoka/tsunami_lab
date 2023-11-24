@@ -80,9 +80,7 @@ env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
 # add nlohmann json 
 env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
 
-env.Append(CPPPATH=['/usr/include/hdf5/serial'])
-
-env.Append(LIBPATH=['/usr/lib/x86_64-linux-gnu', '/usr/lib'])
+env.Append(LIBPATH=['/home/winter/tools/netcdf/include'])
 
 # get source files
 VariantDir( variant_dir = 'build/src',

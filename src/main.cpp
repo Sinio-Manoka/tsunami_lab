@@ -260,6 +260,7 @@ int main() {
     l_stations.end());
 
   }
+  l_netCdf->generateFile(l_nx,l_ny);
   // iterate over time
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
@@ -280,6 +281,14 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
+      l_netCdf->updateFile( l_nx,
+                            l_ny,
+                            l_waveProp->getStride(),
+                            l_simTime,
+                            l_waveProp->getHeight(),
+                            l_waveProp->getMomentumX(),
+                            l_waveProp->getMomentumY(),
+                            l_waveProp->getBathymetry());
 
       l_file.close();
       l_nOut++;
@@ -316,8 +325,7 @@ int main() {
       l_simTime += l_dt;
   
   }
-  l_netCdf->generateFile();
-  l_netCdf->saveData();
+
 
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
