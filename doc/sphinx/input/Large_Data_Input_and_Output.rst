@@ -130,11 +130,7 @@ This function is designed to update the output file after each time step.
 
 .. code-block:: cpp 
 
-  #include "NetCdf.h"
-  #include <netcdf.h>
-  #include <iostream>
-
-  void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
+    void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                               t_idx                   i_ny,
                                               t_real                  i_dx,
                                               t_real                  i_dy,
@@ -151,6 +147,7 @@ This function is designed to update the output file after each time step.
   std::vector<tsunami_lab::t_real> l_coordinatX(i_nx);
   std::vector<tsunami_lab::t_real> l_coordinatY(i_ny);
   std::vector<t_real> l_temp_data_bathymetry(i_ny *i_nx);
+  std::vector<t_real> l_temp_data_z(i_ny *i_nx);
 
   std::vector<size_t> startp = {0};
   std::vector<size_t> endpX = {i_nx};
@@ -163,7 +160,7 @@ This function is designed to update the output file after each time step.
               l_coordinatY[l_iy-1] = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
               t_idx l_id = l_iy * i_stride + l_ix;
               l_temp_data_bathymetry[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
-
+              l_temp_data_z[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
           }
       }
 
@@ -316,10 +313,123 @@ This function is designed to update the output file after each time step.
 
 
 NetCDF Input
-------------
+-------------
 
-Implementation for the artificial tsunami setup
-...............................................
+ArtificialTsunami2d
+....................
+
+
+
+
+adding support for reading netCDF files
+.........................................
+
+To enable reading from our NetCDF files, we need to implement the following function: 
+
+.. code-block:: cpp
+
+    std::vector<tsunami_lab::t_real> readNetCdfDim(std::string filePath , std::string variableName );
+
+    size_t getsizeOfDimension(std::string filePath , std::string variableName);
+
+    std::vector<tsunami_lab::t_real> readNetCdfbathAndDis(std::string filePath );
+
+
+The function `readNetCdfDim` is designed to retrieve the data of dimensions in a NetCDF file for a specific dimension name.
+
+The function `getsizeOfDimension` is intended to provide the size of a specified dimension.
+
+The function `readNetCdfbathAndDis` is crafted to return the dependent variable associated with a particular dimension.
+
+now lests implement the following fucntion in the ``NetCdf.cpp`` the fowllowing function:
+
+
+.. code-block:: cpp
+
+    size_t tsunami_lab::io::NetCdf::getsizeOfDimension(std::string filePath , std::string variableName){
+      int l_ncId,l_err , l_dimId;
+      size_t l_dim_length;
+      const char* file_path = filePath.c_str();
+      const char* variable_name = variableName.c_str();
+
+          l_err = nc_open(file_path,
+                        NC_NOWRITE,
+                        &l_ncId);
+
+          checkNcErr(l_err);
+          l_err = nc_inq_dimid(l_ncId, variable_name, &l_dimId);
+          checkNcErr(l_err);
+
+          l_err = nc_inq_dimlen(l_ncId, l_dimId ,&l_dim_length);
+          checkNcErr(l_err);
+
+      return l_dim_length;
+  }
+
+
+  std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdfDim( std::string filePath , std::string variableName ){
+
+      int l_ncId,l_err, varid ;
+
+      const char* file_path = filePath.c_str();
+      const char* variable_name = variableName.c_str();
+
+      std::vector<tsunami_lab::t_real> data(getsizeOfDimension(filePath,variableName));
+      
+      l_err = nc_open(file_path,
+                        NC_NOWRITE,    
+                        &l_ncId);
+      checkNcErr(l_err);
+
+      l_err = nc_inq_varid(l_ncId, variable_name , &varid);
+      checkNcErr(l_err);
+
+      l_err = nc_get_var_float(l_ncId, varid , &data[0]);
+      checkNcErr(l_err);
+
+      l_err = nc_close(l_ncId);
+
+
+      return data;
+      
+  }
+
+  std::vector<tsunami_lab::t_real>  tsunami_lab::io::NetCdf::readNetCdfbathAndDis(std::string filePath){
+
+      int l_ncId,l_err, varid ;
+
+      const char* file_path = filePath.c_str();
+
+      std::vector<tsunami_lab::t_real> data(getsizeOfDimension(filePath,"x") * getsizeOfDimension(filePath,"y"));
+      
+      l_err = nc_open(file_path,
+                        NC_NOWRITE,    
+                        &l_ncId);
+
+      checkNcErr(l_err);
+
+      l_err = nc_inq_varid(l_ncId, "z" , &varid);
+      checkNcErr(l_err);
+
+      
+      l_err = nc_get_var_float(l_ncId, varid , &data[0]);
+      checkNcErr(l_err);
+        
+      l_err = nc_close(l_ncId);
+
+      return data;
+      
+
+  }
+
+
+
+
+
+
+
+Integration of the new class TsunamiEvent2d
+...........................................
 
 Now, let's proceed to implement the following files ``TsunamiEvent2d.cpp`` , ``TsunamiEvent2d.h`` and ``TsunamiEvent2d.test.cpp`` utilizing the provided data.
 
