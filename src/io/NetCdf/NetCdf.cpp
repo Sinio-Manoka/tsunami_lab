@@ -2,13 +2,14 @@
 #include <netcdf.h>
 #include <iostream>
 
-void tsunami_lab::io::NetCdf::fillXandY(t_idx                   i_nx,
-                                        t_idx                   i_ny,
-                                        t_real                  i_dx,
-                                        t_real                  i_dy,
-                                        t_real                  i_domainstart_x,
-                                        t_real                  i_domainstart_y
-                                                                           ){
+void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
+                                            t_idx                   i_ny,
+                                            t_real                  i_dx,
+                                            t_real                  i_dy,
+                                            t_real                  i_domainstart_x,
+                                            t_real                  i_domainstart_y,
+                                            t_real                  i_stride,
+                                            t_real          const * i_b){
 
 int l_ncId,l_err;
 l_err = nc_open("output.nc",
@@ -17,6 +18,7 @@ l_err = nc_open("output.nc",
 
 std::vector<tsunami_lab::t_real> l_coordinatX(i_nx);
 std::vector<tsunami_lab::t_real> l_coordinatY(i_ny);
+std::vector<t_real> l_temp_data_bathymetry(i_ny *i_nx);
 
 std::vector<size_t> startp = {0};
 std::vector<size_t> endpX = {i_nx};
@@ -27,6 +29,9 @@ std::vector<ptrdiff_t> stridep = {1};
         for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
             l_coordinatX[l_ix-1] = ((l_ix-1 + 0.5) * i_dx )+ i_domainstart_x;
             l_coordinatY[l_iy-1] = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
+            t_idx l_id = l_iy * i_stride + l_ix;
+            l_temp_data_bathymetry[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
+
         }
     }
 
@@ -34,7 +39,11 @@ std::vector<ptrdiff_t> stridep = {1};
     checkNcErr(l_err);
     l_err = nc_put_vars_float(l_ncId, m_varIdY, startp.data(), endpY.data(), stridep.data(), &l_coordinatY[0]);
     checkNcErr(l_err);
-
+    std::vector<size_t> l_start_bathymetry     = {0,0};
+    std::vector<size_t> l_end_bathymetry       = {i_ny,i_nx};
+    std::vector<ptrdiff_t> l_stridep           = {1,1}; 
+    l_err = nc_put_vars_float(l_ncId, m_varIdBathymetry, l_start_bathymetry.data(), l_end_bathymetry.data(), l_stridep.data(), l_temp_data_bathymetry.data());
+    checkNcErr(l_err);
     l_err = nc_close(l_ncId);
     checkNcErr(l_err);
 
@@ -46,8 +55,7 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
                                          t_real               i_time,
                                          t_real       const * i_h,
                                          t_real       const * i_hu,
-                                         t_real       const * i_hv,
-                                         t_real       const * i_b){
+                                         t_real       const * i_hv){
     
     int l_ncId, l_err;    
     l_err = nc_open("output.nc",
@@ -56,16 +64,14 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
 
     checkNcErr(l_err);
     std::vector<t_real> l_temp_data_height(i_ny * i_nx);
-    std::vector<t_real> l_temp_data_bathymetry(i_ny *i_nx);
     std::vector<t_real> l_temp_data_momentum_x(i_ny * i_nx);
     std::vector<t_real> l_temp_data_momentum_y(i_ny * i_nx);
     for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
       for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
         t_idx l_id = l_iy * i_stride + l_ix;
         l_temp_data_height[(l_iy-1) * i_ny + (l_ix-1)] = i_h[l_id];
-        l_temp_data_bathymetry[(l_iy-1) * i_ny + (l_ix-1)] = i_hu[l_id];
-        l_temp_data_momentum_x[(l_iy-1) * i_ny + (l_ix-1)] = i_hv[l_id];
-        l_temp_data_momentum_y[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
+        l_temp_data_momentum_x[(l_iy-1) * i_ny + (l_ix-1)] = i_hu[l_id];
+        l_temp_data_momentum_y[(l_iy-1) * i_ny + (l_ix-1)] = i_hv[l_id];
       }
     }
     
@@ -74,10 +80,6 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
     std::vector<ptrdiff_t> l_stridep = {1,1,1}; // Stride
     
     l_err = nc_put_vars_float(l_ncId, m_varIdHeight, l_startp.data(), l_endp.data(), l_stridep.data(), l_temp_data_height.data());
-    checkNcErr(l_err);
-    std::vector<size_t> l_start_bathymetry     = {0,0};
-    std::vector<size_t> l_end_bathymetry       = {i_ny,i_nx};
-    l_err = nc_put_vars_float(l_ncId, m_varIdBathymetry, l_start_bathymetry.data(), l_end_bathymetry.data(), l_stridep.data(), l_temp_data_bathymetry.data());
     checkNcErr(l_err);
         
     l_err = nc_put_vars_float(l_ncId, m_varIdImpolseX, l_startp.data(), l_endp.data(), l_stridep.data(), l_temp_data_momentum_x.data());

@@ -1,17 +1,17 @@
 {
     "solver" : "fwave",
-    "dimension_x" : 100,
-    "dimension_y" : 80,
+    "dimension_x" : 60,
+    "dimension_y" : 60,
     "setup" :  "dambreak2d",
-    "nx" : 100,
-    "ny" : 80,
+    "nx" : 30,
+    "ny" : 30,
     "hu" : 1,
     "location" : 0,
     "hv":0.0,
     "hr": 55,
     "hl": 25,
-    "domain_start_x" : -50,
-    "domain_start_y" : -50,
+    "domain_start_x" : 0,
+    "domain_start_y" : 0,
     "wavepropagation" : "2d",
-    "endtime" : 20
+    "endtime" : 30
 }

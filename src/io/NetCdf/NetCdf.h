@@ -35,17 +35,18 @@ class tsunami_lab::io::NetCdf {
                     t_real               i_time,
                     t_real       const * i_h,
                     t_real       const * i_hu,
-                    t_real       const * i_hv,
-                    t_real       const * i_b);
+                    t_real       const * i_hv);
                     
     void generateFile(t_real l_nx,t_real l_ny);
 
-    void fillXandY(t_idx                   i_nx,  
-                   t_idx                   i_ny,
-                   t_real                  i_dx,
-                   t_real                  i_dy,
-                   t_real                  i_domainstart_x,
-                   t_real                  i_domainstart_y);
+    void fillConstants(t_idx                   i_nx,  
+                      t_idx                   i_ny,
+                      t_real                  i_dx,
+                      t_real                  i_dy,
+                      t_real                  i_domainstart_x,
+                      t_real                  i_domainstart_y,
+                      t_real                  i_stride,
+                      t_real          const * i_b);
 
 
 

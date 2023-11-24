@@ -234,7 +234,7 @@ int main() {
   }
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(); 
     l_netCdf->generateFile( l_nx,l_ny); 
-    l_netCdf->fillXandY(l_nx,l_ny,l_dx,l_dy,l_domain_start_x,l_domain_start_y);
+
 
   //removing out of boundary stations
   if(l_temp_waveprop == "2d"){
@@ -263,7 +263,9 @@ int main() {
     l_stations.end());
 
   }
-  // iterate over time
+  
+  l_netCdf->fillConstants(l_nx,l_ny,l_dx,l_dy,l_domain_start_x,l_domain_start_y,l_waveProp->getStride(),l_waveProp->getBathymetry());
+  
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
     if( l_timeStep % 25 == 0 ) {
@@ -289,8 +291,7 @@ int main() {
                             l_simTime,
                             l_waveProp->getHeight(),
                             l_waveProp->getMomentumX(),
-                            l_waveProp->getMomentumY(),
-                            l_waveProp->getBathymetry());
+                            l_waveProp->getMomentumY());
 
       l_file.close();
       l_nOut++;
