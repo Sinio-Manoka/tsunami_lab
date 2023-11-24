@@ -181,19 +181,13 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     checkNcErr( l_err );
 }
 
-std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdf(std::string filePath,  std::string variableName ){
+std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdf(){
 
     int l_ncId,l_err, varid ;
 
-    std::vector<tsunami_lab::t_real> data;
-
-    const char* filePath1 = filePath.c_str();
-    const char* variableName1 = variableName.c_str();
-
-
-
+    std::vector<tsunami_lab::t_real> data(1000 * 1000);
     
-    l_err = nc_open(filePath1,
+    l_err = nc_open("data/artificialtsunami_b.nc",
                       NC_NOWRITE,    
                       &l_ncId);
 
@@ -201,7 +195,7 @@ std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdf(std::string
 
     
 
-    l_err = nc_inq_varid(l_ncId, variableName1 , &varid);
+    l_err = nc_inq_varid(l_ncId, "z" , &varid);
     checkNcErr(l_err);
 
     

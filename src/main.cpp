@@ -234,7 +234,6 @@ int main() {
   }
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(); 
     l_netCdf->generateFile( l_nx,l_ny);
-    l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","z"); 
 
 
   //removing out of boundary stations
@@ -329,6 +328,7 @@ int main() {
       l_simTime += l_dt;
   
   }
+  l_netCdf->readNetCdf(); 
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
