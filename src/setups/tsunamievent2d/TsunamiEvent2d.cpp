@@ -54,7 +54,12 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getHeight( t_real i_x,
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_x,t_real i_y) const{
 
-    return 5 * fFunction(i_x) * gFunction(i_y);
+    if((i_x > -500) && (i_y > -500) && (i_x < 500) && (i_y < 500) ){
+        return 5 * fFunction(i_x) * gFunction(i_y);
+    }else{
+        return 0;
+    }
+    
 
 }
 
