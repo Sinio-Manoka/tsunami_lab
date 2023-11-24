@@ -233,7 +233,8 @@ int main() {
     l_stations.end());
   }
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(); 
-    l_netCdf->generateFile( l_nx,l_ny); 
+    l_netCdf->generateFile( l_nx,l_ny);
+    l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","z"); 
 
 
   //removing out of boundary stations

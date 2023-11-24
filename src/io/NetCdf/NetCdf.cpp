@@ -1,6 +1,9 @@
 #include "NetCdf.h"
 #include <netcdf.h>
 #include <iostream>
+#include <list>
+
+
 
 void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                             t_idx                   i_ny,
@@ -104,6 +107,7 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     int l_dimXId,l_dimYId,l_dimTimeId;
     int l_dimIds[3];
 
+    
     std::cout << "generating netcdf-file output.nc " << std::endl;
     l_err = nc_create("output.nc",
                       NC_CLOBBER,    
@@ -176,6 +180,52 @@ void tsunami_lab::io::NetCdf::generateFile(t_real l_nx,t_real l_ny) {
     l_err = nc_enddef( l_ncId ); // ncid
     checkNcErr( l_err );
 }
+
+std::vector<tsunami_lab::t_real> tsunami_lab::io::NetCdf::readNetCdf(std::string filePath,  std::string variableName ){
+
+    int l_ncId,l_err, varid ;
+
+    std::vector<tsunami_lab::t_real> data;
+
+    const char* filePath1 = filePath.c_str();
+    const char* variableName1 = variableName.c_str();
+
+
+
+    
+    l_err = nc_open(filePath1,
+                      NC_NOWRITE,    
+                      &l_ncId);
+
+    checkNcErr(l_err);
+
+    
+
+    l_err = nc_inq_varid(l_ncId, variableName1 , &varid);
+    checkNcErr(l_err);
+
+    
+    std::cout << "im  here" << std :: endl;
+    l_err = nc_get_var_float(l_ncId, varid , &data[0]);
+    checkNcErr(l_err);
+    
+
+       
+
+    l_err = nc_close(l_ncId);
+
+    for (tsunami_lab::t_real value : data) {
+        std::cout << value << " ";
+    }
+
+    return data;
+    
+
+}
+
+
+
+
 
 void tsunami_lab::io::NetCdf::checkNcErr(int i_err) {
     if (i_err) {

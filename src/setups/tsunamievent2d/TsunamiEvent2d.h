@@ -47,7 +47,7 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
      * @param i_delta to avoid running into numerical issues (small value)
      **/
 
-    TsunamiEvent1d( t_real i_delta);
+    TsunamiEvent2d( t_real i_delta);
 
     /**
      * @brief Gets the water height at a given point.

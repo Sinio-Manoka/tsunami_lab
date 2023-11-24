@@ -51,9 +51,8 @@ class tsunami_lab::io::NetCdf {
 
 
 
-
+  std::vector<tsunami_lab::t_real> readNetCdf( std::string filePath,  std::string variableName);
                                 
-
 };
 
 #endif
