@@ -64,13 +64,12 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
     l_hvNew[l_ce] = l_hvOld[l_ce];
   }
   setGhostOutflow(true);
-
- for(t_idx l_ey = 0; l_ey < m_yCells +1;l_ey++){ 
-    for(t_idx l_ex = 0; l_ex < m_xCells +1;l_ex++){
+  
+  for(t_idx l_ex = 0; l_ex < m_yCells +1;l_ex++){ 
+    for(t_idx l_ey = 0; l_ey < m_xCells +1;l_ey++){
       t_real l_netUpdates[2][2];
       t_idx l_ceL = getIndex(l_ex,l_ey);
-      t_idx l_ceR = getIndex(l_ex+1,l_ey);
-
+      t_idx l_ceR = getIndex(l_ex,l_ey+1);
       if(m_choice){
         solvers::Roe::netUpdates(l_hOld[l_ceL],
                                 l_hOld[l_ceR],

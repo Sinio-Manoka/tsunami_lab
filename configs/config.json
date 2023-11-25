@@ -1,7 +1,6 @@
 {
     "solver" : "fwave",
-    "dimension_x" : 100,
-    "dimension_y" : 200,
+    "width" : 100.0,
     "setup" :  "dambreak2d",
     "nx" : 100,
     "ny" : 200,
@@ -13,5 +12,7 @@
     "domain_start_x" : -50,
     "domain_start_y" : -50,
     "wavepropagation" : "2d",
-    "endtime" : 20
+    "endtime" : 20,
+    "writer" : "csv"
+    
 }
