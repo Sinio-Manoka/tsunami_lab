@@ -129,18 +129,22 @@ Usage
 
       {
          "solver" : "fwave",
-         "dimension" : 100,
+         "dimension_x" : 100,
+         "dimension_y" : 100,
          "setup" :  "dambreak2d",
-         "nx" : 200,
-         "ny" : 200,
-         "hu" : 0.0,
-         "location" : 5.0,
+         "nx" : 100,
+         "ny" : 100,
+         "hu" : 1,
+         "location" : 0,
          "hv":0.0,
-         "hr": 10,
-         "hl":0,
-         "domain_start" : -50,
-         "wavepropagation" : "2d"
-         "endtime" : 20
+         "hr": 55,
+         "hl": 25,
+         "domain_start_x" : -50,
+         "domain_start_y" : -50,
+         "wavepropagation" : "2d",
+         "endtime" : 20,
+         "writer" : "csv"
+         
       }
 
 .. important::
@@ -167,9 +171,15 @@ Usage
 
       endtime: End time of the simulation; should be a float number.
 
-      domain_start: Starting point of our domain. For the circular dam break, set the dimension to -50.
+      writer : csv or netcdf. netcdf only support 2d wavepropagation. csv writer support both wavepropagation.
 
-      dimension: Width and length of our domain at this point in our project. l_dxy = dimension / l_nx; 
+      domain_start_x : Starting point of our x_domain. For the circular dam break, set the dimension to -50.
+
+      domain_start_y : Starting point of our y_domain. For the circular dam break, set the dimension to -50.
+
+      dimension_x : Width and length of our domain at this point for the x coordinates. l_dx = dimension_x / l_nx; 
+
+      dimension_y : Width and length of our domain at this point in for the y coordinates. l_dy = dimension_y / l_ny; 
 
       Feel free to adjust the arguments to suit your needs. 
       And don't forget to build the project after every change.
@@ -188,6 +198,7 @@ Usage
    For tsunamievent1d setups, relevant inputs include (dimension=440500.0, endtime, nx, wavepropagation=1d, solver).
 
    For dambreak2d setups, relevant inputs include (nx, ny, endtime, dimension, wavepropagation=2d, domain_start, solver).
+
 
    For each setup, choose the necessary inputs to modify, as other inputs will not affect the setup.
 
