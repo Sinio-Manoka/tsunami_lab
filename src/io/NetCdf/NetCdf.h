@@ -46,7 +46,8 @@ class tsunami_lab::io::NetCdf {
 
     void fillConstants(t_idx                  i_nx,  
                       t_idx                   i_ny,
-                      t_real                  i_dxy,
+                      t_real                  i_dx,
+                      t_real                  i_dy,
                       t_real                  i_domainstart_x,
                       t_real                  i_domainstart_y,
                       t_real                  i_stride,

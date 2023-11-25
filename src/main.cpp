@@ -26,9 +26,9 @@ int main() {
   // number of cells in x- and y-direction
   tsunami_lab::t_idx l_nx = 0;
   tsunami_lab::t_idx l_ny = 1;
-  tsunami_lab::t_real l_dxy= 0;
   // set cell size width length
-
+  tsunami_lab::t_real l_dx = 25;
+  tsunami_lab::t_real l_dy = 25;
   std::cout << "####################################" << std::endl;
   std::cout << "### Tsunami Lab                  ###" << std::endl;
   std::cout << "###                              ###" << std::endl;
@@ -47,9 +47,9 @@ int main() {
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver","width", "setup",
+  std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
                                           "nx","hu","location","hl","ny","domain_start_x",
-                                          "domain_start_y","wavepropagation","endtime","writer"};
+                                          "domain_start_y","wavepropagation","endtime"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -89,14 +89,15 @@ int main() {
   tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
   tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
   tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
-  tsunami_lab::t_real l_temp_width=  tsunami_lab::io::Configuration::readFromConfigReal("width");
+  tsunami_lab::t_real l_temp_dimension_x =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_x");
+  tsunami_lab::t_real l_temp_dimension_y =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_y");
   tsunami_lab::t_real l_frequency = tsunami_lab::io::Configuration::getFrequency();
   tsunami_lab::t_real l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
-  std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
   std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
-  l_dxy = l_temp_width / l_nx;
+  l_dx = l_temp_dimension_x / l_nx;
+  l_dy = l_temp_dimension_y / l_ny;
 
   //Declaration---------------------------------------------------------------------------END
   //Reading the Solver from the Json file-------------------------------------------------START
@@ -165,19 +166,12 @@ int main() {
         l_setup = new tsunami_lab::setups::DamBreak2d();
       }
   }
-
-  if(l_temp_writer == "netcdf"){
-     std::cout << "\033[1;32m\u2713 writer : netcdf \033[0m" << std::endl;
-  }else{
-    std::cout << "\033[1;32m\u2713 writer : csv \033[0m" << std::endl;
-  }
-
     //Determine which setup and which wavepropagation to use--------------------------------END
   std::cout << "runtime configuration" << std::endl;
   std::cout << "  number of cells in x-direction: " << l_nx << std::endl;
   std::cout << "  number of cells in y-direction: " << l_ny << std::endl;
-  std::cout << "  cell width:                     " << l_dxy << std::endl;
-
+  std::cout << "  cell width:                     " << l_dx << std::endl;
+  std::cout << "  cell height:                    " << l_dy << std::endl;
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
   // set up solver
@@ -189,11 +183,11 @@ int main() {
 
   for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ )
   { 
-    tsunami_lab::t_real l_y = l_cy * l_dxy + l_domain_start_y;
+    tsunami_lab::t_real l_y = l_cy * l_dy + l_domain_start_y;
   
     for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ )
     {
-      tsunami_lab::t_real l_x = l_cx * l_dxy + l_domain_start_x;
+      tsunami_lab::t_real l_x = l_cx * l_dx + l_domain_start_x;
 
       // get initial values of the setup
       tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
@@ -225,9 +219,9 @@ int main() {
  
   tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
   
-  tsunami_lab::t_real l_dt = 0.5 * l_dxy / l_speedMax;
+  tsunami_lab::t_real l_dt = std::min((0.5 * l_dy / l_speedMax) , (0.5 * l_dy / l_speedMax));
   // derive scaling for a time step
-  tsunami_lab::t_real l_scaling = l_dt /l_dxy;
+  tsunami_lab::t_real l_scaling = std::min(l_dt/l_dx,l_dt/l_dy);
   
 
   // set up time and print control
@@ -256,8 +250,8 @@ int main() {
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
     std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
-    if (station.i_x < l_domain_start_x || station.i_x >= l_dxy * l_nx + l_domain_start_x||
-        station.i_y < l_domain_start_y || station.i_y >= l_dxy * l_ny + l_domain_start_y) {
+    if (station.i_x < l_domain_start_x || station.i_x >= l_temp_dimension_x + l_domain_start_x ||
+        station.i_y < l_domain_start_y || station.i_y >= l_temp_dimension_y + l_domain_start_y) {
         std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
         return true; // Remove the station
     }
@@ -269,7 +263,7 @@ int main() {
   }else{
     l_stations.erase(
     std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
-    if (station.i_x < l_domain_start_x || station.i_x >= l_dxy) {
+    if (station.i_x < l_domain_start_x || station.i_x >= l_temp_dimension_x + l_domain_start_x) {
         std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
         return true; // Remove the station
     }
@@ -282,30 +276,26 @@ int main() {
   //stations ---------------------------------------------------------------------------------end
 
   //create the netCdf file reader/writer
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny);
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny); 
 
-    if(l_temp_writer == "netcdf"){
-
-          l_netCdf->fillConstants(l_nx,
+    l_netCdf->fillConstants(l_nx,
                             l_ny,
-                            l_dxy,
+                            l_dx,
+                            l_dy,
                             l_domain_start_x,
                             l_domain_start_y,
                             l_waveProp->getStride(),
                             l_waveProp->getBathymetry());
-    }
-
   
 
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
     if( l_timeStep % 25 == 0 ) {
-
-      if(l_temp_writer == "csv"){
       std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
       std::ofstream l_file;
       l_file.open( l_path );
-              tsunami_lab::io::Csv::write(l_dxy,
+      tsunami_lab::io::Csv::write( l_dx,
+                                   l_dy,
                                    l_nx,
                                    l_ny,
                                    l_waveProp->getStride(),
@@ -317,12 +307,7 @@ int main() {
                                    l_waveProp->getMomentumY(),
                                    l_waveProp->getBathymetry(),
                                    l_file );
-        l_file.close();
-         l_nOut++;
-
-      }else{
-        
-            l_netCdf->updateFile( l_nx,
+      l_netCdf->updateFile( l_nx,
                             l_ny,
                             l_waveProp->getStride(),
                             l_simTime,
@@ -330,12 +315,8 @@ int main() {
                             l_waveProp->getMomentumX(),
                             l_waveProp->getMomentumY());
 
-      }
-
-  
-
-    
-     
+      l_file.close();
+      l_nOut++;
     }
     //STATIONS_---------------------------------------------START 
     if(l_current_frequency_time <= l_simTime){
@@ -345,8 +326,8 @@ int main() {
           std::filesystem::create_directory(l_foldername);
         }
         //compute cell IDs
-        tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start_x ) / l_dxy )+ l_waveProp->getGhostcellX();
-        tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start_y ) / l_dxy )+ l_waveProp->getGhostcellY();
+        tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start_x ) / l_dx )+ l_waveProp->getGhostcellX();
+        tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start_y ) / l_dy )+ l_waveProp->getGhostcellY();
         if(l_temp_waveprop == "1d"){
           l_iy = 0; 
         }
@@ -369,6 +350,8 @@ int main() {
       l_simTime += l_dt;
   
   }
+  //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x");
+  //l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
