@@ -1,14 +1,14 @@
 /**
-
+ * @author Ward Tammaa
  *
  * @section DESCRIPTION
  * test unit for the SupercriticalFlow.
-
+ **/
 #include <catch2/catch.hpp>
-#include "TsunamiEvent2d.h"
+#include "TsunamiEvent1d.h"
 
-TEST_CASE( "Test the TsunamiEvent2d setup.", "[TsunamiEvent2d]" ) {
-  tsunami_lab::setups::TsunamiEvent1d l_tsunamiEvent2d(20);
+TEST_CASE( "Test the TsunamiEvent1d setup.", "[TsunamiEvent1d]" ) {
+  tsunami_lab::setups::TsunamiEvent1d l_tsunamiEvent1d(20);
 
   // left side
   REQUIRE( l_tsunamiEvent1d.getHeight( 2, 0 ) == 20.0f );
@@ -51,4 +51,4 @@ TEST_CASE( "Test the TsunamiEvent2d setup.", "[TsunamiEvent2d]" ) {
 
   REQUIRE( l_tsunamiEvent1d.getBathymetry( 10, 0 ) == -20.0f );
 
-} **/
+}

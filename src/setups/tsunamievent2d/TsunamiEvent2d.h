@@ -1,10 +1,11 @@
 /**
+ * @author Ward Tammaa 
  *
  * @section DESCRIPTION
  * supercriticalflow.
  **/
-#ifndef TSUNAMI_LAB_SETUPS_TSUNAMIEVENT2D_H
-#define TSUNAMI_LAB_SETUPS_TSUNAMIEVENT2D_H
+#ifndef TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
+#define TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
 
 #include "../Setup.h"
 #include <fstream>
@@ -14,14 +15,14 @@
 
 namespace tsunami_lab {
   namespace setups {
-    class TsunamiEvent2d;
+    class TsunamiEvent1d;
   }
 }
 
 /**
- * TsunamiEvent2d setup.
+ * TsunamiEvent1d setup.
  **/
-class tsunami_lab::setups::TsunamiEvent2d: public Setup {
+class tsunami_lab::setups::TsunamiEvent1d: public Setup {
 
   private:
     /**
@@ -47,7 +48,7 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
      * @param i_delta to avoid running into numerical issues (small value)
      **/
 
-    TsunamiEvent2d( t_real i_delta);
+    TsunamiEvent1d( t_real i_delta);
 
     /**
      * @brief Gets the water height at a given point.
@@ -56,15 +57,15 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
      * @return Height at the given point.
      **/
     t_real getHeight( t_real i_x,
-                      t_real i_y     ) const;
+                      t_real      ) const;
 
     /**
      * @brief Gets the momentum in x-direction.
      *
      * @return Momentum in x-direction.
      **/
-    t_real getMomentumX( t_real i_x ,
-                         t_real i_y) const;
+    t_real getMomentumX( t_real ,
+                         t_real ) const;
 
     /**
      * @brief Gets the momentum in y-direction.
@@ -79,15 +80,14 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
     * @return Bathymetry.
     */
     t_real getBathymetry( t_real i_x,
-                          t_real i_y) const ;
+                          t_real ) const ;
 
     /** 
     * @brief divide the distance i_x by 250 to determine the index for the bathymetry in the csv file.
     * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
     * @return Bathymetry in the csv file (not the value that we use).
     */
-    t_real getBathymetryCdf(t_real i_x
-                            t_real i_y) const;
+    t_real getBathymetryCsv(t_real i_x) const;
 };
 
 #endif

@@ -1,6 +1,7 @@
 
 #include "patches/wavepropagation1d/WavePropagation1d.h"
 #include "patches/wavepropagation2d/WavePropagation2d.h"
+#include "setups/ArtificialTsunami2d/ArtificialTsunami2d.h"
 #include "setups/dambreak/DamBreak1d.h"
 #include "setups/dambreak2d/DamBreak2d.h"
 #include "setups/rarerare/RareRare.h"
@@ -77,6 +78,8 @@ int main() {
   //New:: Reading Data from the Json File
   l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
   l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+  // we are working on it asking breuer next time
+  
   std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
   std::string l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
   std::string l_temp_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
@@ -111,11 +114,23 @@ int main() {
   //Determine which setup and which wavepropagation to use--------------------------------START
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   if(l_temp_waveprop == "2d"){
-    std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
-    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx,l_ny, l_solver);
-    std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
-    l_setup = new tsunami_lab::setups::DamBreak2d();
-  }else if(l_temp_waveprop == "1d"){
+    if(l_temp_setup == "ArtificialTsunami2D"){
+      std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
+      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx,l_ny, l_solver);
+      std::cout << "\033[1;32m\u2713 Setup : ArtificialTsunami2D \033[0m" << std::endl;
+      l_setup = new tsunami_lab::setups::ArtificialTsunami2d(20);
+      //both offsets should be -5_000 and bot dimension be 10_000
+    }
+    else
+    {
+      std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be choosen \033[0m" << std::endl;
+      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx,l_ny, l_solver);
+      std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
+      l_setup = new tsunami_lab::setups::DamBreak2d();
+    }
+   
+  }else if(l_temp_waveprop == "1d")
+  {
       std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be choosen \033[0m" << std::endl;
       l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
       if(l_temp_setup == "tsunamievent1d"){
@@ -148,15 +163,9 @@ int main() {
       }else if(l_temp_setup == "dambreak2d"){
 
         std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
-        l_setup = new tsunami_lab::setups::DamBreak2d(); 
-      
-
-      }else if(l_temp_setup == "dambreak2d"){
-
-        std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
-        l_setup = new tsunami_lab::setups::DamBreak2d(); 
+        l_setup = new tsunami_lab::setups::DamBreak2d();
       }
-    }
+  }
     //Determine which setup and which wavepropagation to use--------------------------------END
   std::cout << "runtime configuration" << std::endl;
   std::cout << "  number of cells in x-direction: " << l_nx << std::endl;
@@ -166,15 +175,20 @@ int main() {
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
   // set up solver
-  for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ) { 
-    tsunami_lab::t_real l_y;
-    if(l_temp_waveprop == "2d"){
-      l_y = (l_cy * l_dy) + l_domain_start_y; 
-    }else{
-      l_y = 0;
-    }
-    for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ) {
-      tsunami_lab::t_real l_x = (l_cx * l_dx) + l_domain_start_x; 
+
+  if(l_temp_waveprop == "1d")
+  {
+    l_ny = 1;
+  }
+
+  for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ )
+  { 
+    tsunami_lab::t_real l_y = l_cy * l_dy + l_domain_start_y;
+  
+    for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ )
+    {
+      tsunami_lab::t_real l_x = l_cx * l_dx + l_domain_start_x;
+
       // get initial values of the setup
       tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
                                                     l_y );
@@ -206,11 +220,9 @@ int main() {
   tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
   
   tsunami_lab::t_real l_dt = std::min((0.5 * l_dy / l_speedMax) , (0.5 * l_dy / l_speedMax));
+  // derive scaling for a time step
   tsunami_lab::t_real l_scaling = std::min(l_dt/l_dx,l_dt/l_dy);
   
-  
-  
-  // derive scaling for a time step
 
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
@@ -220,7 +232,8 @@ int main() {
   tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "entering time loop" << std::endl;
   
-  // Checking if the Y of each Station is set 0, else delete it from the
+
+  // Checking if the "y" of each Station is set 0, else delete it from the vector.
   if(l_temp_waveprop == "1d" && l_stations.size() != 0){
     l_stations.erase(
     std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
@@ -232,7 +245,7 @@ int main() {
     }),
     l_stations.end());
   }
-  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf( l_nx,l_ny); 
+  //stations removing out of boundary-------------------------------------------------------------start
   //removing out of boundary stations
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
@@ -258,11 +271,23 @@ int main() {
     return false; // Keep the station
     }),
     l_stations.end());
-
   }
+
+  //stations ---------------------------------------------------------------------------------end
+
+  //create the netCdf file reader/writer
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny); 
+
+    l_netCdf->fillConstants(l_nx,
+                            l_ny,
+                            l_dx,
+                            l_dy,
+                            l_domain_start_x,
+                            l_domain_start_y,
+                            l_waveProp->getStride(),
+                            l_waveProp->getBathymetry());
   
-  l_netCdf->fillConstants(l_nx,l_ny,l_dx,l_dy,l_domain_start_x,l_domain_start_y,l_waveProp->getStride(),l_waveProp->getBathymetry());
-  
+
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(true);
     if( l_timeStep % 25 == 0 ) {
@@ -325,11 +350,8 @@ int main() {
       l_simTime += l_dt;
   
   }
-  //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x"); 
+  //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x");
   //l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
-  std::vector<tsunami_lab::t_real> data;
-  l_netCdf ->read("data/artificialtsunami_bathymetry_1000.nc","z", data);
-
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
   // free memory

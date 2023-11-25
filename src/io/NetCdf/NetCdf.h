@@ -23,13 +23,14 @@ namespace tsunami_lab {
 
 class tsunami_lab::io::NetCdf {
   private:
-    int m_varIdX, m_varIdY,  m_varIdHeight, m_varIdTime, m_varIdBathymetry, m_varIdImpolseX, m_varIdImpolseY;
+    int m_varIdX, m_varIdY,  m_varIdHeight, m_varIdTime, m_varIdBathymetry, m_varIdImpulseX, m_varIdImpulseY;
     t_idx m_time_step = 0;
   /**
   * @param i_err 
   *
   */
     static void checkNcErr( int i_err);
+    t_real * pruneGhostCells(t_idx i_stride,t_idx i_ny,t_idx i_nx,t_real const *i_data);
 
   public:
   
