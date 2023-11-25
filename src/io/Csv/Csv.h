@@ -40,8 +40,7 @@ class tsunami_lab::io::Csv {
      * @param i_b bathymetry of the cell
      * @param io_stream stream to which the CSV-data is written.
      **/
-    static void write( t_real               i_dx,
-                       t_real               i_dy, 
+    static void write( t_real               i_dxy,
                        t_idx                i_nx,
                        t_idx                i_ny,
                        t_idx                i_stride,

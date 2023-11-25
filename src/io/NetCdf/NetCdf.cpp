@@ -7,8 +7,7 @@
 
 void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                             t_idx                   i_ny,
-                                            t_real                  i_dx,
-                                            t_real                  i_dy,
+                                            t_real                  i_dxy,
                                             t_real                  i_domainstart_x,
                                             t_real                  i_domainstart_y,
                                             t_real                  i_stride,
@@ -23,7 +22,7 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     
     for( t_idx l_iy = 0; l_iy < i_ny; l_iy++ )
     {
-        l_coordinateY[l_iy] = ((l_iy + 0.5) * i_dy )+ i_domainstart_y;
+        l_coordinateY[l_iy] = ((l_iy + 0.5) * i_dxy )+ i_domainstart_y;
     }
     // put y coordinates
     l_err = nc_put_var_float(l_ncId, m_varIdY, l_coordinateY);
@@ -32,7 +31,7 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     delete[] l_coordinateY;
     for(t_idx l_ix = 0; l_ix < i_nx; l_ix++) 
     {
-        l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dx )+ i_domainstart_x;
+        l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dxy )+ i_domainstart_x;
     }
     // put x coordinates
     l_err = nc_put_var_float(l_ncId, m_varIdX, l_coordinateX);

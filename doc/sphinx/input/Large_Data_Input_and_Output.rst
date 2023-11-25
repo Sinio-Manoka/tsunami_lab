@@ -124,6 +124,7 @@ This function is designed to update the output file after each time step.
 
 .. code-block:: cpp 
 
+
     void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                                 t_idx                   i_ny,
                                                 t_real                  i_dx,
@@ -134,37 +135,47 @@ This function is designed to update the output file after each time step.
                                                 t_real          const * i_b){
 
         int l_ncId,l_err;
-        l_err = nc_open("output.nc",
-                        NC_WRITE,
-                        &l_ncId);
+        l_err = nc_open("output.nc",NC_WRITE, &l_ncId);
 
-        std::vector<tsunami_lab::t_real> l_coordinatX(i_nx);
-        std::vector<tsunami_lab::t_real> l_coordinatY(i_ny);
-        std::vector<t_real> l_temp_data_bathymetry(i_ny *i_nx);
+        t_real *l_coordinateX = new t_real[i_nx];
+        t_real *l_coordinateY = new t_real[i_ny];
+        t_real *l_temp_data_bathymetry = new t_real[(i_ny * i_nx)];
+        
+        for( t_idx l_iy = 0; l_iy < i_ny; l_iy++ )
+        {
+            l_coordinateY[l_iy] = ((l_iy + 0.5) * i_dy )+ i_domainstart_y;
+        }
+        // put y coordinates
+        l_err = nc_put_var_float(l_ncId, m_varIdY, l_coordinateY);
+        checkNcErr(l_err);
 
-        std::vector<size_t> startp = {0};
-        std::vector<size_t> endpX = {i_nx};
-        std::vector<size_t> endpY = {i_ny};
-        std::vector<ptrdiff_t> stridep = {1};
+        delete[] l_coordinateY;
+        for(t_idx l_ix = 0; l_ix < i_nx; l_ix++) 
+        {
+            l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dx )+ i_domainstart_x;
+        }
+        // put x coordinates
+        l_err = nc_put_var_float(l_ncId, m_varIdX, l_coordinateX);
+        checkNcErr(l_err);
+        delete[] l_coordinateX;
 
-        for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
-            for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
-                l_coordinatX[l_ix-1] = ((l_ix-1 + 0.5) * i_dx )+ i_domainstart_x;
-                l_coordinatY[l_iy-1] = ((l_iy-1 + 0.5) * i_dy )+ i_domainstart_y;
-                t_idx l_id = l_iy * i_stride + l_ix;
-                l_temp_data_bathymetry[(l_iy-1) * i_ny + (l_ix-1)] = i_b[l_id];
+        for( t_idx l_iy = 0; l_iy < i_ny; l_iy++ )
+        {
+            for( t_idx l_ix = 0; l_ix < i_nx; l_ix++)
+            {   
+                t_idx l_id = (l_iy) * i_stride + (l_ix+1);
+
+                l_temp_data_bathymetry[(l_iy * i_nx) + l_ix] = i_b[l_id];
             }
         }
+        
+        // put bathymetry values
+        l_err = nc_put_var_float(l_ncId, m_varIdBathymetry, l_temp_data_bathymetry);
+        checkNcErr(l_err);
 
-        l_err = nc_put_vars_float(l_ncId, m_varIdX, startp.data(), endpX.data(), stridep.data(), &l_coordinatX[0]);
-        checkNcErr(l_err);
-        l_err = nc_put_vars_float(l_ncId, m_varIdY, startp.data(), endpY.data(), stridep.data(), &l_coordinatY[0]);
-        checkNcErr(l_err);
-        std::vector<size_t> l_start_bathymetry     = {0,0};
-        std::vector<size_t> l_end_bathymetry       = {i_ny,i_nx};
-        std::vector<ptrdiff_t> l_stridep           = {1,1}; 
-        l_err = nc_put_vars_float(l_ncId, m_varIdBathymetry, l_start_bathymetry.data(), l_end_bathymetry.data(), l_stridep.data(), l_temp_data_bathymetry.data());
-        checkNcErr(l_err);
+        delete[] l_temp_data_bathymetry;
+
+        //close file for now
         l_err = nc_close(l_ncId);
         checkNcErr(l_err);
 
@@ -311,6 +322,9 @@ NetCDF Input
 
 ArtificialTsunami2d
 ....................
+
+
+
 
 
 
