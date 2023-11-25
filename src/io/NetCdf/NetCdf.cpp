@@ -189,18 +189,14 @@ tsunami_lab::io::NetCdf::NetCdf(t_real l_nx,t_real l_ny) {
     //variable x
     l_err = nc_def_var(l_ncId, "x", NC_FLOAT, 1, &l_dimXId, &m_varIdX);
     checkNcErr(l_err);
-    const char* units_attribute_x = "meters";
+    const char* units_attribute_x = "meter";
     nc_put_att_text(l_ncId, m_varIdX, "units", strlen(units_attribute_x), units_attribute_x);
-    const char* axis_attribute_x = "X";
-    nc_put_att_text(l_ncId, m_varIdX, "axis", strlen(axis_attribute_x), axis_attribute_x);
 
     //variable y
     l_err = nc_def_var(l_ncId, "y", NC_FLOAT, 1, &l_dimYId, &m_varIdY);
     checkNcErr(l_err);
-    const char* units_attribute_y = "meters";
+    const char* units_attribute_y = "meter";
     nc_put_att_text(l_ncId, m_varIdY, "units", strlen(units_attribute_y), units_attribute_y);
-    const char* axis_attribute_y = "Y";
-    nc_put_att_text(l_ncId, m_varIdY, "axis", strlen(axis_attribute_y), axis_attribute_y);
 
     //variable time
     l_err = nc_def_var(l_ncId, "time", NC_FLOAT, 1, &l_dimTimeId, &m_varIdTime);
