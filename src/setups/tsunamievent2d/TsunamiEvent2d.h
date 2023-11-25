@@ -28,21 +28,30 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
     /**
      * @param m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
      */
-    t_real m_delta = 0; 
+    t_real m_delta               = 0 ;
+    t_real m_width_bathymetry    = 0 ; 
+    t_real m_length_bathymetry   = 0 ;
+    t_real m_width_displacement  = 0 ;
+    t_real m_length_displacement = 0 ;
+
 
     /**
     * @param m_bathymetry_values contains all bathymetry values 
     */
     std::vector<t_real> m_bathymetry_values;
+    std::vector<t_real> m_bathymetry_x_values;
+    std::vector<t_real> m_bathymetry_y_values;
 
     std::vector<t_real> m_displacement_values;
+    std::vector<t_real> m_displacement_x_values;
+    std::vector<t_real> m_displacement_y_values;
 
-    
     /**
     * @brief the method adds the vertical displacement, typically caused by a subduction-zone earthquake.
     * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
     */
     t_real displacement( t_real i_x,t_real i_y) const;
+
 
   public:
   
@@ -91,6 +100,8 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
     * @return Bathymetry in the csv file (not the value that we use).
     */
     t_real getBathymetryNetCdf(t_real i_x, t_real i_y) const;
+    t_idx findClosestIndex(const std::vector<t_real>& vec, t_real value) const;
+
 };
 
 #endif
