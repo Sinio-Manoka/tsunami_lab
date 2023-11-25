@@ -126,6 +126,8 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     {
         REQUIRE(bathymetry[i] == Approx(0));
     }
+
+    delete l_netCdf;
     
     
 }
@@ -145,5 +147,7 @@ TEST_CASE( "Test the NetCdf-reader ", "[NetCdfreader]" ) {
   {
      REQUIRE(i == data[i]);
   }
+
+  delete l_netCdf;
 
 }
