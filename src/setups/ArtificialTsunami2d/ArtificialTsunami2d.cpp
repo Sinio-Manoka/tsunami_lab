@@ -11,10 +11,11 @@
 tsunami_lab::setups::ArtificialTsunami2d::ArtificialTsunami2d(t_real i_delta){
 
     m_delta = i_delta;
+
 }
 
 tsunami_lab::t_real tsunami_lab::setups::ArtificialTsunami2d::getBathymetry( t_real i_x,
-                                                                        t_real i_y) const {
+                                                                            t_real i_y) const {
 
 
     //m_Bin is hardcoded to -100                                                                     
@@ -59,12 +60,12 @@ tsunami_lab::t_real tsunami_lab::setups::ArtificialTsunami2d::gFunction(t_real i
 
 tsunami_lab::t_real tsunami_lab::setups::ArtificialTsunami2d::getMomentumY(  t_real ,
                                                                         t_real )const{
-    return 0;                                                                                                                                                                      
+    return 0;
 }
 
 
 
 tsunami_lab::t_real tsunami_lab::setups::ArtificialTsunami2d::getMomentumX(  t_real,
                                                                         t_real )const{
-    return 0;                                                                                                                       
+    return 0;
 }

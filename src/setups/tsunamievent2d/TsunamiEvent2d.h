@@ -4,8 +4,8 @@
  * @section DESCRIPTION
  * supercriticalflow.
  **/
-#ifndef TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
-#define TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
+#ifndef TSUNAMI_LAB_SETUPS_TSUNAMIEVENT2D_H
+#define TSUNAMI_LAB_SETUPS_TSUNAMIEVENT2D_H
 
 #include "../Setup.h"
 #include <fstream>
@@ -15,14 +15,14 @@
 
 namespace tsunami_lab {
   namespace setups {
-    class TsunamiEvent1d;
+    class TsunamiEvent2d;
   }
 }
 
 /**
- * TsunamiEvent1d setup.
+ * TsunamiEvent2d setup.
  **/
-class tsunami_lab::setups::TsunamiEvent1d: public Setup {
+class tsunami_lab::setups::TsunamiEvent2d: public Setup {
 
   private:
     /**
@@ -34,21 +34,24 @@ class tsunami_lab::setups::TsunamiEvent1d: public Setup {
     * @param m_bathymetry_values contains all bathymetry values 
     */
     std::vector<t_real> m_bathymetry_values;
+
+    std::vector<t_real> m_displacement_values;
+
     
     /**
     * @brief the method adds the vertical displacement, typically caused by a subduction-zone earthquake.
     * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
     */
-    t_real displacement( t_real i_x) const;
+    t_real displacement( t_real i_x,t_real i_y) const;
 
   public:
   
     /**
-     * @brief The constructor for TsunamiEvent1D.
+     * @brief The constructor for TsunamiEvent2d.
      * @param i_delta to avoid running into numerical issues (small value)
      **/
 
-    TsunamiEvent1d( t_real i_delta);
+    TsunamiEvent2d( t_real i_delta);
 
     /**
      * @brief Gets the water height at a given point.
@@ -57,7 +60,7 @@ class tsunami_lab::setups::TsunamiEvent1d: public Setup {
      * @return Height at the given point.
      **/
     t_real getHeight( t_real i_x,
-                      t_real      ) const;
+                      t_real i_y) const;
 
     /**
      * @brief Gets the momentum in x-direction.
@@ -80,14 +83,14 @@ class tsunami_lab::setups::TsunamiEvent1d: public Setup {
     * @return Bathymetry.
     */
     t_real getBathymetry( t_real i_x,
-                          t_real ) const ;
+                          t_real i_y) const ;
 
     /** 
     * @brief divide the distance i_x by 250 to determine the index for the bathymetry in the csv file.
     * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
     * @return Bathymetry in the csv file (not the value that we use).
     */
-    t_real getBathymetryCsv(t_real i_x) const;
+    t_real getBathymetryNetCdf(t_real i_x, t_real i_y) const;
 };
 
 #endif

@@ -54,9 +54,9 @@ class tsunami_lab::io::NetCdf {
                       t_real          const * i_b);
 
 
-    int read( const char* filename,
-              const char* varname,
-              std::vector<t_real> &data);
+    static int read( const char* filename,
+                    const char* varname,
+                    std::vector<t_real> &data);
                                 
 };
 
