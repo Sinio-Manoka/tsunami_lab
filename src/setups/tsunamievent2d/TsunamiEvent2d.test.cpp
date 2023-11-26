@@ -31,4 +31,5 @@ TEST_CASE("Test the two-dimensional tsunamiEvent setup.", "[TsunamiEvent2d]")
   l_heightValue = l_tsunamiEvent2d->getHeight(9,4);
   REQUIRE(l_heightValue == 100.0f);
 
+  delete l_tsunamiEvent2d;
 }
