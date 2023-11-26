@@ -7,13 +7,13 @@
 tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta)
 {
 
-    tsunami_lab::io::NetCdf::read("data/testBathymetry.nc","z",m_bathymetry_values);
-    tsunami_lab::io::NetCdf::read("data/testBathymetry.nc","x",m_bathymetry_x_values);
-    tsunami_lab::io::NetCdf::read("data/testBathymetry.nc","y",m_bathymetry_y_values); 
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","z",m_bathymetry_values);
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","x",m_bathymetry_x_values);
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","y",m_bathymetry_y_values); 
  
-    tsunami_lab::io::NetCdf::read("data/testDispl.nc","z",m_displacement_values);
-    tsunami_lab::io::NetCdf::read("data/testDispl.nc","x",m_displacement_x_values);
-    tsunami_lab::io::NetCdf::read("data/testDispl.nc","y",m_displacement_y_values);
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","z",m_displacement_values);
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","x",m_displacement_x_values);
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","y",m_displacement_y_values);
 
     m_delta = i_delta;
     
