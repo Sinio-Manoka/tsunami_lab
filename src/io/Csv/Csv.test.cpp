@@ -18,7 +18,8 @@ TEST_CASE( "Test the CSV-writer for 1D settings. Example 1", "[CsvWrite1d]" ) {
   tsunami_lab::t_real l_hu[7] = { 6, 5, 4, 3, 2, 1, 0 };
 
   std::stringstream l_stream0;
-  tsunami_lab::io::Csv::write( 1,
+  tsunami_lab::io::Csv::write( 0.5,
+                               1,
                                5,
                                1,
                                7,
@@ -32,11 +33,11 @@ TEST_CASE( "Test the CSV-writer for 1D settings. Example 1", "[CsvWrite1d]" ) {
                                l_stream0 );
 
   std::string l_ref0 = R"V0G0N(x,y,height,momentum_x
--49.5,0.5,1,5
--48.5,0.5,2,4
--47.5,0.5,3,3
--46.5,0.5,4,2
--45.5,0.5,5,1
+-49.75,0.5,1,5
+-49.25,0.5,2,4
+-48.75,0.5,3,3
+-48.25,0.5,4,2
+-47.75,0.5,5,1
 )V0G0N";
 
   REQUIRE( l_stream0.str().size() == l_ref0.size() );
@@ -60,6 +61,7 @@ TEST_CASE( "Test the CSV-writer for 2D settings. Example 1", "[CsvWrite2d]" ) {
 
   std::stringstream l_stream1;
   tsunami_lab::io::Csv::write( 10,
+                               10,
                                2,
                                2,
                                4,
@@ -99,7 +101,8 @@ TEST_CASE( "Test the CSV-writer for 1D settings. Example 2", "[CsvWrite1d]" ) {
   tsunami_lab::t_real l_hu[7] = { 6, 5, 4, 3, 2, 1, 0 };
 
   std::stringstream l_stream0;
-  tsunami_lab::io::Csv::write( 1,
+  tsunami_lab::io::Csv::write( 0.5,
+                               1,
                                5,
                                1,
                                7,
@@ -113,11 +116,11 @@ TEST_CASE( "Test the CSV-writer for 1D settings. Example 2", "[CsvWrite1d]" ) {
                                l_stream0 );
 
   std::string l_ref0 = R"V0G0N(x,y,height,momentum_x
-0.5,0.5,1,5
-1.5,0.5,2,4
-2.5,0.5,3,3
-3.5,0.5,4,2
-4.5,0.5,5,1
+0.25,0.5,1,5
+0.75,0.5,2,4
+1.25,0.5,3,3
+1.75,0.5,4,2
+2.25,0.5,5,1
 )V0G0N";
 
   REQUIRE( l_stream0.str().size() == l_ref0.size() );
@@ -141,6 +144,7 @@ TEST_CASE( "Test the CSV-writer for 1D settings. Example 3", "[CsvWrite2d]" ) {
 
   std::stringstream l_stream1;
   tsunami_lab::io::Csv::write( 10,
+                               10,
                                2,
                                2,
                                4,

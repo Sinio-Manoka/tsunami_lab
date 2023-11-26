@@ -33,29 +33,32 @@ class tsunami_lab::io::NetCdf {
     t_real * pruneGhostCells(t_idx i_stride,t_idx i_ny,t_idx i_nx,t_real const *i_data);
 
   public:
-    
+  
     void updateFile(t_idx                i_nx,
                     t_idx                i_ny,
                     t_idx                i_stride,
                     t_real               i_time,
                     t_real       const * i_h,
                     t_real       const * i_hu,
-                    t_real       const * i_hv);
+                    t_real       const * i_hv,
+                    const char*          filename);
                     
-    NetCdf(t_real l_nx,t_real l_ny);
+    NetCdf(t_real l_nx,t_real l_ny, const char* filename);
 
     void fillConstants(t_idx                  i_nx,  
                       t_idx                   i_ny,
-                      t_real                  i_dxy,
+                      t_real                  i_dx,
+                      t_real                  i_dy,
                       t_real                  i_domainstart_x,
                       t_real                  i_domainstart_y,
                       t_real                  i_stride,
-                      t_real          const * i_b);
+                      t_real          const * i_b,
+                      const char*           filename);
 
 
-    static void read( const char* filename,
-                      const char* varname,
-                      std::vector<t_real> &data);
+    static int read( const char* filename,
+                    const char* varname,
+                    std::vector<t_real> &data);
                                 
 };
 

@@ -16,9 +16,7 @@ tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta)
     tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","y",m_displacement_y_values);
 
     m_delta = i_delta;
-
-    //m_width_bathymetry   = (m_bathymetry_values[m_bathymetry_values.size()-1]   - m_bathymetry_values[0]) / m_bathymetry_values.size();
-    //m_width_displacement = (m_displacement_values[m_displacement_values.size()-1] - m_displacement_values[0])/ m_displacement_values.size();
+    
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetry( t_real i_x,
@@ -50,22 +48,6 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetry( t_real i
         }
     }
 
-
-    /* xD? 
-
-    if(l_batNetCdf < -m_delta)
-    {
-        return l_batNetCdf + displacement(i_x, i_y);
-    } 
-    else if(l_batNetCdf < 0)
-    {
-        return -m_delta + displacement(i_x, i_y);
-    }
-    else
-    {
-        return std::max(l_batNetCdf, m_delta) + displacement(i_x, i_y);
-    }
-    */
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_x,t_real i_y) const {
@@ -79,8 +61,6 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_
     t_idx l_x = findClosestIndex(m_displacement_x_values, i_x);
     t_idx l_y = findClosestIndex(m_displacement_y_values, i_y);
 
-
-            //          ?!?!??   l_x * m_displacement_y_values.size()  +l_y lol
     return m_displacement_values[l_y * m_displacement_x_values.size() + l_x];
 }
 
@@ -106,7 +86,6 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetryNetCdf(t_r
     t_idx l_x = findClosestIndex(m_bathymetry_x_values, i_x);
     t_idx l_y = findClosestIndex(m_bathymetry_y_values, i_y);
     
-    //                 !!!!!!!!!!!?? m_displacement_x_values.size()
     return m_bathymetry_values[l_y * m_bathymetry_x_values.size() + l_x];
 }
 
@@ -119,10 +98,7 @@ tsunami_lab::t_idx tsunami_lab::setups::TsunamiEvent2d::findClosestIndex(const s
     t_idx index = static_cast<t_idx>(std::distance(vec.begin(), it));
 
     // Adjust the index if necessary 
-    /*
-        ??? "(index == vec.size()||" ???? kann doch nie size sein out of boundary 
-        und "lower_bound" gibt vec.end() aus also letzter index wenn keine wert größer sind
-    */
+
     if (index > 0 &&  (std::abs(value - vec[index - 1]) < std::abs(value - vec[index]))){
         --index;
     }

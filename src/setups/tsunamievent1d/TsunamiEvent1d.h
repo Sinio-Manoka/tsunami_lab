@@ -2,7 +2,7 @@
  * @author Ward Tammaa 
  *
  * @section DESCRIPTION
-
+ *
  **/
 #ifndef TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
 #define TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
