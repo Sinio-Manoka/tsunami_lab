@@ -604,7 +604,7 @@ and
 
         //m_Bin is hardcoded to -100                                                                     
         
-        if(m_Bin < 0 ){    
+        if(m_Bin < 0 ){
             if( m_Bin < -m_delta){
                 return m_Bin + displacement(i_x,i_y);  
             }else{
@@ -660,31 +660,39 @@ and
 
 .. code-block:: cpp
 
-
     #include <catch2/catch.hpp>
     #include "ArtificialTsunami2d.h"
+    #include "string"
 
-    TEST_CASE( "Test the ArtificialTsunami2d setup.", "[ArtificialTsunami2d]" ) {
-    tsunami_lab::setups::ArtificialTsunami2d l_ArtificialTsunami2d(20);
+    TEST_CASE("Test the two-dimensional ArtificialTsunami2d setup.", "[ArtificialTsunami2d]")
+    {
+        tsunami_lab::setups::ArtificialTsunami2d* l_ArtificialTsunami2d = new tsunami_lab::setups::ArtificialTsunami2d(20);
 
-    // x = 500 ,y = 500  not within the if condition
-    REQUIRE( l_ArtificialTsunami2d.getHeight( 500, 500 ) == 100.0f);
-    //  (500 < 500) && (500 < 500) == false -> return 0 -> -100 + 0
-    REQUIRE( l_ArtificialTsunami2d.getBathymetry( 500, 500 ) == -100.0f );
-    
-    REQUIRE( l_ArtificialTsunami2d.getMomentumX( 500, 500 ) == 0);
+        tsunami_lab::t_real l_momentumX = l_ArtificialTsunami2d->getMomentumX(0,0);
+        REQUIRE(l_momentumX == Approx(0));
 
-    REQUIRE( l_ArtificialTsunami2d.getMomentumY( 500, 500 ) == 0 );
+        tsunami_lab::t_real l_momentumY = l_ArtificialTsunami2d->getMomentumY(0,0);
+        REQUIRE(l_momentumY == Approx(0));
 
+        tsunami_lab::t_real l_bathymetryValue = l_ArtificialTsunami2d->getBathymetry(0,0);
+        REQUIRE(l_bathymetryValue == Approx(-99.84296f));
+        l_bathymetryValue = l_ArtificialTsunami2d->getBathymetry(9,0);
+        REQUIRE(l_bathymetryValue == Approx(-99.84296f));
+        l_bathymetryValue = l_ArtificialTsunami2d->getBathymetry(0,4);
+        REQUIRE(l_bathymetryValue == Approx(-100.15704f));
+        l_bathymetryValue = l_ArtificialTsunami2d->getBathymetry(9,4);
+        REQUIRE(l_bathymetryValue == Approx( -100.15704f));
 
-    //x = 20 , y = 600 
-    REQUIRE( l_ArtificialTsunami2d.getHeight( 20, 600) == 100.0f );
-    //  (600 < 500) == false -> return 0 -> -100 + 0
-    REQUIRE( l_ArtificialTsunami2d.getBathymetry( 20, 600 ) ==-100 );
-    
-    REQUIRE( l_ArtificialTsunami2d.getMomentumX( 20, 600 ) == 0);
-
-    REQUIRE( l_ArtificialTsunami2d.getMomentumY( 20, 600 ) == 0 );
+        tsunami_lab::t_real l_heightValue = l_ArtificialTsunami2d->getHeight(2,1);
+        l_heightValue = l_ArtificialTsunami2d->getHeight(0,0);
+        REQUIRE(l_heightValue == 100.0f);
+        l_heightValue = l_ArtificialTsunami2d->getHeight(0,4);
+        REQUIRE(l_heightValue == 100.0f);
+        l_heightValue = l_ArtificialTsunami2d->getHeight(9,0);
+        REQUIRE(l_heightValue == 100.0f);
+        l_heightValue = l_ArtificialTsunami2d->getHeight(9,4);
+        REQUIRE(l_heightValue == 100.0f);
+    }
 
 
     //within the boundary [-500,500]x[-500,500]->R
@@ -1151,22 +1159,28 @@ Finally, let's proceed with implementing the unit tests in the ``TsunamiEvent2d.
     REQUIRE(l_heightValue == 100.0f);
     l_heightValue = l_tsunamiEvent2d->getHeight(9,4);
     REQUIRE(l_heightValue == 100.0f);
-
     }
-
-
-
-
-
-
-
-
 
 Check the correctness 
 ......................
 
+The last question was to compare the ``ArtificialTsunami2d`` with the ``TsunamiEvent2d`` the first animation is from the
+``ArtificialTsunami2d``:
 
+.. video:: _static/Artificial_sim.mp4
+      :width: 700
+      :autoplay:
 
+And now the ``TsunamiEvent2d`` animation
+
+.. video:: _static/Tsunami_decent_2D.mp4
+      :width: 700
+      :autoplay:
+
+The second video had these settings : "domain_start_x" : -5050,"domain_start_y" : -5050 ,"dimension_x" : 10100,"dimension_y" : 10100,
+
+As you can see both simulation are very similar but the best way to test the correctness is by having the same tests for both setups.
+In case they haven't already noticed :D
 
 
 
