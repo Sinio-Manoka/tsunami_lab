@@ -163,7 +163,7 @@ In the document, you'll find two functions: ``fillConstants``, ``updateFile``, a
         {
             for( t_idx l_ix = 0; l_ix < i_nx; l_ix++)
             {   
-                t_idx l_id = (l_iy) * i_stride + (l_ix+1);
+                t_idx l_id = (l_iy+1) * i_stride + (l_ix+1);
 
                 l_temp_data_bathymetry[(l_iy * i_nx) + l_ix] = i_b[l_id];
             }
@@ -826,11 +826,9 @@ Now, locate the file we utilized either in our project folder or download it fro
     for (tsunami_lab::t_real i = 0; i < 71; i++)
     {
         REQUIRE(i == data[i]);
-    }
+        }
 
     }
-
-
 
 
 
@@ -839,7 +837,322 @@ Integration the new class TsunamiEvent2d
 .........................................
 
 
+lets implement TsunamiEvent2d setup. for the fowllowing  setup we will need to implement the fowllowing files : 
+``TsunamiEvent2d.cpp`` , ``TsunamiEvent2d.h`` and ``TsunamiEvent2d.test.cpp``. 
 
+Prior to incorporating TsunamiEvent2d, it is essential to develop the following function, which will determine the nearest available value in the grid file in case the exact coordinates are unavailable:
+
+.. code-block:: cpp
+
+    tsunami_lab::t_idx tsunami_lab::setups::TsunamiEvent2d::findClosestIndex(const std::vector<t_real>& vec, t_real value) const {
+
+        t_idx closestIndex = 0;
+        for (t_idx index = 0; index < vec.size(); ++index) {
+            if (vec[index] > value) {
+                if (value - vec[index - 1] > vec[index] - value){
+                    closestIndex = index ;
+                }
+                else{
+                    closestIndex = index- 1;
+                }
+                break;
+            }
+        }
+
+        return closestIndex;
+    }
+
+
+
+Now, let's commence the implementation of the following header file,``TsunamiEvent2d.h`` :
+
+
+
+
+.. code-block:: cpp 
+
+        /**
+    * @author Ward Tammaa 
+    *
+    * @section DESCRIPTION
+
+    **/
+    #ifndef TSUNAMI_LAB_SETUPS_TSUNAMIEVENT2D_H
+    #define TSUNAMI_LAB_SETUPS_TSUNAMIEVENT2D_H
+
+    #include "../Setup.h"
+    #include <fstream>
+    #include <sstream>
+    #include <vector>
+
+
+    namespace tsunami_lab {
+    namespace setups {
+        class TsunamiEvent2d;
+    }
+    }
+
+    /**
+    * TsunamiEvent2d setup.
+    **/
+    class tsunami_lab::setups::TsunamiEvent2d: public Setup {
+
+    private:
+        /**
+        * @param m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
+        */
+        t_real m_delta               = 0;
+        t_real m_width_bathymetry    = 0; 
+        t_real m_length_bathymetry   = 0;
+        t_real m_width_displacement  = 0;
+        t_real m_length_displacement = 0;
+
+
+        /**
+        * @param m_bathymetry_values contains all bathymetry values 
+        */
+        std::vector<t_real> m_bathymetry_values;
+        std::vector<t_real> m_bathymetry_x_values;
+        std::vector<t_real> m_bathymetry_y_values;
+
+        std::vector<t_real> m_displacement_values;
+        std::vector<t_real> m_displacement_x_values;
+        std::vector<t_real> m_displacement_y_values;
+
+        t_real getBathymetryNetCdf(t_real i_x, t_real i_y) const;
+        
+        t_idx findClosestIndex(const std::vector<t_real>& vec, t_real value) const;
+
+
+    public:
+
+    
+        /**
+        * @brief the method adds the vertical displacement, typically caused by a subduction-zone earthquake.
+        * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+        */
+    
+        t_real displacement( t_real i_x,t_real i_y) const;
+        /**
+        * @brief The constructor for TsunamiEvent2d.
+        * @param i_delta to avoid running into numerical issues (small value)
+        **/
+
+        TsunamiEvent2d( t_real i_delta);
+
+        /**
+        * @brief Gets the water height at a given point.
+        *
+        * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant
+        * @return Height at the given point.
+        **/
+        t_real getHeight( t_real i_x,
+                        t_real i_y) const;
+
+        /**
+        * @brief Gets the momentum in x-direction.
+        *
+        * @return Momentum in x-direction.
+        **/
+        t_real getMomentumX( t_real ,
+                            t_real ) const;
+
+        /**
+        * @brief Gets the momentum in y-direction.
+        * @return Momentum in y-direction.
+        **/
+        t_real getMomentumY( t_real,
+                            t_real ) const;
+        
+        /**
+        * @brief Computes the bathymetry as explained in <a href="https://scalable.uni-jena.de/opt/tsunami/chapters/assignment_3.html#equation-eq-tsunami-event-1d">3.4.1</a>.
+        * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+        * @return Bathymetry.
+        */
+        t_real getBathymetry( t_real i_x,
+                            t_real i_y) const ;
+
+        /** 
+        * @brief divide the distance i_x by 250 to determine the index for the bathymetry in the csv file.
+        * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+        * @return Bathymetry in the csv file (not the value that we use).
+        */
+        
+
+    };
+
+    #endif
+
+
+
+
+Let's now proceed with the implementation of the ``TsunamiEvent2d.cpp`` file. Before we implement the class, we need to read the bathymetry and displacement data from the files given in the task.
+
+.. code-block:: cpp
+    
+        #include "TsunamiEvent2d.h"
+        #include "../../io/NetCdf/NetCdf.h"
+        #include <cmath>
+        #include <cstddef> 
+
+
+        tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta)
+        {
+
+            tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","z",m_bathymetry_values);
+            tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","x",m_bathymetry_x_values);
+            tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","y",m_bathymetry_y_values); 
+        
+            tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","z",m_displacement_values);
+            tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","x",m_displacement_x_values);
+            tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","y",m_displacement_y_values);
+
+            m_delta = i_delta;
+            
+        }
+
+        tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetry( t_real i_x,
+                                                                                t_real i_y) const {
+
+            
+            t_real l_batNetCdf = getBathymetryNetCdf(i_x, i_y);
+
+            if(l_batNetCdf < 0 )
+            {
+                if(l_batNetCdf < -m_delta)
+                {
+                    return l_batNetCdf + displacement(i_x, i_y);
+                }
+                else
+                {
+                    return  displacement(i_x, i_y) - m_delta;
+                }
+            }
+            else
+            {
+                if(l_batNetCdf < m_delta)
+                {
+                    return  displacement(i_x, i_y) + m_delta;
+                }
+                else
+                {
+                    return l_batNetCdf + displacement(i_x, i_y);
+                }
+            }
+
+        }
+
+        tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_x,t_real i_y) const {
+
+            if (i_x < m_displacement_x_values[0] || i_x > m_displacement_x_values[m_displacement_x_values.size() - 1] ||
+                i_y < m_displacement_y_values[0] || i_y > m_displacement_y_values[m_displacement_y_values.size() - 1])
+            {
+                return 0;
+            }
+            //nachdem man schon eigentlich den index raushat wollen wir ihn nochmal berechnen????? 
+            t_idx l_x = findClosestIndex(m_displacement_x_values, i_x);
+            t_idx l_y = findClosestIndex(m_displacement_y_values, i_y);
+
+            return m_displacement_values[l_x * m_displacement_y_values.size() + l_y];
+        }
+
+        tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getHeight( t_real i_x,
+                                                                            t_real i_y)const{
+
+            t_real l_bin = getBathymetryNetCdf(i_x, i_y);
+
+            if (l_bin < 0) {
+                return (-l_bin > m_delta) ? -l_bin : m_delta;
+            }
+            return 0;
+        }
+
+        tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetryNetCdf(t_real i_x, t_real i_y) const {
+            //check whether the position is within our domain
+            if (i_x < m_bathymetry_x_values[0] || i_x > m_bathymetry_x_values[m_bathymetry_x_values.size() - 1] ||
+                i_y < m_bathymetry_y_values[0] || i_y > m_bathymetry_y_values[m_bathymetry_y_values.size() - 1])
+            {
+                return 0;
+            }
+
+            t_idx l_x = findClosestIndex(m_bathymetry_x_values, i_x);
+            t_idx l_y = findClosestIndex(m_bathymetry_y_values, i_y);
+            
+            return m_bathymetry_values[l_y * m_bathymetry_x_values.size() + l_x];
+        }
+
+        tsunami_lab::t_idx tsunami_lab::setups::TsunamiEvent2d::findClosestIndex(const std::vector<t_real>& vec, t_real value) const {
+
+            t_idx closestIndex = 0;
+            for (t_idx index = 0; index < vec.size(); ++index) {
+                if (vec[index] > value) {
+                    if (value - vec[index - 1] > vec[index] - value){
+                        closestIndex = index ;
+                    }
+                    else{
+                        closestIndex = index- 1;
+                    }
+                    break;
+                }
+            }
+
+            return closestIndex;
+        }
+
+
+        tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumY(  t_real,
+                                                                                t_real)const{
+            return 0;                                                                                                                                                                      
+        }
+
+
+
+        tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumX(  t_real ,
+                                                                                t_real)const{
+            return 0;                                                                                                                       
+        }                    
+
+
+
+
+Finally, let's proceed with implementing the unit tests in the ``TsunamiEvent2d.test.cpp`` file:
+
+.. code-block:: cpp
+
+        #include <catch2/catch.hpp>
+    #include "TsunamiEvent2d.h"
+    #include "string"
+
+    TEST_CASE("Test the two-dimensional tsunamiEvent setup.", "[TsunamiEvent2d]")
+    {
+    tsunami_lab::setups::TsunamiEvent2d* l_tsunamiEvent2d = new tsunami_lab::setups::TsunamiEvent2d(20);
+
+    tsunami_lab::t_real l_momentumX = l_tsunamiEvent2d->getMomentumX(0,0);
+    REQUIRE(l_momentumX == Approx(0));
+
+    tsunami_lab::t_real l_momentumY = l_tsunamiEvent2d->getMomentumY(0,0);
+    REQUIRE(l_momentumY == Approx(0));
+
+    tsunami_lab::t_real l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(0,0);
+    REQUIRE(l_bathymetryValue == Approx(-99.84296f));
+    l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(9,0);
+    REQUIRE(l_bathymetryValue == Approx(-99.84296f));
+    l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(0,4);
+    REQUIRE(l_bathymetryValue == Approx(-100.15704f));
+    l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(9,4);
+    REQUIRE(l_bathymetryValue == Approx( -100.15704f));
+
+    tsunami_lab::t_real l_heightValue = l_tsunamiEvent2d->getHeight(2,1);
+    l_heightValue = l_tsunamiEvent2d->getHeight(0,0);
+    REQUIRE(l_heightValue == 100.0f);
+    l_heightValue = l_tsunamiEvent2d->getHeight(0,4);
+    REQUIRE(l_heightValue == 100.0f);
+    l_heightValue = l_tsunamiEvent2d->getHeight(9,0);
+    REQUIRE(l_heightValue == 100.0f);
+    l_heightValue = l_tsunamiEvent2d->getHeight(9,4);
+    REQUIRE(l_heightValue == 100.0f);
+
+    }
 
 
 

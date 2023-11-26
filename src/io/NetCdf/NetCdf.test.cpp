@@ -9,10 +9,10 @@
 
 TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
 
-    tsunami_lab::t_real l_h[10]  = { 0, 1, 2, 3, 4, 5, 6 ,7, 8 ,5};
-    tsunami_lab::t_real l_hu[10] = { 6, 5, 4, 3, 2, 1, 0 ,7, 8 ,5};
-    tsunami_lab::t_real l_hv[10] = { 6, 5, 4, 3, 2, 1, 0,7, 8 ,5 };
-    tsunami_lab::t_real l_b[10]  = { 0, 0, 0, 0, 0, 0, 0 ,7, 8 ,5};
+    tsunami_lab::t_real l_h[10]  = {0, 1, 2, 3, 4, 5, 6 ,7, 8 ,5};
+    tsunami_lab::t_real l_hu[10] = {6, 5, 4, 3, 2, 1, 0 ,7, 8 ,5};
+    tsunami_lab::t_real l_hv[10] = {6, 5, 4, 3, 2, 1, 0 ,7 , 8 ,5 };
+    tsunami_lab::t_real l_b[10]  = {0, 0, 0, 0, 0, 0, 0 ,7, 8 ,5};
 
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,"testsFiles/test.nc");
     l_netCdf->fillConstants(5,2,1,-50,-50,0,l_b,"testsFiles/test.nc");

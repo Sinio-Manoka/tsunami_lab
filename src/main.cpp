@@ -42,7 +42,7 @@ int main() {
   const std::string filename = "configs/config.json";
   std::ifstream fileStream(filename.c_str());
   if (fileStream.good()) {
-    std::cout << "\033[1;32m\u2713 The File 'config.json' does exists "  << std::endl;
+    std::cout << "\033[1;32m\u2713 The file 'config.json' does indeed exist."  << std::endl;
   } else {
     std::cout << "\033[1;31m\u2717 The File 'config.json' does not exist under 'configs/config.json'  "<< std::endl;
     return EXIT_FAILURE;
