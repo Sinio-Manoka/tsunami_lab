@@ -30,5 +30,5 @@ TEST_CASE("Test the two-dimensional ArtificialTsunami2d setup.", "[ArtificialTsu
   REQUIRE(l_heightValue == 100.0f);
   l_heightValue = l_ArtificialTsunami2d->getHeight(9,4);
   REQUIRE(l_heightValue == 100.0f);
-  delete l_tsunamiEvent2d;
+  delete l_ArtificialTsunami2d;
 }
