@@ -1,0 +1,44 @@
+netcdf test {
+dimensions:
+	x = 5 ;
+	y = 2 ;
+	time = UNLIMITED ; // (1 currently)
+variables:
+	float x(x) ;
+		x:units = "meter" ;
+	float y(y) ;
+		y:units = "meter" ;
+	float time(time) ;
+		time:units = "seconds" ;
+	float b(y, x) ;
+		b:units = "meters" ;
+	float h(time, y, x) ;
+		h:units = "meters" ;
+	float hu(time, y, x) ;
+		hu:units = "meters" ;
+	float hv(time, y, x) ;
+		hv:units = "meters" ;
+data:
+
+ x = -49.5, -48.5, -47.5, -46.5, -45.5 ;
+
+ y = -49.5, -48.5 ;
+
+ time = 1 ;
+
+ b =
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0 ;
+
+ h =
+  2, 3, 4, 5, 6,
+  3, 4, 5, 6, 7 ;
+
+ hu =
+  4, 3, 2, 1, 0,
+  3, 2, 1, 0, 7 ;
+
+ hv =
+  4, 3, 2, 1, 0,
+  3, 2, 1, 0, 7 ;
+}

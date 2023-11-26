@@ -14,18 +14,18 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     tsunami_lab::t_real l_hv[10] = { 6, 5, 4, 3, 2, 1, 0,7, 8 ,5 };
     tsunami_lab::t_real l_b[10]  = { 0, 0, 0, 0, 0, 0, 0 ,7, 8 ,5};
 
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,"test.nc");
-    l_netCdf->fillConstants(5,2,1,-50,-50,0,l_b,"test.nc");
-    l_netCdf->updateFile(5,2,1,1,l_h,l_hu,l_hv,"test.nc");
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,"testsFiles/test.nc");
+    l_netCdf->fillConstants(5,2,1,-50,-50,0,l_b,"testsFiles/test.nc");
+    l_netCdf->updateFile(5,2,1,1,l_h,l_hu,l_hv,"testsFiles/test.nc");
     int l_err;
     int l_ncidp;
     int  l_dimXId,l_dimYId,l_TimeId;
     size_t l_nx,l_ny , l_nt ;
     int l_vHId, l_vXId,l_vHuId, l_vYId, l_vTimeId, l_vHvId ,l_vBId ;
 
-    REQUIRE(std::filesystem::exists("output.nc"));
+    REQUIRE(std::filesystem::exists("testsFiles/test.nc"));
 
-    l_err = nc_open("test.nc", NC_NOWRITE, &l_ncidp);
+    l_err = nc_open("testsFiles/test.nc", NC_NOWRITE, &l_ncidp);
     l_netCdf->checkNcErr(l_err);
 
     l_err = nc_inq_dimid(l_ncidp,"x",&l_dimXId);
@@ -91,12 +91,15 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     l_err = nc_get_var_float(l_ncidp, l_vBId, &bathymetry[0]);
     l_netCdf->checkNcErr(l_err);
 
-    REQUIRE(x[0] == Approx(-49.75));
-    REQUIRE(x[1] == Approx(-49.25));
-    REQUIRE(x[2] == Approx(-48.75));
-    REQUIRE(x[3] == Approx(-48.25));
-    REQUIRE(x[4] == Approx(-47.75));
-    REQUIRE(y[0] == Approx(-49.5));
+    REQUIRE(x[0] == Approx(-49.5));
+    REQUIRE(x[1] == Approx(-48.5));
+    REQUIRE(x[2] == Approx(-47.5));
+    REQUIRE(x[3] == Approx(-46.5));
+    REQUIRE(x[4] == Approx(-45.5));
+
+     REQUIRE(y[0] == Approx(-49.5));
+     REQUIRE(y[1] == Approx(-48.5));
+
 
     REQUIRE(time[0] == Approx(1));
 
@@ -136,10 +139,10 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
 TEST_CASE( "Test the NetCdf-reader ", "[NetCdfreader]" ) {
     std::vector<tsunami_lab::t_real> data;
 
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(10,10,"data/reader.nc");
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(10,10,"testsFiles/reader.nc");
   
 
-    l_netCdf->read("data/testFileForTheReader.nc" , "data", data ) ;
+    l_netCdf->read("testsFiles/testFileForTheReader.nc" , "data", data ) ;
     
 
 
