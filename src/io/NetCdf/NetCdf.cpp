@@ -39,13 +39,13 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     checkNcErr(l_err);
     delete[] l_coordinateX;
 
-    for( t_idx l_iy = 1; l_iy < i_ny; l_iy++ )
+    for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ )
     {
-        for( t_idx l_ix = 1; l_ix < i_nx; l_ix++)
+        for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++)
         {   
-            t_idx l_id = (l_iy) * i_stride + (l_ix);
+            t_idx l_id = (l_iy) * i_stride + (l_ix+1);
 
-            l_temp_data_bathymetry[(l_iy-1) * i_nx + (l_ix-1)] = i_b[l_id];
+            l_temp_data_bathymetry[(l_iy-1) * i_nx + (l_ix-1) ] = i_b[l_id];
         }
     }
     
@@ -107,7 +107,7 @@ int tsunami_lab::io::NetCdf::read(  const char* filename,
     if (nc_close(l_ncId) != NC_NOERR) {
         std::cerr << "Error closing NetCDF file: " << filename << std::endl;
     }
-    return -1;
+    return 1;
 }
 
 void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
