@@ -36,7 +36,7 @@ tsunami_lab::t_real tsunami_lab::setups::ArtificialTsunami2d::getBathymetry( t_r
 }
 
 tsunami_lab::t_real tsunami_lab::setups::ArtificialTsunami2d::getHeight( t_real, 
-                                                                    t_real )const{
+                                                                        t_real )const{
     //-100 m bathymetry and water level is at 0 -> 100m height
     return 100;                                                                                                                                                                                   
 }

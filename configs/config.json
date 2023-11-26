@@ -1,19 +1,17 @@
 {
     "solver" : "fwave",
-    "dimension_x" : 100,
-    "dimension_y" : 100,
-    "setup" :  "dambreak2d",
-    "nx" : 100,
-    "ny" : 100,
-    "hu" : 1,
+    "dimension_x" : 10100,
+    "dimension_y" : 10100,
+    "setup" :  "tsunamievent2d",
+    "nx" : 400,
+    "ny" : 400,
+    "hu" : 100,
     "location" : 0,
     "hv":0.0,
     "hr": 55,
     "hl": 25,
-    "domain_start_x" : -50,
-    "domain_start_y" : -50,
+    "domain_start_x" : -5050,
+    "domain_start_y" : -5050,
     "wavepropagation" : "2d",
-    "endtime" : 20,
-    "writer" : "csv"
-    
+    "endtime" : 500
 }

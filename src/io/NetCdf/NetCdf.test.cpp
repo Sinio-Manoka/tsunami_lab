@@ -15,7 +15,7 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     tsunami_lab::t_real l_b[10]  = { 0, 0, 0, 0, 0, 0, 0 ,7, 8 ,5};
 
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2);
-    l_netCdf->fillConstants(5,2,0.5,1,-50,-50,0,l_b);
+    l_netCdf->fillConstants(5,2,1,-50,-50,0,l_b);
     l_netCdf->updateFile(5,2,1,1,l_h,l_hu,l_hv);
     int l_err;
     int l_ncidp;
@@ -91,11 +91,11 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     l_err = nc_get_var_float(l_ncidp, l_vBId, &bathymetry[0]);
     l_netCdf->checkNcErr(l_err);
 
-    REQUIRE(x[0] == Approx(-49.75));
-    REQUIRE(x[1] == Approx(-49.25));
-    REQUIRE(x[2] == Approx(-48.75));
-    REQUIRE(x[3] == Approx(-48.25));
-    REQUIRE(x[4] == Approx(-47.75));
+    REQUIRE(x[0] == Approx(-49.5));
+    REQUIRE(x[1] == Approx(-48.5));
+    REQUIRE(x[2] == Approx(-47.5));
+    REQUIRE(x[3] == Approx(-46.5));
+    REQUIRE(x[4] == Approx(-45.5));
     REQUIRE(y[0] == Approx(-49.5));
 
     REQUIRE(time[0] == Approx(1));

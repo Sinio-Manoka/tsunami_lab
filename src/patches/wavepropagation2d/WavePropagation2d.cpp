@@ -63,7 +63,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
     l_huNew[l_ce] = l_huOld[l_ce];
     l_hvNew[l_ce] = l_hvOld[l_ce];
   }
-  setGhostOutflow(true);
+  setGhostOutflow(false);
   /*
   
   for(t_idx l_ex = 0; l_ex < m_yCells +1;l_ex++){ 
@@ -120,7 +120,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
     l_huNew[l_ce] = l_huOld[l_ce];
     l_hvNew[l_ce] = l_hvOld[l_ce];
   }
-  setGhostOutflow(true);
+  setGhostOutflow(false);
 
   for(t_idx l_ex = 0; l_ex < m_xCells +1;l_ex++){
     for(t_idx l_ey = 0; l_ey < m_yCells +1;l_ey++){

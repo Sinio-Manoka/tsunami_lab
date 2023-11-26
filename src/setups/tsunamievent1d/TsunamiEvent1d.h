@@ -2,7 +2,7 @@
  * @author Ward Tammaa 
  *
  * @section DESCRIPTION
- * supercriticalflow.
+
  **/
 #ifndef TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
 #define TSUNAMI_LAB_SETUPS_TSUNAMIEVENT1D_H
