@@ -26,8 +26,7 @@ class tsunami_lab::io::Csv {
     /**
      * @brief Writes the data as CSV to the given stream.
      *
-     * @param i_dx cell width.
-     * @param i_dy cell height.
+     * @param i_dxy width of a cell
      * @param i_nx number of cells in x-direction.
      * @param i_ny number of cells in y-direction.
      * @param i_stride stride of the data arrays in y-direction (x is assumed to be stride-1).

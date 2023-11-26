@@ -67,10 +67,18 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     t_idx getStride(){
       return m_nCells+2;
     }
-
+    /**
+     * @brief skip the first column /ghostcells
+     * 
+     * @return t_idx 
+     */
     t_idx getGhostcellX(){
       return 1;
-    } 
+    }
+    /**
+     * @brief skip the Ghostcell row for 1d 
+     * @return t_idx 
+     */
     t_idx getGhostcellY(){
       return 0;
     }

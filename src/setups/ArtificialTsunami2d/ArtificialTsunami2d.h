@@ -34,13 +34,22 @@ class tsunami_lab::setups::ArtificialTsunami2d: public Setup {
     t_real m_Bin = -100;
     
     /**
-    * @brief the method adds the vertical displacement, typically caused by a subduction-zone earthquake.
-    * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+    * @brief computes the artificial displacement in the swimming pool.
+    * @param i_x position in the swimming pool.
+    * @param i_y position in the swimming pool.
     */
     t_real displacement( t_real i_x ,t_real i_y) const;
 
+    /**
+    * @brief return -((i_y/500)*(i_y/500))+1;
+    * @param i_x position in the swimming pool.
+    */
     t_real gFunction(t_real i_y) const;
 
+    /**
+    * @brief return sin(((i_x/500)+1)* M_PI );
+    * @param i_x position in the swimming pool.
+    */
     t_real fFunction(t_real i_x) const;
 
   public:
@@ -81,8 +90,6 @@ class tsunami_lab::setups::ArtificialTsunami2d: public Setup {
     */
     t_real getBathymetry( t_real i_x,
                           t_real i_y) const ;
-
-   
 };
 
 #endif

@@ -42,8 +42,8 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     for( t_idx l_iy = 0; l_iy < i_ny; l_iy++ )
     {
         for( t_idx l_ix = 0; l_ix < i_nx; l_ix++)
-        {   
-            t_idx l_id = (l_iy) * i_stride + (l_ix+1);
+        {
+            t_idx l_id = (l_iy+1) * i_stride + (l_ix+1);
 
             l_temp_data_bathymetry[(l_iy * i_nx) + l_ix] = i_b[l_id];
         }

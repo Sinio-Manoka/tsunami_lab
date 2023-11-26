@@ -18,7 +18,7 @@ tsunami_lab::t_real tsunami_lab::setups::ArtificialTsunami2d::getBathymetry( t_r
                                                                             t_real i_y) const {
 
 
-    //m_Bin is hardcoded to -100                                                                     
+    //m_Bin is hardcoded to -100m                                                                 
     
     if(m_Bin < 0 ){    
         if( m_Bin < -m_delta){

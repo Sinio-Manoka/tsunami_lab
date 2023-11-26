@@ -36,41 +36,72 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
 
 
     /**
-    * @param m_bathymetry_values contains all bathymetry values 
+    * @param m_bathymetry_values bathymetry values without ghostcells.
     */
     std::vector<t_real> m_bathymetry_values;
+    /**
+    * @param m_bathymetry_x_values 1D array for the bathymetry x values.
+    */
     std::vector<t_real> m_bathymetry_x_values;
+    /**
+    * @param m_bathymetry_y_values 1D array for the bathymetry y values.
+    */
     std::vector<t_real> m_bathymetry_y_values;
 
+
+
+    /**
+    * @param m_displacement_values bathymetry values without ghostcells.
+    */
     std::vector<t_real> m_displacement_values;
+    /**
+    * @param m_displacement_x_values 1D array for the bathymetry x values.
+    */
     std::vector<t_real> m_displacement_x_values;
+    /**
+    * @param m_displacement_y_values 1D array for the bathymetry y values.
+    */
     std::vector<t_real> m_displacement_y_values;
+
+    /**
+     * @brief check if position is in boundary true : call findClosestIndex else : 0; 
+     *   
+     * @param i_x xPos in the netcdf file.
+     * @param i_y YPos in the netcdf file.
+     * @return bathymetry value.
+     */
 
     t_real getBathymetryNetCdf(t_real i_x, t_real i_y) const;
     
+    /**
+     * @param vec vector to find the closest available value in the vector if the exact coordinates are not available.
+     * @param value queries the value at point.
+     * @return index of the closest available value.
+     */
     t_idx findClosestIndex(const std::vector<t_real>& vec, t_real value) const;
 
-
   public:
-
    
     /**
-    * @brief the method adds the vertical displacement, typically caused by a subduction-zone earthquake.
-    * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
-    */
+     * @brief check if position is in boundary true : call findClosestIndex else : 0; 
+     * 
+     * @param i_x xPos in the netcdf file.
+     * @param i_y YPosin the netcdf file.
+     * @return displacement value.
+     */
    
     t_real displacement( t_real i_x,t_real i_y) const;
     /**
      * @brief The constructor for TsunamiEvent2d.
-     * @param i_delta to avoid running into numerical issues (small value)
+     * @param i_delta to avoid running into numerical issues (small value).
      **/
 
     TsunamiEvent2d( t_real i_delta);
 
     /**
      * @brief Gets the water height at a given point.
-     *
-     * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant
+     * @param i_x xPos in the netcdf file.
+     * @param i_y yPos in the netcdf file.
      * @return Height at the given point.
      **/
     t_real getHeight( t_real i_x,
@@ -92,19 +123,14 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
                          t_real ) const;
     
     /**
-    * @brief Computes the bathymetry as explained in <a href="https://scalable.uni-jena.de/opt/tsunami/chapters/assignment_3.html#equation-eq-tsunami-event-1d">3.4.1</a>.
-    * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
+    * @brief Computes the bathymetry as explained in 5.2.
+    * @param i_x xPos in the netcdf file.
+    * @param i_y xPos in the netcdf file.
     * @return Bathymetry.
     */
     t_real getBathymetry( t_real i_x,
                           t_real i_y) const ;
 
-    /** 
-    * @brief divide the distance i_x by 250 to determine the index for the bathymetry in the csv file.
-    * @param i_x is the distance from the Fukushima Daini Nuclear Power Plant.
-    * @return Bathymetry in the csv file (not the value that we use).
-    */
-    
 
 };
 
