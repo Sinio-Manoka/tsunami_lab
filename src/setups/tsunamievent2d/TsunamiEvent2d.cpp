@@ -7,13 +7,13 @@
 tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta)
 {
 
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","z",m_bathymetry_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","x",m_bathymetry_x_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","y",m_bathymetry_y_values); 
+    tsunami_lab::io::NetCdf::read("data/testBathymetry.nc","z",m_bathymetry_values);
+    tsunami_lab::io::NetCdf::read("data/testBathymetry.nc","x",m_bathymetry_x_values);
+    tsunami_lab::io::NetCdf::read("data/testBathymetry.nc","y",m_bathymetry_y_values); 
  
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","z",m_displacement_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","x",m_displacement_x_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","y",m_displacement_y_values);
+    tsunami_lab::io::NetCdf::read("data/testDispl.nc","z",m_displacement_values);
+    tsunami_lab::io::NetCdf::read("data/testDispl.nc","x",m_displacement_x_values);
+    tsunami_lab::io::NetCdf::read("data/testDispl.nc","y",m_displacement_y_values);
 
     m_delta = i_delta;
     
@@ -61,7 +61,7 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_
     t_idx l_x = findClosestIndex(m_displacement_x_values, i_x);
     t_idx l_y = findClosestIndex(m_displacement_y_values, i_y);
 
-    return m_displacement_values[l_y * m_displacement_x_values.size() + l_x];
+    return m_displacement_values[l_x * m_displacement_y_values.size() + l_y];
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getHeight( t_real i_x,
@@ -90,20 +90,21 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetryNetCdf(t_r
 }
 
 tsunami_lab::t_idx tsunami_lab::setups::TsunamiEvent2d::findClosestIndex(const std::vector<t_real>& vec, t_real value) const {
-    
-    //find the iterator value of the first element that is bigger than "value"
-    auto it = std::lower_bound(vec.begin(), vec.end(), value);
 
-    //compute the index
-    t_idx index = static_cast<t_idx>(std::distance(vec.begin(), it));
-
-    // Adjust the index if necessary 
-
-    if (index > 0 &&  (std::abs(value - vec[index - 1]) < std::abs(value - vec[index]))){
-        --index;
+    t_idx closestIndex = 0;
+    for (t_idx index = 0; index < vec.size(); ++index) {
+        if (vec[index] > value) {
+            if (value - vec[index - 1] > vec[index] - value){
+                closestIndex = index ;
+            }
+            else{
+                closestIndex = index- 1;
+            }
+            break;
+        }
     }
 
-    return index;
+    return closestIndex;
 }
 
 
