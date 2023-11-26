@@ -116,25 +116,20 @@ int main() {
   //Determine which setup and which wavepropagation to use--------------------------------START
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   if(l_temp_waveprop == "2d"){
+    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx, l_ny, l_solver);
+    std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be chosen \033[0m" << std::endl;
     if(l_temp_setup == "artificialtsunami2D")
     {
-      std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be chosen \033[0m" << std::endl;
-      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx,l_ny, l_solver);
       std::cout << "\033[1;32m\u2713 Setup : ArtificialTsunami2D \033[0m" << std::endl;
       l_setup = new tsunami_lab::setups::ArtificialTsunami2d(20);
-      //both offsets should be -5_000 and bot dimension be 10_000
     }
     else if(l_temp_setup == "tsunamievent2d")
     {
-      std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be chosen \033[0m" << std::endl;
-      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx,l_ny, l_solver);
       std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent2d \033[0m" << std::endl;
       l_setup = new tsunami_lab::setups::TsunamiEvent2d(20);
     }
     else
     {
-      std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be chosen \033[0m" << std::endl;
-      l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx,l_ny, l_solver);
       std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
       l_setup = new tsunami_lab::setups::DamBreak2d();
     }
