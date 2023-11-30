@@ -3,9 +3,9 @@
     "dimension_x" : 10100,
     "dimension_y" : 10100,
     "setup" :  "tsunamievent2d",
-    "nx" : 500,
-    "ny" : 500,
-    "hu" : 100,
+    "nx" : 1250,
+    "ny" : 1250,
+    "hu" : 1250,
     "location" : 0,
     "hv":0.0,
     "hr": 55,
@@ -13,6 +13,9 @@
     "domain_start_x" : -5050,
     "domain_start_y" : -5050,
     "wavepropagation" : "2d",
-    "endtime" : 60,
-    "writer" : "netcdf"
+    "endtime" : 15,
+    "writer" : "netcdf",
+    "bathFile" : "data/artificialtsunami_bathymetry_1000.nc",
+    "dicFile" : "data/artificialtsunami_displ_1000.nc"
+
 }

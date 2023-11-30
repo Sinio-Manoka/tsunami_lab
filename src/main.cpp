@@ -50,7 +50,7 @@ int main() {
   //2. Are all the needed Keys there??
   std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
                                           "nx","hu","location","hl","ny","domain_start_x",
-                                          "domain_start_y","wavepropagation","endtime","writer"};
+                                          "domain_start_y","wavepropagation","endtime","writer","bathFile","dicFile"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -95,6 +95,10 @@ int main() {
   tsunami_lab::t_real l_frequency = tsunami_lab::io::Configuration::getFrequency();
   tsunami_lab::t_real l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
   std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
+  std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathFile");
+  std::string l_temp_dicFile = tsunami_lab::io::Configuration::readFromConfigString("dicFile");
+  const char * l_bathFile = l_temp_bathFile.c_str();
+  const char * l_dicFile = l_temp_dicFile.c_str();
   std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
@@ -126,7 +130,7 @@ int main() {
     else if(l_temp_setup == "tsunamievent2d")
     {
       std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent2d \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::TsunamiEvent2d(20);
+      l_setup = new tsunami_lab::setups::TsunamiEvent2d(20,l_bathFile ,l_dicFile);
     }
     else
     {
@@ -282,7 +286,9 @@ int main() {
 
   //create the netCdf file reader/writer
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,"outputs/output.nc"); 
+
     if(l_temp_writer == "netcdf"){
+      std::cout << "generating netcdf-file ' " << "outputs/output.nc" << " '"<< std::endl;
       l_netCdf->fillConstants(l_nx,
                               l_ny,
                               l_dxy,
@@ -365,7 +371,7 @@ int main() {
   //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x");
   //l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
   std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
-  std::cout << "\033[1;32m\u2713 All soultions have been written to the Folder : 'outputs' " << std::endl;
+  std::cout << "\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
   std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
   delete l_setup;

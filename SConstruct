@@ -63,11 +63,11 @@ if 'san' in  env['mode']:
                             '-fsanitize=undefined' ] )
 
 
-netcdf_lib = env.Append(LIBS=['netcdf'])
+env.Append(LIBS=['netcdf'])
 
-zlib_lib = env.Append(LIBS=['z'])
+env.Append(LIBS=['z'])
 
-hdf5_lib = env.Append(LIBS=['hdf5_serial'])
+env.Append(LIBS=['hdf5_serial'])
 
 if 'LD_LIBRARY_PATH' not in env['ENV']:
     env['ENV']['LD_LIBRARY_PATH'] = ''
