@@ -4,7 +4,7 @@
 
 TEST_CASE("Test the two-dimensional tsunamiEvent setup.", "[TsunamiEvent2d]")
 {
-  tsunami_lab::setups::TsunamiEvent2d* l_tsunamiEvent2d = new tsunami_lab::setups::TsunamiEvent2d(20);
+  tsunami_lab::setups::TsunamiEvent2d* l_tsunamiEvent2d = new tsunami_lab::setups::TsunamiEvent2d(20, "data/artificialtsunami_bathymetry_1000.nc" ,"data/artificialtsunami_displ_1000.nc");
 
   tsunami_lab::t_real l_momentumX = l_tsunamiEvent2d->getMomentumX(0,0);
   REQUIRE(l_momentumX == Approx(0));

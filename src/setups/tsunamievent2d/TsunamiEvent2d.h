@@ -98,7 +98,7 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
      * @param i_delta to avoid running into numerical issues (small value).
      **/
 
-    TsunamiEvent2d( t_real i_delta);
+    TsunamiEvent2d( t_real i_delta,const char*  i_bathFile, const char*    i_disFile);
 
     /**
      * @brief Gets the water height at a given point.
