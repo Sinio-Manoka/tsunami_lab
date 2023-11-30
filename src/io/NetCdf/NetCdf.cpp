@@ -14,7 +14,6 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                             t_real                  i_stride,
                                             t_real          const * i_b,
                                             const char*           filename){
-    auto start = std::chrono::high_resolution_clock::now();
     int l_ncId,l_err;
     l_err = nc_open(filename,NC_WRITE, &l_ncId);
     t_real *l_data0 = new t_real[i_ny];
@@ -58,10 +57,6 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     //close file for now
     l_err = nc_close(l_ncId);
     checkNcErr(l_err);
-
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Execution time: " << duration.count() << " microseconds" << std::endl;
 
 }
 

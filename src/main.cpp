@@ -50,7 +50,7 @@ int main() {
   //2. Are all the needed Keys there??
   std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
                                           "nx","hu","location","hl","ny","domain_start_x",
-                                          "domain_start_y","wavepropagation","endtime","writer","bathFile","dicFile"};
+                                          "domain_start_y","wavepropagation","endtime","writer","bathFile","disFile"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -96,9 +96,9 @@ int main() {
   tsunami_lab::t_real l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
   std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
   std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathFile");
-  std::string l_temp_dicFile = tsunami_lab::io::Configuration::readFromConfigString("dicFile");
+  std::string l_temp_disFile = tsunami_lab::io::Configuration::readFromConfigString("disFile");
   const char * l_bathFile = l_temp_bathFile.c_str();
-  const char * l_dicFile = l_temp_dicFile.c_str();
+  const char * l_disFile = l_temp_disFile.c_str();
   std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
@@ -130,7 +130,7 @@ int main() {
     else if(l_temp_setup == "tsunamievent2d")
     {
       std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent2d \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::TsunamiEvent2d(20,l_bathFile ,l_dicFile);
+      l_setup = new tsunami_lab::setups::TsunamiEvent2d(20,l_bathFile ,l_disFile);
     }
     else
     {
