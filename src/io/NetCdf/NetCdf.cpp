@@ -176,9 +176,6 @@ tsunami_lab::io::NetCdf::NetCdf(t_real l_nx,t_real l_ny,const char*  filename) {
     int l_dim3Ids[3];
 
     
-
-    std::cout << "generating netcdf-file ' " <<filename<< " '"<< std::endl;
-
     l_err = nc_create(filename,NC_CLOBBER, &l_ncId);      
     checkNcErr(l_err);
 
