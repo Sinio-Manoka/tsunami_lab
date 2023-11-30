@@ -98,7 +98,7 @@ int main() {
   std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
   std::string l_temp_dicFile = tsunami_lab::io::Configuration::readFromConfigString("dicfile");
   const char * l_bathFile = l_temp_bathFile.c_str();
-  const char * l_disFile = l_temp_disFile.c_str();
+  const char * l_disFile = l_temp_dicFile.c_str();
   std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
