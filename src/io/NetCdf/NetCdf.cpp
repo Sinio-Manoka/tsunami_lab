@@ -2,7 +2,7 @@
 #include <netcdf.h>
 #include <iostream>
 #include <list>
-
+#include <chrono>
 
 
 void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
@@ -68,6 +68,9 @@ void tsunami_lab::io::NetCdf::read( const char* i_filename,
                                     t_real ** o_zdata,
                                     t_real ** o_xdata,
                                     t_real ** o_ydata){
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     int l_ncId, l_err = 0;
     int l_varidz, l_varidy, l_varidx, l_dimX, l_dimY;
 
@@ -111,6 +114,10 @@ void tsunami_lab::io::NetCdf::read( const char* i_filename,
     if (nc_close(l_ncId) != NC_NOERR) {
         std::cerr << "Error closing NetCDF file: " << i_filename << std::endl;
     }
+    
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
 
 }
 
