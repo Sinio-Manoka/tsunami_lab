@@ -61,53 +61,57 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
 
 }
 
-int tsunami_lab::io::NetCdf::read(  const char* filename,
-                                    const char* varname,
-                                    std::vector<t_real>  & data){
-    int l_ncId; 
-    //if an error occurs it return -1
-    if (nc_open(filename, NC_NOWRITE, &l_ncId) != NC_NOERR) {
-        std::cerr << "Error opening NetCDF file: " << filename << std::endl;
-        return -1;
-    }
+void tsunami_lab::io::NetCdf::read( const char* i_filename,
+                                    const char* i_varname,
+                                    t_idx & i_nx,
+                                    t_idx & i_ny,
+                                    t_real ** o_zdata,
+                                    t_real ** o_xdata,
+                                    t_real ** o_ydata){
+    int l_ncId, l_err = 0;
+    int l_varidz, l_varidy, l_varidx, l_dimX, l_dimY;
 
-    int varid; 
-    //get the variable identifier
-    if (nc_inq_varid(l_ncId, varname, &varid) != NC_NOERR) {
-        std::cerr << "Error getting variable ID for variable: " << varname << std::endl;
-        nc_close(l_ncId);
-        return -1; 
-    }
-
-    int ndims; 
-    int dimids[NC_MAX_VAR_DIMS];
-    // get amount of dimensions (ndims) and the identifiers of the dimensions (dimids)
-    if (nc_inq_var(l_ncId, varid, nullptr, nullptr, &ndims, dimids, nullptr) != NC_NOERR) {
-        std::cerr << "Error getting variable information for variable: " << varname << std::endl;
-        nc_close(l_ncId);
-        return -1;
-    }
-
-    //get the length of the dimension
-    t_idx dataSize = 1;
-    for (int i = 0; i < ndims; ++i) {
-        char dimname[NC_MAX_NAME + 1];
-        size_t dimlen;
-        if (nc_inq_dim(l_ncId, dimids[i], dimname, &dimlen) != NC_NOERR) {
-            std::cerr << "Error getting dimension information." << std::endl;
-            nc_close(l_ncId); 
-        }
-        dataSize *= dimlen;
-    }
-    //write the data in the vector
-    data.resize(dataSize);
-    int l_err = nc_get_var_float(l_ncId, varid , &data[0]);
+    l_err = nc_open(i_filename, NC_NOWRITE, &l_ncId);
     checkNcErr(l_err);
 
-    if (nc_close(l_ncId) != NC_NOERR) {
-        std::cerr << "Error closing NetCDF file: " << filename << std::endl;
+    l_err = nc_inq_dimid(l_ncId,"x",&l_dimX);
+    checkNcErr(l_err);
+
+    l_err = nc_inq_dimlen(l_ncId, l_dimX, &i_nx);
+    checkNcErr(l_err);
+
+    l_err = nc_inq_dimid(l_ncId,"y",&l_dimY);
+    checkNcErr(l_err);
+
+    l_err = nc_inq_dimlen(l_ncId, l_dimY, &i_ny);
+    checkNcErr(l_err);
+
+    if(o_xdata != nullptr){
+        nc_inq_varid(l_ncId, "x", &l_varidx);
+        *o_xdata = new t_real[i_nx];
+        l_err = nc_get_var_float(l_ncId, l_varidx , *o_xdata);
+        checkNcErr(l_err);
+
     }
-    return 1;
+
+    if(o_ydata != nullptr){
+        nc_inq_varid(l_ncId, "y", &l_varidy);
+        *o_ydata = new t_real[i_ny];
+        l_err = nc_get_var_float(l_ncId, l_varidy , *o_ydata);
+        checkNcErr(l_err);
+    }
+
+    if(o_zdata != nullptr){
+        nc_inq_varid(l_ncId, i_varname, &l_varidz);
+        *o_zdata = new t_real[i_ny * i_nx ];
+        l_err = nc_get_var_float(l_ncId, l_varidz , *o_zdata);
+        checkNcErr(l_err);
+    }
+
+    if (nc_close(l_ncId) != NC_NOERR) {
+        std::cerr << "Error closing NetCDF file: " << i_filename << std::endl;
+    }
+
 }
 
 void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,

@@ -7,13 +7,8 @@
 tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta)
 {
 
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","z",m_bathymetry_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","x",m_bathymetry_x_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","y",m_bathymetry_y_values); 
- 
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","z",m_displacement_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","x",m_displacement_x_values);
-    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","y",m_displacement_y_values);
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_bathymetry_1000.nc","z",m_nx_bat,m_ny_bat,&m_bathymetry_values,&m_bathymetry_x_values,&m_bathymetry_y_values);
+    tsunami_lab::io::NetCdf::read("data/artificialtsunami_displ_1000.nc","z",m_nx_dis,m_ny_dis,&m_displacement_values,&m_displacement_x_values,&m_displacement_y_values);
 
     m_delta = i_delta;
     
@@ -52,16 +47,16 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetry( t_real i
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_x,t_real i_y) const {
 
-    if (i_x < m_displacement_x_values[0] || i_x > m_displacement_x_values[m_displacement_x_values.size() - 1] ||
-        i_y < m_displacement_y_values[0] || i_y > m_displacement_y_values[m_displacement_y_values.size() - 1])
+    if (i_x < m_displacement_x_values[0] || i_x > m_displacement_x_values[m_nx_dis - 1] ||
+        i_y < m_displacement_y_values[0] || i_y > m_displacement_y_values[m_ny_dis - 1])
     {
         return 0;
     }
     //nachdem man schon eigentlich den index raushat wollen wir ihn nochmal berechnen????? 
-    t_idx l_x = findClosestIndex(m_displacement_x_values, i_x);
-    t_idx l_y = findClosestIndex(m_displacement_y_values, i_y);
+    t_idx l_x = findClosestIndex(m_displacement_x_values,m_nx_dis, i_x);
+    t_idx l_y = findClosestIndex(m_displacement_y_values,m_ny_dis, i_y);
 
-    return m_displacement_values[l_x * m_displacement_y_values.size() + l_y];
+    return m_displacement_values[l_x * m_ny_dis + l_y];
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getHeight( t_real i_x,
@@ -77,28 +72,33 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getHeight( t_real i_x,
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetryNetCdf(t_real i_x, t_real i_y) const {
     //check whether the position is within our domain
-    if (i_x < m_bathymetry_x_values[0] || i_x > m_bathymetry_x_values[m_bathymetry_x_values.size() - 1] ||
-        i_y < m_bathymetry_y_values[0] || i_y > m_bathymetry_y_values[m_bathymetry_y_values.size() - 1])
+    if (i_x < m_bathymetry_x_values[0] || i_x > m_bathymetry_x_values[m_nx_bat - 1] ||
+        i_y < m_bathymetry_y_values[0] || i_y > m_bathymetry_y_values[m_ny_bat - 1])
     {
         return 0;
     }
 
-    t_idx l_x = findClosestIndex(m_bathymetry_x_values, i_x);
-    t_idx l_y = findClosestIndex(m_bathymetry_y_values, i_y);
+    t_idx l_x = findClosestIndex(m_bathymetry_x_values,m_nx_bat, i_x);
+    t_idx l_y = findClosestIndex(m_bathymetry_y_values,m_ny_bat,i_y);
     
-    return m_bathymetry_values[l_y * m_bathymetry_x_values.size() + l_x];
+    return m_bathymetry_values[l_y * m_nx_bat + l_x];
 }
 
-tsunami_lab::t_idx tsunami_lab::setups::TsunamiEvent2d::findClosestIndex(const std::vector<t_real>& vec, t_real value) const {
+tsunami_lab::t_idx tsunami_lab::setups::TsunamiEvent2d::findClosestIndex(const t_real* arr,size_t size, t_real value) const {
+
+    if(arr == nullptr) return -1;
+
+    if (size == 0) {
+        return 0; 
+    }
 
     t_idx closestIndex = 0;
-    for (t_idx index = 0; index < vec.size(); ++index) {
-        if (vec[index] > value) {
-            if (value - vec[index - 1] > vec[index] - value){
-                closestIndex = index ;
-            }
-            else{
-                closestIndex = index- 1;
+    for (t_idx index = 0; index < size; ++index) {
+        if (arr[index] > value) {
+            if (value - arr[index - 1] > arr[index] - value) {
+                closestIndex = index;
+            } else {
+                closestIndex = index - 1;
             }
             break;
         }

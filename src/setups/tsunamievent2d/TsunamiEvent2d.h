@@ -33,35 +33,37 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
     t_real m_length_bathymetry   = 0;
     t_real m_width_displacement  = 0;
     t_real m_length_displacement = 0;
-
-
+    t_idx  m_nx_bat = 0;
+    t_idx  m_ny_bat = 0;
+    t_idx  m_nx_dis = 0;
+    t_idx  m_ny_dis = 0;
     /**
     * @param m_bathymetry_values bathymetry values without ghostcells.
     */
-    std::vector<t_real> m_bathymetry_values;
+    t_real * m_bathymetry_values;
     /**
     * @param m_bathymetry_x_values 1D array for the bathymetry x values.
     */
-    std::vector<t_real> m_bathymetry_x_values;
+    t_real * m_bathymetry_x_values;
     /**
     * @param m_bathymetry_y_values 1D array for the bathymetry y values.
     */
-    std::vector<t_real> m_bathymetry_y_values;
+    t_real * m_bathymetry_y_values;
 
 
 
     /**
     * @param m_displacement_values bathymetry values without ghostcells.
     */
-    std::vector<t_real> m_displacement_values;
+    t_real * m_displacement_values;
     /**
     * @param m_displacement_x_values 1D array for the bathymetry x values.
     */
-    std::vector<t_real> m_displacement_x_values;
+    t_real * m_displacement_x_values;
     /**
     * @param m_displacement_y_values 1D array for the bathymetry y values.
     */
-    std::vector<t_real> m_displacement_y_values;
+    t_real * m_displacement_y_values;
 
     /**
      * @brief check if position is in boundary true : call findClosestIndex else : 0; 
@@ -78,7 +80,7 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
      * @param value queries the value at point.
      * @return index of the closest available value.
      */
-    t_idx findClosestIndex(const std::vector<t_real>& vec, t_real value) const;
+    t_idx findClosestIndex(const t_real* arr,size_t size, t_real value) const;
 
   public:
    

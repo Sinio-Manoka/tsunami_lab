@@ -137,20 +137,16 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
 
 
 TEST_CASE( "Test the NetCdf-reader ", "[NetCdfreader]" ) {
-    std::vector<tsunami_lab::t_real> data;
-
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(10,10,"testsFiles/reader.nc");
-  
-
-    l_netCdf->read("testsFiles/testFileForTheReader.nc" , "data", data ) ;
     
-
-
-  for (tsunami_lab::t_real i = 0; i < 71; i++)
-  {
-     REQUIRE(i == data[i]);
-  }
-
-  delete l_netCdf;
-
+    tsunami_lab::t_real * l_data;
+    tsunami_lab::t_idx l_nx;
+    tsunami_lab::t_idx l_ny;
+    tsunami_lab::io::NetCdf::read("testsFiles/testFileForTheReader.nc", "data", l_nx, l_ny, &l_data, nullptr, nullptr) ;
+    for (tsunami_lab::t_idx  i = 0; i < 71; i++)
+    {
+        REQUIRE(i == l_data[i]);
+    }
+    REQUIRE(6 == l_nx);
+    REQUIRE(12 == l_ny);
+    delete[] l_data; 
 }

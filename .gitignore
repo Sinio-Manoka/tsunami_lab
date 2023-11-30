@@ -5,3 +5,4 @@ outputs/**
 stations/**
 .gitignore
 .sconsign.dblite
+data/**

@@ -74,14 +74,14 @@ class tsunami_lab::io::NetCdf {
      * @param i_b bathymetry values with ghostcells.
      * @param filename string filename
      */
-    void fillConstants(t_idx                  i_nx,  
-                      t_idx                   i_ny,
-                      t_real                  i_dxy,
-                      t_real                  i_domainstart_x,
-                      t_real                  i_domainstart_y,
-                      t_real                  i_stride,
-                      t_real          const * i_b,
-                      const char*           filename);
+    void fillConstants(t_idx i_nx,  
+                      t_idx i_ny,
+                      t_real i_dxy,
+                      t_real i_domainstart_x,
+                      t_real i_domainstart_y,
+                      t_real i_stride,
+                      t_real const * i_b,
+                      const char* filename);
 
     /**
      * @brief get the values written in a empty vector
@@ -91,9 +91,13 @@ class tsunami_lab::io::NetCdf {
      * @param data get the values written in a empty vector
      * @return -1 dummy to end method
      */
-    static int read( const char* filename,
-                    const char* varname,
-                    std::vector<t_real> &data);
+    static void read( const char* filename,
+                      const char* varname,
+                      t_idx & i_nx,
+                      t_idx & i_ny,
+                      t_real ** o_zdata,
+                      t_real ** o_xdata,
+                      t_real ** o_ydata);
                                 
 };
 
