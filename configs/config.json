@@ -16,6 +16,6 @@
     "endtime" : 600,
     "writer" : "netcdf",
     "bathfile" : "data/chile_gebco20_usgs_250m_bath.nc",
-    "dicfile" : "data/chile_gebco20_usgs_250m_displ.nc"
+    "disfile" : "data/chile_gebco20_usgs_250m_displ.nc"
 
 }

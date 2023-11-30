@@ -96,9 +96,9 @@ int main() {
   tsunami_lab::t_real l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
   std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
   std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
-  std::string l_temp_dicFile = tsunami_lab::io::Configuration::readFromConfigString("dicfile");
+  std::string l_temp_disFile = tsunami_lab::io::Configuration::readFromConfigString("disfile");
   const char * l_bathFile = l_temp_bathFile.c_str();
-  const char * l_disFile = l_temp_dicFile.c_str();
+  const char * l_disFile = l_temp_disFile.c_str();
   std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
