@@ -98,7 +98,7 @@ int main() {
   std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
   std::string l_temp_dicFile = tsunami_lab::io::Configuration::readFromConfigString("dicfile");
   const char * l_bathFile = l_temp_bathFile.c_str();
-  const char * l_dicFile = l_temp_dicFile.c_str();
+  const char * l_disFile = l_temp_disFile.c_str();
   std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
@@ -130,7 +130,7 @@ int main() {
     else if(l_temp_setup == "tsunamievent2d")
     {
       std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent2d \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::TsunamiEvent2d(20,l_bathFile ,l_dicFile);
+      l_setup = new tsunami_lab::setups::TsunamiEvent2d(20,l_bathFile ,l_disFile);
     }
     else
     {
