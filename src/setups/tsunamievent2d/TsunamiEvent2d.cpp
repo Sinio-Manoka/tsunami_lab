@@ -14,6 +14,17 @@ tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta ,const char* 
     
 }
 
+tsunami_lab::setups::TsunamiEvent2d::~TsunamiEvent2d(){
+
+    delete[] m_bathymetry_values;
+    delete[] m_bathymetry_x_values;
+    delete[] m_bathymetry_y_values;
+    delete[] m_displacement_values;
+    delete[] m_displacement_x_values;
+    delete[] m_displacement_y_values;
+}
+
+
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetry( t_real i_x,
                                                                         t_real i_y) const {
 

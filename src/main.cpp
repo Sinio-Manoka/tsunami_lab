@@ -50,7 +50,7 @@ int main() {
   //2. Are all the needed Keys there??
   std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
                                           "nx","hu","location","hl","ny","domain_start_x",
-                                          "domain_start_y","wavepropagation","endtime","writer","bathFile","dicFile"};
+                                          "domain_start_y","wavepropagation","endtime","writer","bathfile","dicfile"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -95,8 +95,8 @@ int main() {
   tsunami_lab::t_real l_frequency = tsunami_lab::io::Configuration::getFrequency();
   tsunami_lab::t_real l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
   std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
-  std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathFile");
-  std::string l_temp_dicFile = tsunami_lab::io::Configuration::readFromConfigString("dicFile");
+  std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
+  std::string l_temp_dicFile = tsunami_lab::io::Configuration::readFromConfigString("dicfile");
   const char * l_bathFile = l_temp_bathFile.c_str();
   const char * l_dicFile = l_temp_dicFile.c_str();
   std::vector<tsunami_lab::Station> l_stations;
@@ -303,7 +303,7 @@ int main() {
 
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(false);
-    if( l_timeStep % 25 == 0 ) {
+    if( l_timeStep % 75 == 0 ) {
 
       if(l_temp_writer == "csv"){
         std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";

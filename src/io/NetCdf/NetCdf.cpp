@@ -5,7 +5,6 @@
 #include <chrono>
 
 
-
 void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                             t_idx                   i_ny,
                                             t_real                  i_dxy,
@@ -14,54 +13,51 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                             t_real                  i_stride,
                                             t_real          const * i_b,
                                             const char*           filename){
-    auto start = std::chrono::high_resolution_clock::now();
+
     int l_ncId,l_err;
     l_err = nc_open(filename,NC_WRITE, &l_ncId);
-    t_real *l_data0 = new t_real[i_ny];
 
+    t_real *l_coordinateX = new t_real[i_nx];
+    t_real *l_coordinateY = new t_real[i_ny];
+    t_real *l_temp_data_bathymetry = new t_real[(i_ny * i_nx)];
+    
     for( t_idx l_iy = 0; l_iy < i_ny; l_iy++ )
     {
-        l_data0[l_iy] = ((l_iy + 0.5) * i_dxy )+ i_domainstart_y;
+        l_coordinateY[l_iy] = ((l_iy + 0.5) * i_dxy )+ i_domainstart_y;
     }
     // put y coordinates
-    l_err = nc_put_var_float(l_ncId, m_varIdY, l_data0);
+    l_err = nc_put_var_float(l_ncId, m_varIdY, l_coordinateY);
     checkNcErr(l_err);
-    delete[] l_data0;
 
-    t_real *l_data1 = new t_real[i_nx];
+    delete[] l_coordinateY;
     for(t_idx l_ix = 0; l_ix < i_nx; l_ix++) 
     {
-        l_data1[l_ix] = ((l_ix + 0.5) * i_dxy )+ i_domainstart_x;
+        l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dxy )+ i_domainstart_x;
     }
     // put x coordinates
-    l_err = nc_put_var_float(l_ncId, m_varIdX, l_data1);
+    l_err = nc_put_var_float(l_ncId, m_varIdX, l_coordinateX);
     checkNcErr(l_err);
-    delete[] l_data1;
+    delete[] l_coordinateX;
 
-    t_real *l_data2 = new t_real[i_nx*i_ny];
     for( t_idx l_iy = 0; l_iy < i_ny; l_iy++)
     {
         for( t_idx l_ix = 0; l_ix < i_nx; l_ix++)
         {
             t_idx l_id = (l_iy+1) * i_stride + (l_ix+1);
 
-            l_data2[(l_iy) * i_nx + (l_ix) ] = i_b[l_id];
+            l_temp_data_bathymetry[(l_iy) * i_nx + (l_ix) ] = i_b[l_id];
         }
     }
     
     // put bathymetry values
-    l_err = nc_put_var_float(l_ncId, m_varIdBathymetry, l_data2);
+    l_err = nc_put_var_float(l_ncId, m_varIdBathymetry, l_temp_data_bathymetry);
     checkNcErr(l_err);
-    delete[] l_data2;
 
+    delete[] l_temp_data_bathymetry;
 
     //close file for now
     l_err = nc_close(l_ncId);
     checkNcErr(l_err);
-
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Execution time: " << duration.count() << " microseconds" << std::endl;
 
 }
 
@@ -72,8 +68,6 @@ void tsunami_lab::io::NetCdf::read( const char* i_filename,
                                     t_real ** o_zdata,
                                     t_real ** o_xdata,
                                     t_real ** o_ydata){
-
-    auto start = std::chrono::high_resolution_clock::now();
 
     int l_ncId, l_err = 0;
     int l_varidz, l_varidy, l_varidx, l_dimX, l_dimY;
@@ -119,9 +113,6 @@ void tsunami_lab::io::NetCdf::read( const char* i_filename,
         std::cerr << "Error closing NetCDF file: " << i_filename << std::endl;
     }
     
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
 
 }
 
@@ -132,15 +123,14 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
                                          t_real       const * i_h,
                                          t_real       const * i_hu,
                                          t_real       const * i_hv,
-                                         const char*           filename){
+                                         const char*          filename){
     
     int l_ncId, l_err;  
-    //open file
     l_err = nc_open(filename,NC_WRITE,&l_ncId); 
     checkNcErr(l_err);
 
-    //create memory
     std::vector<t_real> l_temp_data_height(i_ny * i_nx);
+
     std::vector<t_real> l_temp_data_momentum_x(i_ny * i_nx);
     std::vector<t_real> l_temp_data_momentum_y(i_ny * i_nx);
 
@@ -186,6 +176,8 @@ tsunami_lab::io::NetCdf::NetCdf(t_real l_nx,t_real l_ny,const char*  filename) {
     int l_dim3Ids[3];
 
     
+
+    std::cout << "generating netcdf-file ' " <<filename<< " '"<< std::endl;
 
     l_err = nc_create(filename,NC_CLOBBER, &l_ncId);      
     checkNcErr(l_err);

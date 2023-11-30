@@ -100,6 +100,7 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
 
     TsunamiEvent2d( t_real i_delta,const char*  i_bathFile, const char*    i_disFile);
 
+    ~TsunamiEvent2d();
     /**
      * @brief Gets the water height at a given point.
      * @param i_x xPos in the netcdf file.

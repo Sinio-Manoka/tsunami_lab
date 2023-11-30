@@ -31,7 +31,6 @@ class tsunami_lab::io::NetCdf {
   */
     static void checkNcErr( int i_err);
 
-
   public:
     /**
      * @brief adds the new time step to ne nc file
@@ -61,7 +60,7 @@ class tsunami_lab::io::NetCdf {
      * @param filename string filename
      */
     NetCdf(t_real l_nx,t_real l_ny, const char* filename);
-
+    
     /**
      * @brief  fills a NetCDF file with bathymetry data, generating X and Y coordinates based on input parameters 
      * 
