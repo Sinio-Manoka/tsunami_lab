@@ -15,7 +15,7 @@
     "wavepropagation" : "2d",
     "endtime" : 600,
     "writer" : "netcdf",
-    "bathfile" : "data/output/chile_gebco20_usgs_250m_bath.nc",
-    "dicfile" : "data/output/chile_gebco20_usgs_250m_displ.nc"
+    "bathfile" : "data/chile_gebco20_usgs_250m_bath.nc",
+    "dicfile" : "data/chile_gebco20_usgs_250m_displ.nc"
 
 }
