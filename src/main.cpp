@@ -22,6 +22,20 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <thread>
+
+void updateProgressBar(double current, double total, int width = 50) {
+    double progress = (current / total) * 100;
+    progress = std::min(std::max(progress, 0.0), 100.0);
+    int intProgress = static_cast<int>(progress);
+    int numHashes = static_cast<int>((intProgress / 100.0) * width);
+    std::cout << "\rCycles: [" << std::string(numHashes, '#') << std::string(width - numHashes, ' ') << "] "
+              << intProgress << "%";
+    std::cout.flush();
+}
+
+
 int main() {
   
   // number of cells in x- and y-direction
@@ -50,7 +64,7 @@ int main() {
   //2. Are all the needed Keys there??
   std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
                                           "nx","hu","location","hl","ny","domain_start_x",
-                                          "domain_start_y","wavepropagation","endtime","writer","bathfile","dicfile"};
+                                          "domain_start_y","wavepropagation","endtime","writer","bathfile","disfile"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -228,7 +242,7 @@ int main() {
  
   tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
   
-  tsunami_lab::t_real l_dt = 0.45 * l_dxy / l_speedMax;
+  tsunami_lab::t_real l_dt = 0.50 * l_dxy / l_speedMax;
   // derive scaling for a time step
   tsunami_lab::t_real l_scaling = l_dt/l_dxy;
   
@@ -285,26 +299,23 @@ int main() {
   //stations ---------------------------------------------------------------------------------end
 
   //create the netCdf file reader/writer
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,"outputs/output.nc"); 
+  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,"outputs/output.nc"); 
 
-    if(l_temp_writer == "netcdf"){
-      std::cout << "generating netcdf-file ' " << "outputs/output.nc" << " '"<< std::endl;
-      l_netCdf->fillConstants(l_nx,
-                              l_ny,
-                              l_dxy,
-                              l_domain_start_x,
-                              l_domain_start_y,
-                              l_waveProp->getStride(),
-                              l_waveProp->getBathymetry(),
-                              "outputs/output.nc");
-    }
-
-  
+  if(l_temp_writer == "netcdf"){
+    std::cout << "generating netcdf-file ' " << "outputs/output.nc" << " '"<< std::endl;
+    l_netCdf->fillConstants(l_nx,
+                            l_ny,
+                            l_dxy,
+                            l_domain_start_x,
+                            l_domain_start_y,
+                            l_waveProp->getStride(),
+                            l_waveProp->getBathymetry(),
+                            "outputs/output.nc");
+  }
 
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(false);
-    if( l_timeStep % 75 == 0 ) {
-
+    if( l_timeStep % 1250 == 0 ) {
       if(l_temp_writer == "csv"){
         std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
         std::ofstream l_file;
@@ -324,7 +335,7 @@ int main() {
 
         l_file.close();
         l_nOut++;
-       }else{
+      }else{
          l_netCdf->updateFile( l_nx,
                             l_ny,
                             l_waveProp->getStride(),
@@ -333,7 +344,7 @@ int main() {
                             l_waveProp->getMomentumX(),
                             l_waveProp->getMomentumY(),
                             "outputs/output.nc");
-       } 
+      }
     }
     
     //STATIONS_---------------------------------------------START 
@@ -361,16 +372,17 @@ int main() {
       }
       l_current_frequency_time = l_current_frequency_time + l_frequency;
     }
-      //STATIONS----------------------------------------------END
-   
-      l_waveProp->timeStep( l_scaling);
-      l_timeStep++;
-      l_simTime += l_dt;
-  
+    //STATIONS----------------------------------------------END
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    l_waveProp->timeStep( l_scaling);
+    l_timeStep++;
+    l_simTime += l_dt;
+    updateProgressBar(l_simTime, l_endTime);
+
   }
   //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x");
   //l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
-  std::cout << "\033[1;32m\u2713 finished with all time loops" << std::endl;
+  std::cout << "\n\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
   std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
