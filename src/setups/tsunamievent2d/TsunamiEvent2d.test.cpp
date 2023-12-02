@@ -16,8 +16,9 @@ TEST_CASE("Test the two-dimensional tsunamiEvent setup.", "[TsunamiEvent2d]")
   REQUIRE(l_bathymetryValue == Approx(-99.84296f));
   l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(9,0);
   REQUIRE(l_bathymetryValue == Approx(-100.15704f));
+  REQUIRE(l_bathymetryValue == Approx(-100.15704f));
   l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(0,4);
-  REQUIRE(l_bathymetryValue == Approx(-99.84296f));
+  REQUIRE(l_bathymetryValue == Approx( -99.84296f));
   l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(9,4);
   REQUIRE(l_bathymetryValue == Approx(-100.15704f));
 

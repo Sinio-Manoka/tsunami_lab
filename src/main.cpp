@@ -401,11 +401,15 @@ int main() {
         }
         tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix;
         const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
+        const tsunami_lab::t_real* l_water_hu =  l_waveProp->getMomentumX();
+        const tsunami_lab::t_real* l_water_hv =  l_waveProp->getMomentumY();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,
                                         l_water_height[l_id],
+                                        l_water_hu[l_id],
+                                        l_water_hv[l_id],
                                         l_station_path
                                         );
       }
