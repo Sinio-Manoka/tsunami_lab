@@ -129,4 +129,4 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumY(  t_real,
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumX(  t_real ,
                                                                         t_real)const{
     return 0;                                                                                                                       
-}                    
+}   
