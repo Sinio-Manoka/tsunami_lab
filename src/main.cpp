@@ -1,3 +1,4 @@
+
 #include "patches/wavepropagation1d/WavePropagation1d.h"
 #include "setups/tsunamievent2d/TsunamiEvent2d.h"
 #include "patches/wavepropagation2d/WavePropagation2d.h"
@@ -354,7 +355,7 @@ int main() {
 
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(false);
-    if( l_timeStep % 25 == 0 ) {
+    if( l_timeStep % 1250 == 0 ) {
       if(l_temp_writer == "csv"){
         std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
         std::ofstream l_file;

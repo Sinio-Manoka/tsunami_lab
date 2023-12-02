@@ -3,13 +3,8 @@
     "dimension_x" : 3500000,
     "dimension_y" : 2950000,
     "setup" :  "tsunamievent2d",
-<<<<<<< HEAD
     "nx" : 1400,
     "ny" : 1180,
-=======
-    "nx" : 7000,
-    "ny" : 5900,
->>>>>>> bef0cc6b92b669f4672fda7c17f414eb9b961b09
     "hu" : 0,
     "location" : 0,
     "hv":0.0,
@@ -18,11 +13,7 @@
     "domain_start_x" : -3000000,
     "domain_start_y" : -1450000,
     "wavepropagation" : "2d",
-<<<<<<< HEAD
-    "endtime" : 36000,
-=======
     "endtime" : 14400,
->>>>>>> bef0cc6b92b669f4672fda7c17f414eb9b961b09
     "writer" : "netcdf",
     "bathfile" : "data/output/chile_gebco20_usgs_250m_bath_fixed.nc",
     "disfile" : "data/output/chile_gebco20_usgs_250m_displ_fixed.nc"

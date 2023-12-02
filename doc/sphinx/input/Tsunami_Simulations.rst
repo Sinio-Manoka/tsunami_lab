@@ -82,6 +82,23 @@ This image pertains to the 250m Chile event, depicting the estimated completion 
 We had also tried to just let it run because we thought that the expected duration would not be the same as the real simulation duration
 but after more than 30 hours of simulation we stopped because the 250m cell width variants take too long
 
+
+After visualizing the Chile 500m event, we identified an additional unknown issue
+with our solver in the following video. However, we observed that by downgrading the resolution,
+the problem no longer occurs .This is why we will downgrade the resolution to 5000m and simulate it for 10 hours
+
+
+.. video:: _static/Chile_500m_problem.mp4
+   :width: 700
+   :height: 500
+   :autoplay:
+
+
+
+
+
+
+
 number of cell updates
 ........................
 
@@ -119,9 +136,11 @@ and will add a progressbar to kn
 lets now simulate the tsunami for the following resolutions:
 
 
-1. 250m:
+1. 2500m:
 
-For this resolution, we will use the following config file with a specified cell width and we will visualize it for 8 hours.
+
+
+For this resolution, we will use the following config file with a specified cell width and we will visualize it for 10 hours.
 
 .. code-block:: cpp 
 
@@ -130,8 +149,8 @@ For this resolution, we will use the following config file with a specified cell
    "dimension_x" : 3500000,
    "dimension_y" : 2950000,
    "setup" :  "tsunamievent2d",
-   "nx" : 14000,
-   "ny" : 11800,
+   "nx" : 1400,
+   "ny" : 1180,
    "hu" : 0,
    "location" : 0,
    "hv":0.0,
@@ -147,18 +166,24 @@ For this resolution, we will use the following config file with a specified cell
 
    }
 
-.. video:: _static/Dambreak2d.mp4
+.. video:: _static/chile_2500m_10h.mp4
    :width: 700
    :height: 500
    :autoplay:
 
 
+.. image:: _static/2500_Wave_left_domain.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
 
+As evident in the image, the wave exits our domain approximately at the time of 15319
 
+2. 5000m:
 
-2. 500m:
-
-For the 500m option, we will use the following config file, and we will visualize it for 4 hours:
+For the 5000m option, we will use the following config file, and we will visualize it for 4 hours:
 
 
 .. code-block:: cpp 
@@ -168,8 +193,8 @@ For the 500m option, we will use the following config file, and we will visualiz
     "dimension_x" : 3500000,
     "dimension_y" : 2950000,
     "setup" :  "tsunamievent2d",
-    "nx" : 7000,
-    "ny" : 5900,
+    "nx" : 700,
+    "ny" : 590,
     "hu" : 0,
     "location" : 0,
     "hv":0.0,
@@ -178,17 +203,27 @@ For the 500m option, we will use the following config file, and we will visualiz
     "domain_start_x" : -3000000,
     "domain_start_y" : -1450000,
     "wavepropagation" : "2d",
-    "endtime" : 14400,
+    "endtime" : 36000,
     "writer" : "netcdf",
     "bathfile" : "data/output/chile_gebco20_usgs_250m_bath_fixed.nc",
     "disfile" : "data/output/chile_gebco20_usgs_250m_displ_fixed.nc"
 
    }
 
-.. video:: _static/Dambreak2d.mp4
+.. video:: _static/Chile_5000_10hrs.mp4
    :width: 700
    :height: 500
    :autoplay:
+
+
+.. image:: _static/2500_Wave_left_domain.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
 
 
 3. 1000m:
@@ -243,7 +278,46 @@ lets now simulate the tsunami for the following resolutions:
 2. 500m:
 
 
+.. code-block:: cpp 
 
+   {
+      "solver" : "fwave",
+      "dimension_x" : 2700000,
+      "dimension_y" : 1500000,
+      "setup" :  "tsunamievent2d",
+      "nx" : 5400,
+      "ny" : 3000,
+      "hu" : 0,
+      "location" : 0,
+      "hv":0.0,
+      "hr": 55,
+      "hl": 25,
+      "domain_start_x" : -200000,
+      "domain_start_y" : -750000,
+      "wavepropagation" : "2d",
+      "endtime" : 18000,
+      "writer" : "netcdf",
+      "bathfile" : "data/tohoku_gebco20_ucsb3_250m_bath.nc",
+      "disfile" : "data/tohoku_gebco20_ucsb3_250m_displ.nc"
+
+   }
+
+
+.. video:: _static/TOHOKU_500_8H.mp4
+   :width: 700
+   :height: 500
+   :autoplay:
+
+
+.. image:: _static/TOHOKU_500_8H_wave_left_domain.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
+As evident in the image, the wave exits our domain approximately at the time of 10000
 
 3. 1000m:
 
