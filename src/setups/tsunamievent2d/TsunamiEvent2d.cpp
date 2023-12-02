@@ -67,7 +67,7 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_
     t_idx l_x = findClosestIndex(m_displacement_x_values,m_nx_dis, i_x);
     t_idx l_y = findClosestIndex(m_displacement_y_values,m_ny_dis, i_y);
 
-    return m_displacement_values[l_x * m_ny_dis + l_y];
+    return m_displacement_values[l_y * m_nx_dis + l_x];
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getHeight( t_real i_x,
@@ -129,4 +129,4 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumY(  t_real,
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getMomentumX(  t_real ,
                                                                         t_real)const{
     return 0;                                                                                                                       
-}                    
+}   
