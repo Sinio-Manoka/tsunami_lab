@@ -354,7 +354,7 @@ int main() {
 
   while( l_simTime < l_endTime ){
     l_waveProp->setGhostOutflow(false);
-    if( l_timeStep % 1250 == 0 ) {
+    if( l_timeStep % 25 == 0 ) {
       if(l_temp_writer == "csv"){
         std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
         std::ofstream l_file;
