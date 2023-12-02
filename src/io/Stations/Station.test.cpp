@@ -12,7 +12,7 @@
 
 
 TEST_CASE( "Test the Station IO", "[Station]" ) {
-    
+
     tsunami_lab::t_idx l_x = 5;
     tsunami_lab::t_idx l_y = 0;
     tsunami_lab::t_idx l_time = 0;
@@ -22,7 +22,7 @@ TEST_CASE( "Test the Station IO", "[Station]" ) {
     if (std::filesystem::exists("tests")) std::filesystem::remove_all("tests");
     std::filesystem::create_directory("tests");
     std::string l_csv_path = "tests/test_station_io.csv";
-    
+
     tsunami_lab::io::Station::write(l_x,
                                     l_y,
                                     l_time,
@@ -41,6 +41,6 @@ TEST_CASE( "Test the Station IO", "[Station]" ) {
 )V0G0N";
     REQUIRE( csvStream.str().size() == l_ref0.size() );
     REQUIRE( csvStream.str() == l_ref0 );
-    
+
     if (std::filesystem::exists("tests")) std::filesystem::remove_all("tests");
 }
