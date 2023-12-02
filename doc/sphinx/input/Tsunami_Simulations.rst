@@ -15,7 +15,7 @@ Additionally, we will adjust the opacity of the bathymetry to 0.6 to enhance the
 
 In ParaView, we will use the following color maps `here`_:
 
-.. _here:: https://www.earthmodels.org/date-and-tools/color-tables/gmt_colortables_for_paraview.zip
+.. _here:https://www.earthmodels.org/date-and-tools/color-tables/gmt_colortables_for_paraview.zip
 
 Don't forget to import the color maps in ParaView.
 
@@ -45,11 +45,67 @@ Simulate the tsunami event and visualize the output
 
 .. important:: 
 
-   Considering both performance issues and time constraints, we will limit the simulation to 8 hours.
-   for both event  
+   Considering performance issues and time constraints, we werent able to simulate everything.
+   For example After visualizing Chile event for 2 days for every resolution given in the question, we realized that we made a mistake in
+   our tsunamievent2d setup and we tried to simulate everything again and fixed the function.
+
+.. code-block:: cpp
+
+   tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetryNetCdf(t_real i_x, t_real i_y) const {
+    //check whether the position is within our domain
+    if (i_x < m_bathymetry_x_values[0]  i_x > m_bathymetry_x_values[m_nx_bat - 1] 
+        i_y < m_bathymetry_y_values[0] || i_y > m_bathymetry_y_values[m_ny_bat - 1])
+    {
+        return 0;
+    }
+
+    t_idx l_x = findClosestIndex(m_bathymetry_x_values,m_nx_bat, i_x);
+    t_idx l_y = findClosestIndex(m_bathymetry_y_values,m_ny_bat,i_y);
+
+    return m_bathymetry_values[l_x * m_nx_bat + l_y]; // the problem was here
+   }
+
+The correct line of the code would be: ``return m_bathymetry_values[l_y * m_nx_bat + l_x]``
+
+For the performance issues we always got something like this:
 
 
-or the Chilean events, we will use different grid resolutions. However, before doing that, we need to adjust the number of timesteps we go through in main ``main.cpp``
+.. image:: _static/probleme_250m_chile.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+This image pertains to the 250m Chile event, depicting the estimated completion time for our solver.
+
+We had also tried to just let it run because we thought that the expected duration would not be the same as the real simulation duration
+but after more than 30 hours of simulation we stopped because the 250m cell width variants take too long
+
+number of cell updates
+........................
+
+For the question: **What are the computational demands of your simulations (number of required cells and cell updates)?**
+we will use the following formula: 
+
+``l_nx * l_ny * amount_of_time_steps * 4``
+
+.. important:: 
+
+   l_nx: amount of cells in the x direction
+
+   l_ny: amount of cells in the y direction
+
+   amount_of_time_steps: amount of timesteps
+
+the multiplication with `4` is due to the number of netupdates for each cell per time step. 2 time ``x_sweep`` and 2 time ``y_sweep`` netupdates.
+
+
+visualiztion
+.............
+
+For the Chile events, we will use different grid resolutions. However, before doing that,
+we need to adjust the number of timesteps we go through in main ``main.cpp``
 
 
 .. code-block:: cpp 
@@ -65,7 +121,7 @@ lets now simulate the tsunami for the following resolutions:
 
 1. 250m:
 
-For this resolution, we will use the following config file with a specified cell width and we willvisualize it for 8 hours.
+For this resolution, we will use the following config file with a specified cell width and we will visualize it for 8 hours.
 
 .. code-block:: cpp 
 
@@ -95,6 +151,7 @@ For this resolution, we will use the following config file with a specified cell
    :width: 700
    :height: 500
    :autoplay:
+
 
 
 
@@ -174,7 +231,7 @@ and for the 1000m option we will use the following config file :
 Tohoku Event
 -------------
 
-imulate the tsunami event and visualize the output
+simulate the tsunami event and visualize the output
 ...................................................
 
 lets now simulate the tsunami for the following resolutions:
@@ -192,9 +249,167 @@ lets now simulate the tsunami for the following resolutions:
 
 
 
-Time between the earthquake rupture and the arrival of the first tsunami waves
-...............................................................................
+The time between the earthquake rupture and the arrival of the first tsunami waves in Sõma
+..........................................................................................
 
+
+1. For the question: ``Find the measured data for Sõma for the March 11, 2011`` we used the following site `The National Center for Environmental Information`_:
+
+.. _The National Center for Environmental Information: https://www.ngdc.noaa.gov/hazel/view/hazards/tsunami/runup-more-info/19241
+
+The relevant Information are : 
+
+Latitude: 37.83300
+
+Longitude: 140.96700
+
+Distance From Source(Km) :134
+
+Travel Minutes: 9
+
+Maximum Water Height(m): 9.3
+
+
+2. travel time until the first waves reach Sõma:
+
+   1. For this question first, To approximate the height using the csv file, we can calculate the average bathymetry
+      value by adding the values together and dividing them by the number of values located between Soma and the epicenter :
+
+
+      .. code-block:: cpp 
+
+         -3.9362,
+         -9.5917,
+         -10.011,
+         -14.636,
+         -15.122,
+         -20.738,
+         -25.357,
+         -25.949,
+         -27.898,
+         -30.959,
+         -31.919,
+         -32.675,
+         -35.377,
+         -35.988,
+         -36.033,
+         -39.395,
+         -42.388,
+         -43.535,
+         -46.543,
+         -48.412,
+         -50.274,
+         -51.736,
+         -60.871,
+         -66.789,
+         -67.249,
+         -81.843,
+         -90.523,
+         -92.603,
+         -98.261,
+         -106.67,
+         -114.38,
+         -119.41,
+         -127.19,
+         -129.43,
+         -129.62,
+         -131.4,
+         -130.86,
+         -131.05,
+         -131.78,
+         -136.93,
+         -138.16,
+         -139.16,
+         -141.31,
+         -145.29,
+         -145.49,
+         -147.12,
+         -149.79,
+         -151.39,
+         -155.38,
+         -163.21,
+         -169.61,
+         -173.66,
+         -185.52,
+         -194.54,
+         -194.89,
+         -203.06,
+         -213.28,
+         -216.36,
+         -224.07,
+         -235.6,
+         -242.75,
+         -246.89,
+         -261.36,
+         -281.08,
+         -281.6,
+         -302.34,
+         -323.7,
+         -331.87,
+         -350.7,-
+         -381.22,
+         -401.84,
+         -413.14,
+         -457.6,
+         -498.8,
+         -499.5,
+         -550.35,
+         -628.92,
+         -656.97,
+         -717.03,
+         -788.27,
+         -811.56,
+         -823.58,
+         -854.8,
+         -879.21,
+         -879.34,
+         -905.36,
+         -945.49,
+         -953.42,
+         -968.75,
+
+
+
+      We trimmed the bathymetry values starting from the point ``-3.9362,-1.2386e+05,-53000,0``  opting not
+      to choose the point ``5.7205,-1.25e+05,-53487,0``
+      despite it's suitable x-coordinate, due to the positive bathymetry associated with that point.
+      We concluded the trimming process at the point ``-968.75,-1000,-427.9,0``
+      avoid including the point ``-994.25,1000,427.9,0`` , which comes afterward and skips the epicenter.
+
+   2. The average value is -255.6141787 so we assume that our height equals 255.6141787 and now we can compute the wave speed with the
+      following formula:
+
+      .. math:: \lambda \approx \sqrt{gh}
+
+   .. image:: _static/waveSpeed_Soma.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+      
+   3. now lets calculate the Distance between the epicenter and Sõma:
+
+   .. image:: _static/soma_question_2_2.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
+
+   4. now lets compute the time by the following formula:  
+
+      :math:`time= \frac{distance}{wave speed}`
+      
+      .. image:: _static/Soma_time.png
+      :width: 700px
+      :height: 500px
+      :scale: 100 %
+      :alt: alternate text
+      :align: right
 
 
 
