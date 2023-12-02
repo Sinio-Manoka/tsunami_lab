@@ -25,54 +25,69 @@
 #include <chrono>
 #include <thread>
 
+
 class Timer {
   public:
-      Timer() {
-          start_time = std::chrono::high_resolution_clock::now();
-      }
+    Timer() {
+        start_time = std::chrono::high_resolution_clock::now();
+    }
 
-      ~Timer() {
-          end_time = std::chrono::high_resolution_clock::now();
-          auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time).count();
+    ~Timer() {
+        end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time).count();
 
-          int hours = duration / 3600;
-          int minutes = (duration % 3600) / 60;
-          int seconds = duration % 60;
+        int hours = duration / 3600;
+        int minutes = (duration % 3600) / 60;
+        int seconds = duration % 60;
 
-          std::cout << "\nProgram started at: " << getFormattedTime(start_time)
-                    << "\nProgram ended at: " << getFormattedTime(end_time)
-                    << "\nProgram duration: " << hours << " hours, " << minutes << " minutes, " << seconds << " seconds\n";
-      }
+        std::cout << "\nProgram started at: " << getFormattedTime(start_time)
+                  << "\nProgram ended at: " << getFormattedTime(end_time)
+                  << "\nProgram duration: " << hours << " hours, " << minutes << " minutes, " << seconds << " seconds\n";
+    }
 
-  private:
-      std::chrono::high_resolution_clock::time_point start_time;
-      std::chrono::high_resolution_clock::time_point end_time;
+    std::chrono::high_resolution_clock::time_point getStartTime() const {
+        return start_time;
+    }
 
-      std::string getFormattedTime(const std::chrono::high_resolution_clock::time_point& time) {
-          auto time_t = std::chrono::system_clock::to_time_t(time);
-          std::string time_str = std::ctime(&time_t);
-          time_str.pop_back();  // Remove the trailing newline character
-          return time_str;
-      }
+private:
+    std::chrono::high_resolution_clock::time_point start_time;
+    std::chrono::high_resolution_clock::time_point end_time;
+
+    std::string getFormattedTime(const std::chrono::high_resolution_clock::time_point& time) {
+        auto time_t = std::chrono::system_clock::to_time_t(time);
+        std::string time_str = std::ctime(&time_t);
+        time_str.pop_back();  // Remove the trailing newline character
+        return time_str;
+    }
 };
 
-void updateProgressBar(double current, double total, int width = 50) {
+void updateProgressBar(double current, double total, const std::chrono::high_resolution_clock::time_point& start_time, int width = 50) {
     double progress = (current / total) * 100;
     progress = std::min(std::max(progress, 0.0), 100.0);
     int intProgress = static_cast<int>(progress);
     int numHashes = static_cast<int>((intProgress / 100.0) * width);
-    std::cout << "\rCycles: [" << std::string(numHashes, '#') << std::string(width - numHashes, ' ') << "] "
+    std::cout << "\rProgress: [" << std::string(numHashes, '#') << std::string(width - numHashes, ' ') << "] "
               << intProgress << "%";
+    if (current > 0.0) {
+        auto now = std::chrono::high_resolution_clock::now();
+        auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(now - start_time).count();
+        auto remaining_time = static_cast<int>((100.0 - progress) / (progress / elapsed_time));
+
+        int remaining_hours = remaining_time / 3600;
+        int remaining_minutes = (remaining_time % 3600) / 60;
+        int remaining_seconds = remaining_time % 60;
+
+        std::cout << " | Estimated time remaining: " << remaining_hours << " hours, "
+                  << remaining_minutes << " minutes, " << remaining_seconds << " seconds";
+    }
+
     std::cout.flush();
 }
 
 int main() {
-  
-  Timer timer;
-  // number of cells in x- and y-direction
+  Timer timer; 
   tsunami_lab::t_idx l_nx = 0;
   tsunami_lab::t_idx l_ny = 1;
-  // set cell size width length
   tsunami_lab::t_real l_dxy = 25;
 
   std::cout << "####################################" << std::endl;
@@ -103,14 +118,8 @@ int main() {
       std::cout << "-> "<< key << std::endl;
     }
     return EXIT_FAILURE;
-  }else{
-    std::cout << "\033[1;32m\u2713 All needed Keys do exists."  << std::endl;
-    for (const auto& key : keysToCheck) {
-      std::cout << "-> "<< key << std::endl;
-    }
-      std::cout << "\033[0m"; //reset the Terminal color From Green to White
   }
-  
+  std::cout << "\033[0m" << std::endl; 
   if (std::filesystem::exists("outputs")) std::filesystem::remove_all("outputs");
   std::filesystem::create_directory("outputs");
   if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
@@ -393,26 +402,27 @@ int main() {
         }
         tsunami_lab::t_idx l_id = l_iy * l_waveProp->getStride() + l_ix;
         const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
+        const tsunami_lab::t_real* l_water_hu =  l_waveProp->getMomentumX();
+        const tsunami_lab::t_real* l_water_hv =  l_waveProp->getMomentumY();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,
                                         l_water_height[l_id],
+                                        l_water_hu[l_id],
+                                        l_water_hv[l_id],
                                         l_station_path
                                         );
       }
       l_current_frequency_time = l_current_frequency_time + l_frequency;
     }
     //STATIONS----------------------------------------------END
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     l_waveProp->timeStep( l_scaling);
     l_timeStep++;
     l_simTime += l_dt;
-    updateProgressBar(l_simTime, l_endTime);
+    updateProgressBar(l_simTime, l_endTime,timer.getStartTime());
 
   }
-  //l_netCdf->readNetCdf("artificialtsunami_bathymetry_1000.nc","x");
-  //l_netCdf->readNetCdfbathAndDis("artificialtsunami_displ_1000.nc");
   std::cout << "\n\033[1;32m\u2713 finished with all time loops" << std::endl;
   std::cout << "\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
   // free memory

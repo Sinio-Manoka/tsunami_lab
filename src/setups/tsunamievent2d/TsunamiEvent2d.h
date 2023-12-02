@@ -28,11 +28,7 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
     /**
      * @param m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
      */
-    t_real m_delta               = 0;
-    t_real m_width_bathymetry    = 0; 
-    t_real m_length_bathymetry   = 0;
-    t_real m_width_displacement  = 0;
-    t_real m_length_displacement = 0;
+    t_real m_delta  = 0;
     t_idx  m_nx_bat = 0;
     t_idx  m_ny_bat = 0;
     t_idx  m_nx_dis = 0;
