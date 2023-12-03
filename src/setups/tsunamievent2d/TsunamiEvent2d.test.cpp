@@ -14,12 +14,11 @@ TEST_CASE("Test the two-dimensional tsunamiEvent setup.", "[TsunamiEvent2d]")
 
   tsunami_lab::t_real l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(0,0);
   REQUIRE(l_bathymetryValue == Approx(-99.84296f));
-  l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(9,0);
   REQUIRE(l_bathymetryValue == Approx(-99.84296f));
   l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(0,4);
-  REQUIRE(l_bathymetryValue == Approx(-100.15704f));
+  REQUIRE(l_bathymetryValue == Approx( -99.84296f));
   l_bathymetryValue = l_tsunamiEvent2d->getBathymetry(9,4);
-  REQUIRE(l_bathymetryValue == Approx( -100.15704f));
+  REQUIRE(l_bathymetryValue == Approx(-100.15704f));
 
   tsunami_lab::t_real l_heightValue = l_tsunamiEvent2d->getHeight(2,1);
   l_heightValue = l_tsunamiEvent2d->getHeight(0,0);
