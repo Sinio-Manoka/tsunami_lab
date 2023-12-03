@@ -282,11 +282,17 @@ int main() {
  
   tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
   
-  tsunami_lab::t_real l_dt = 0.50 * l_dxy / l_speedMax;
+  tsunami_lab::t_real l_dt = 0.45 * l_dxy / l_speedMax;
   // derive scaling for a time step
   tsunami_lab::t_real l_scaling = l_dt/l_dxy;
   
+  std::cout << "\033[1;34mTime step: " << l_dt << "\033[0m" << std::endl;
 
+  tsunami_lab::t_real amount_time_steps = l_temp_endtime/l_dt;
+  std::cout << "\033[1;34mAmound of Time steps: " << amount_time_steps << "\033[0m" << std::endl;
+
+  tsunami_lab::t_real amount_time_steps = ceil(l_temp_endtime/l_dt);
+  std::cout << "\033[1;34mAmound of Time steps: " << amount_time_steps << "\033[0m" << std::endl;
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
   tsunami_lab::t_idx  l_nOut = 0;
@@ -420,7 +426,7 @@ int main() {
     l_waveProp->timeStep( l_scaling);
     l_timeStep++;
     l_simTime += l_dt;
-    updateProgressBar(l_simTime, l_endTime,timer.getStartTime());
+    updateProgressBar(l_simTime, l_endTime);
 
   }
   std::cout << "\n\033[1;32m\u2713 finished with all time loops" << std::endl;

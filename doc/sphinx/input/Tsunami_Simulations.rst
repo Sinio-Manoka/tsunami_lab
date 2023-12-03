@@ -15,7 +15,7 @@ Additionally, we will adjust the opacity of the bathymetry to 0.6 to enhance the
 
 In ParaView, we will use the following color maps `here`_:
 
-.. _here:https://www.earthmodels.org/date-and-tools/color-tables/gmt_colortables_for_paraview.zip
+.. _here: https://www.earthmodels.org/date-and-tools/color-tables/gmt_colortables_for_paraview.zip
 
 Don't forget to import the color maps in ParaView.
 
@@ -96,16 +96,13 @@ the problem no longer occurs .This is why we will downgrade the resolution to 50
 
 
 
-
-
-
 number of cell updates
 ........................
 
 For the question: **What are the computational demands of your simulations (number of required cells and cell updates)?**
 we will use the following formula: 
 
-``l_nx * l_ny * amount_of_time_steps * 4``
+::math:`l_{\text{nx} * l_{\text{ny}} * timestep_{\text{amount}} * 4`
 
 .. important:: 
 
@@ -116,6 +113,12 @@ we will use the following formula:
    amount_of_time_steps: amount of timesteps
 
 the multiplication with `4` is due to the number of netupdates for each cell per time step. 2 time ``x_sweep`` and 2 time ``y_sweep`` netupdates.
+
+The number of timesteps can be calculated using this formula::
+
+.. code_block:: cpp
+
+   tsunami_lab::t_real amount_time_steps = l_temp_endtime/l_dt;
 
 
 visualiztion
@@ -136,7 +139,7 @@ and will add a progressbar to kn
 lets now simulate the tsunami for the following resolutions:
 
 
-1. 2500m:
+**1. 2500m:**
 
 
 
@@ -179,11 +182,21 @@ For this resolution, we will use the following config file with a specified cell
    :alt: alternate text
    :align: right
 
+
+
 As evident in the image, the wave exits our domain approximately at the time of 15319
 
-2. 5000m:
+Now let's compute the number of net updates using our formula:
 
-For the 5000m option, we will use the following config file, and we will visualize it for 4 hours:
+::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+
+.. math:: 1400 * 1180 * 6533.12 * 4  = 43170856960
+
+..
+
+**2. 5000m:**
+
+For the 5000m option, we will use the following config file, and we will visualize it for 10 hours:
 
 
 .. code-block:: cpp 
@@ -223,44 +236,68 @@ For the 5000m option, we will use the following config file, and we will visuali
    :alt: alternate text
    :align: right
 
+As evident in the image, the wave exits our domain approximately at the time of 15957
+
+
+Now let's compute the number of net updates using our formula:
+
+::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+
+.. math:: 700 * 590 * 4060.92 * 4 = 17533.68
 
 
 
-3. 1000m:
+
+**3. 1000m:**
 
 and for the 1000m option we will use the following config file : 
 
 .. code-block:: cpp 
 
    {
-   "solver" : "fwave",
-   "dimension_x" : 3500000,
-   "dimension_y" : 2950000,
-   "setup" :  "tsunamievent2d",
-   "nx" : 3500,
-   "ny" : 2950,
-   "hu" : 0,
-   "location" : 0,
-   "hv":0.0,
-   "hr": 55,
-   "hl": 25,
-   "domain_start_x" : -3000000,
-   "domain_start_y" : -1450000,
-   "wavepropagation" : "2d",
-   "endtime" : 14400,
-   "writer" : "netcdf",
-   "bathfile" : "data/output/chile_gebco20_usgs_250m_bath_fixed.nc",
-   "disfile" : "data/output/chile_gebco20_usgs_250m_displ_fixed.nc"
+      "solver" : "fwave",
+      "dimension_x" : 3500000,
+      "dimension_y" : 2950000,
+      "setup" :  "tsunamievent2d",
+      "nx" : 3500,
+      "ny" : 2950,
+      "hu" : 0,
+      "location" : 0,
+      "hv":0.0,
+      "hr": 55,
+      "hl": 25,
+      "domain_start_x" : -3000000,
+      "domain_start_y" : -1450000,
+      "wavepropagation" : "2d",
+      "endtime" : 18000,
+      "writer" : "netcdf",
+      "bathfile" : "data/chile_gebco20_usgs_250m_bath_fixed.nc",
+      "disfile" : "data/chile_gebco20_usgs_250m_displ_fixed.nc"
 
    }
 
-.. video:: _static/Dambreak2d.mp4
+.. video:: _static/chile_1000m_5h.mp4
    :width: 700
    :height: 500
    :autoplay:
 
 
+.. image:: _static/chile_1000m_5h_wave_leave_domain.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
 
+
+
+As evident in the image, the wave exits our domain approximately at the time of 14477
+
+now lets comput the number of netupdate using our formula:
+
+::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+
+.. math:: 3500 * 2950 * 10257.4 = 105907655000
  
 
 Tohoku Event
@@ -271,11 +308,58 @@ simulate the tsunami event and visualize the output
 
 lets now simulate the tsunami for the following resolutions:
 
-1. 250m:
+**1. 2500m:**
+
+.. code-block:: cpp 
+
+ 
+   {
+      "solver" : "fwave",
+      "dimension_x" : 2700000,
+      "dimension_y" : 1500000,
+      "setup" :  "tsunamievent2d",
+      "nx" : 1080,
+      "ny" : 600,
+      "hu" : 0,
+      "location" : 0,
+      "hv":0.0,
+      "hr": 55,
+      "hl": 25,
+      "domain_start_x" : -200000,
+      "domain_start_y" : -750000,
+      "wavepropagation" : "2d",
+      "endtime" : 36000,
+      "writer" : "netcdf",
+      "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
+      "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc"
+
+   }
+
+.. video:: _static/Tohuko_250mFile_2500m_10h.mp4
+   :width: 700
+   :height: 500
+   :autoplay:
+   
+.. image:: _static/Tohuko_250mFile_2500m_10h_Wave_left_domain.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
 
 
 
-2. 500m:
+As evident in the image, the wave exits our domain approximately at the time of 14477
+
+now lets comput the number of netupdate using our formula:
+
+::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+
+.. math:: 1080 * 600 * 4417.32 * 4 = 11449693440
+
+
+
+**2. 500m:**
 
 
 .. code-block:: cpp 
@@ -319,7 +403,15 @@ lets now simulate the tsunami for the following resolutions:
 
 As evident in the image, the wave exits our domain approximately at the time of 10000
 
-3. 1000m:
+Now let's compute the number of net updates using our formula:
+::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+
+.. math:: 5400 * 3000 * 8625 * 4 = 558900000000
+ 
+
+
+
+**3. 1000m:**
 
 
 
@@ -456,21 +548,21 @@ Maximum Water Height(m): 9.3
       .. math:: \lambda \approx \sqrt{gh}
 
    .. image:: _static/waveSpeed_Soma.png
-   :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
-   :align: right
+      :width: 700px
+      :height: 500px
+      :scale: 100 %
+      :alt: alternate text
+      :align: right
 
       
    3. now lets calculate the Distance between the epicenter and Sõma:
 
    .. image:: _static/soma_question_2_2.png
-   :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
-   :align: right
+      :width: 700px
+      :height: 500px
+      :scale: 100 %
+      :alt: alternate text
+      :align: right
 
 
 
@@ -479,11 +571,13 @@ Maximum Water Height(m): 9.3
       :math:`time= \frac{distance}{wave speed}`
       
       .. image:: _static/Soma_time.png
-      :width: 700px
-      :height: 500px
-      :scale: 100 %
-      :alt: alternate text
-      :align: right
+         :width: 700px
+         :height: 500px
+         :scale: 100 %
+         :alt: alternate text
+         :align: right
+
+3. Soma station:
 
 
 
