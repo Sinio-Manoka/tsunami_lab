@@ -290,7 +290,7 @@ and for the 1000m option we will use the following config file :
 
 
 
-As evident in the image, the wave exits our domain approximately after 14 477 seconds
+As evident in the image, the wave exits our domain approximately at the time of 15 957
 
 now let's compute the number of netupdates using our formula:
 
@@ -348,7 +348,7 @@ Let's now simulate the tsunami for the following resolution:
 
 
 
-As evident in the image, the wave exits our domain approximately after 14 477 seconds.
+As evident in the image, the wave exits our domain approximately after 10000 seconds.
 
 Now let's compute the number of netupdate using our formula:
 
@@ -453,6 +453,15 @@ For the 1000m cell width the simulated time is 3.5 hours
    :scale: 100 %
    :alt: alternate text
    :align: right
+
+
+As evident in the image, the wave exits our domain approximately after 10 000 seconds
+
+Now let's compute the number of net updates using our formula:
+
+.. math:: l_{\text{nx}} * l_{\text{ny}} * timestep_{\text{amount}} * 4
+
+.. math:: 2700 * 1500 * 7762 * 4 = 125744400000
 
 
 The time between the earthquake rupture and the arrival of the first tsunami waves in Sõma
@@ -589,7 +598,7 @@ Maximum Water Height(m): 9.3
 
    .. image:: _static/waveSpeed_Soma.png
       :width: 700px
-      :height: 500px
+      :height: 200px
       :scale: 100 %
       :alt: alternate text
       :align: right
@@ -599,7 +608,7 @@ Maximum Water Height(m): 9.3
 
    .. image:: _static/soma_question_2_2.png
       :width: 700px
-      :height: 500px
+      :height: 300px
       :scale: 100 %
       :alt: alternate text
       :align: right
@@ -612,7 +621,7 @@ Maximum Water Height(m): 9.3
       
       .. image:: _static/Soma_time.png
          :width: 700px
-         :height: 500px
+         :height: 300px
          :scale: 100 %
          :alt: alternate text
          :align: right
