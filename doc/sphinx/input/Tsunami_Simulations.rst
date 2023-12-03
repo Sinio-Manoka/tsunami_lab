@@ -308,7 +308,54 @@ simulate the tsunami event and visualize the output
 
 lets now simulate the tsunami for the following resolutions:
 
-**1. 250m:**
+**1. 2500m:**
+
+.. code-block:: cpp 
+
+ 
+   {
+      "solver" : "fwave",
+      "dimension_x" : 2700000,
+      "dimension_y" : 1500000,
+      "setup" :  "tsunamievent2d",
+      "nx" : 1080,
+      "ny" : 600,
+      "hu" : 0,
+      "location" : 0,
+      "hv":0.0,
+      "hr": 55,
+      "hl": 25,
+      "domain_start_x" : -200000,
+      "domain_start_y" : -750000,
+      "wavepropagation" : "2d",
+      "endtime" : 36000,
+      "writer" : "netcdf",
+      "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
+      "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc"
+
+   }
+
+.. video:: _static/Tohuko_250mFile_2500m_10h.mp4
+   :width: 700
+   :height: 500
+   :autoplay:
+   
+.. image:: _static/Tohuko_250mFile_2500m_10h_Wave_left_domain.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
+
+As evident in the image, the wave exits our domain approximately at the time of 14477
+
+now lets comput the number of netupdate using our formula:
+
+::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+
+.. math:: 1080 * 600 * 4417.32 * 4 = 11449693440
 
 
 
