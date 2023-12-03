@@ -587,7 +587,7 @@ Maximum Water Height(m): 9.3
 
       We trimmed the bathymetry values starting from the point ``-3.9362,-1.2386e+05,-53000,0``  opting not
       to choose the point ``5.7205,-1.25e+05,-53487,0``
-      despite it's suitable x-coordinate, due to the positive bathymetry associated with that point.
+      despite it's a suitable x-coordinate, due to the positive bathymetry associated with that point.
       We concluded the trimming process at the point ``-968.75,-1000,-427.9,0``
       avoid including the point ``-994.25,1000,427.9,0`` , which comes afterward and skips the epicenter.
 
@@ -604,7 +604,7 @@ Maximum Water Height(m): 9.3
       :align: right
 
       
-   3. now lets calculate the Distance between the epicenter and Sõma:
+   3. now lets calculate the distance between the epicenter and Sõma:
 
    .. image:: _static/soma_question_2_2.png
       :width: 700px
@@ -627,6 +627,99 @@ Maximum Water Height(m): 9.3
          :align: right
 
 3. Soma station:
+
+For the task : **Add a station close to Sõma and measure the h, hu and hv over time. Compare the results with your simulated tsunami arrival times.** we sample data every 20 seconds
+and we have selected the point ``P[-123860/-53000]``.
+
+We chose this point because it is the first to have negative bathymetry, i.e. it is not on land, and is closest to Soma.
+
+The station would look like this:
+
+   .. code-block:: cpp 
+
+      {
+         "frequency": 20,
+         "stations":
+         [
+            {                     
+                  "i_name": "SomaStation",
+                  "i_x": -123860,
+                  "i_y": -53000
+            }
+         ]
+
+      }
+
+and we simulated it with these settings:
+in other words we used a 1000m cell width simulation
+
+   .. code-block:: cpp 
+      
+      {
+         "solver" : "fwave",
+         "dimension_x" : 2700000,
+         "dimension_y" : 1500000,
+         "setup" :  "tsunamievent2d",
+         "nx" : 2700,
+         "ny" : 1500,
+         "hu" : 0,
+         "location" : 0,
+         "hv":0.0,
+         "hr": 55,
+         "hl": 25,
+         "domain_start_x" : -200000,
+         "domain_start_y" : -750000,
+         "wavepropagation" : "2d",
+         "endtime" : 12600,
+         "writer" : "netcdf",
+         "bathfile" : "data/tohoku_gebco20_ucsb3_250m_bath.nc",
+         "disfile" : "data/tohoku_gebco20_ucsb3_250m_displ.nc"
+      }
+
+After simulating, the ``h``, ``hv`` and ``hu`` look like this:
+
+   .. image:: _static/soma_station.png
+      :width: 700px
+      :height: 500px
+      :scale: 100 %
+      :alt: alternate text
+      :align: right
+
+To compare our output with the calculation above we need to determine when the first waves arrives at our station.
+
+   .. image:: _static/arrival_wave.png
+      :width: 900px
+      :height: 300px
+      :scale: 100 %
+      :alt: alternate text
+      :align: right
+
+So you can see that the first wave arrives after about ``2540 seconds``.
+That is 42,33 minutes and is ``46.2 -42.33 = 3.87 Minutes`` earlier than our
+computed wave. The difference is probably due to the many approximations such as bathymetry and positions
+
+To compare our output with the data from the ``National Centers for
+Environmental Information`` we firstly determine the max height of the arriving wave.
+Our initial height is shown the following picture:
+
+   .. image:: _static/start_height.png
+      :width: 900px
+      :height: 300px
+      :scale: 100 %
+      :alt: alternate text
+      :align: right
+
+And the highest altitude can be seen here:
+
+   .. image:: _static/greatest_height.png
+      :width: 900px
+      :height: 300px
+      :scale: 100 %
+      :alt: alternate text
+      :align: right
+
+   If we subtract the initial height we get a wave height of ``29.4237m - 21.6348m = 7.7889m`` which is 
+   ``9.3m - 7.7889m =1.5111m``  lower than the actual messured height.
 
 
 
