@@ -16,7 +16,7 @@
     "endtime" : 18000,
     "endtime" : 18000,
     "writer" : "netcdf",
-    "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
-    "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc"
+    "bathfile" : "data/tohoku_gebco20_ucsb3_250m_bath.nc",
+    "disfile" : "data/tohoku_gebco20_ucsb3_250m_displ.nc"
 
  }
