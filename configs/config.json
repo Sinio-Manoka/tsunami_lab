@@ -2,7 +2,7 @@
     "solver" : "fwave",
     "dimension_x" : 2700000,
     "dimension_y" : 1500000,
-    "setup" :  "tsunamievent2d",
+    "setup" :  "dambreak2d",
     "nx" : 3500,
     "ny" : 2950,
     "hu" : 0,
