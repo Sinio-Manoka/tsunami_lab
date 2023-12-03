@@ -53,15 +53,15 @@ class tsunami_lab::setups::TsunamiEvent2d: public Setup {
 
 
     /**
-    * @param m_displacement_values bathymetry values without ghostcells.
+    * @param m_displacement_values displacement values without ghostcells.
     */
     t_real * m_displacement_values;
     /**
-    * @param m_displacement_x_values 1D array for the bathymetry x values.
+    * @param m_displacement_x_values 1D array for the displacement x values.
     */
     t_real * m_displacement_x_values;
     /**
-    * @param m_displacement_y_values 1D array for the bathymetry y values.
+    * @param m_displacement_y_values 1D array for the displacement y values.
     */
     t_real * m_displacement_y_values;
 
