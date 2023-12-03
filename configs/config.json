@@ -1,21 +1,21 @@
 {
     "solver" : "fwave",
-    "dimension_x" : 3500000,
-    "dimension_y" : 2950000,
+    "dimension_x" : 2700000,
+    "dimension_y" : 1500000,
     "setup" :  "tsunamievent2d",
-    "nx" : 1400,
-    "ny" : 1180,
+    "nx" : 5400,
+    "ny" : 3000,
     "hu" : 0,
     "location" : 0,
     "hv":0.0,
     "hr": 55,
     "hl": 25,
-    "domain_start_x" : -3000000,
-    "domain_start_y" : -1450000,
+    "domain_start_x" : -200000,
+    "domain_start_y" : -750000,
     "wavepropagation" : "2d",
-    "endtime" : 14400,
+    "endtime" : 18000,
     "writer" : "netcdf",
-    "bathfile" : "data/output/chile_gebco20_usgs_250m_bath_fixed.nc",
-    "disfile" : "data/output/chile_gebco20_usgs_250m_displ_fixed.nc"
+    "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
+    "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc"
 
-}
+ }
