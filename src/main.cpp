@@ -259,7 +259,7 @@ int main() {
   
   std::cout << "\033[1;34mTime step: " << l_dt << "\033[0m" << std::endl;
 
-  tsunami_lab::t_real amount_time_steps = l_temp_endtime/l_dt;
+  tsunami_lab::t_real amount_time_steps = ceil(l_temp_endtime/l_dt);
   std::cout << "\033[1;34mAmount of Time steps: " << amount_time_steps << "\033[0m" << std::endl;
 
   // set up time and print control
