@@ -25,24 +25,30 @@
 #include <chrono>
 #include <thread>
 
+
+
+
 void updateProgressBar(double current, double total, const std::chrono::high_resolution_clock::time_point& start_time, int width = 50) {
-    double progress = (current / total) * 100;
-    progress = std::min(std::max(progress, 0.0), 100.0);
-    int intProgress = static_cast<int>(progress);
-    int numHashes = static_cast<int>((intProgress / 100.0) * width);
-    std::cout << "\rProgress: [" << std::string(numHashes, '#') << std::string(width - numHashes, ' ') << "] "
-              << intProgress << "%";
+    const double progress = std::min(std::max((current / total) * 100.0, 0.0), 100.0);
+    const int numHashes = static_cast<int>((progress / 100.0) * width);
+
+    std::cout << "\r\033[1;33mProgress: ["
+              << std::string(numHashes, '#') << std::string(width - numHashes, ' ')
+              << "] " << static_cast<int>(progress) << "%";
+
     if (current > 0.0) {
-        auto now = std::chrono::high_resolution_clock::now();
-        auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(now - start_time).count();
-        auto remaining_time = static_cast<int>((100.0 - progress) / (progress / elapsed_time));
+        const auto now = std::chrono::high_resolution_clock::now();
+        const auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(now - start_time).count();
+        const int remaining_time = static_cast<int>((100.0 - progress) / (progress / elapsed_time));
 
-        int remaining_hours = remaining_time / 3600;
-        int remaining_minutes = (remaining_time % 3600) / 60;
-        int remaining_seconds = remaining_time % 60;
+        const int remaining_hours = remaining_time / 3600;
+        const int remaining_minutes = (remaining_time % 3600) / 60;
+        const int remaining_seconds = remaining_time % 60;
 
-        std::cout << " | Estimated time remaining: " << remaining_hours << " hours, "
-                  << remaining_minutes << " minutes, " << remaining_seconds << " seconds";
+        std::cout << " | Estimated time remaining: "
+                  << remaining_hours << " hours, "
+                  << remaining_minutes << " minutes, "
+                  << remaining_seconds << " seconds" << "\033[0m";
     }
 
     std::cout.flush();
@@ -54,11 +60,12 @@ int main() {
   tsunami_lab::t_idx l_ny = 1;
   tsunami_lab::t_real l_dxy = 25;
 
-  std::cout << "####################################" << std::endl;
+  
+  std::cout << "\033[1;33m"<< "####################################" << std::endl;
   std::cout << "### Tsunami Lab                  ###" << std::endl;
   std::cout << "###                              ###" << std::endl;
   std::cout << "### https://scalable.uni-jena.de ###" << std::endl;
-  std::cout << "####################################" << std::endl;
+  std::cout << "####################################" << "\033[0m" << std::endl;
   
   //NEW::
   //Errors checking-----------------------------------------------------------------------START
@@ -66,9 +73,9 @@ int main() {
   const std::string filename = "configs/config.json";
   std::ifstream fileStream(filename.c_str());
   if (fileStream.good()) {
-    std::cout << "\033[1;32m\u2713 The file 'config.json' does indeed exist."  << std::endl;
+    std::cout << "\n\033[1;32m\u2713 The file 'config.json' does indeed exist."  << std::endl;
   } else {
-    std::cout << "\033[1;31m\u2717 The File 'config.json' does not exist under 'configs/config.json'  "<< std::endl;
+    std::cout << "\n\033[1;31m\u2717 The File 'config.json' does not exist under 'configs/config.json'  "<< std::endl;
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
@@ -83,7 +90,7 @@ int main() {
     }
     return EXIT_FAILURE;
   }
-  std::cout << "\033[0m" << std::endl; 
+  std::cout << "\033[0m"; 
   if (std::filesystem::exists("outputs")) std::filesystem::remove_all("outputs");
   std::filesystem::create_directory("outputs");
   if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
@@ -194,10 +201,10 @@ int main() {
       }
   }
     //Determine which setup and which wavepropagation to use--------------------------------END
-  std::cout << "runtime configuration" << std::endl;
+  std::cout << "\n\033[1;34m" << "runtime configuration" << std::endl;
   std::cout << "  number of cells in x-direction: " << l_nx << std::endl;
   std::cout << "  number of cells in y-direction: " << l_ny << std::endl;
-  std::cout << "  cell width:                     " << l_dxy << std::endl;
+  std::cout << "  cell width:                     " << l_dxy << "\033[0m"<< std::endl;
 
   // maximum observed height in the setup
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
@@ -253,7 +260,7 @@ int main() {
   std::cout << "\033[1;34mTime step: " << l_dt << "\033[0m" << std::endl;
 
   tsunami_lab::t_real amount_time_steps = l_temp_endtime/l_dt;
-  std::cout << "\033[1;34mAmound of Time steps: " << amount_time_steps << "\033[0m" << std::endl;
+  std::cout << "\033[1;34mAmount of Time steps: " << amount_time_steps << "\033[0m" << std::endl;
 
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
@@ -261,7 +268,7 @@ int main() {
   tsunami_lab::t_real l_endTime = l_temp_endtime;
   tsunami_lab::t_real l_simTime = 0;
   tsunami_lab::t_real  l_current_frequency_time = l_frequency;
-  std::cout << "entering time loop" << std::endl;
+  std::cout << "\033[1;34mGentering time loop" << "\033[0m\n" << std::endl;
   
 
   // Checking if the "y" of each Station is set 0, else delete it from the vector.
@@ -310,7 +317,6 @@ int main() {
   tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,"outputs/output.nc"); 
 
   if(l_temp_writer == "netcdf"){
-    std::cout << "generating netcdf-file ' " << "outputs/output.nc" << " '"<< std::endl;
     l_netCdf->fillConstants(l_nx,
                             l_ny,
                             l_dxy,
@@ -391,13 +397,12 @@ int main() {
     updateProgressBar(l_simTime, l_endTime,timer.getStartTime());
 
   }
-  std::cout << "\n\033[1;32m\u2713 finished with all time loops" << std::endl;
-  std::cout << "\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
+  std::cout << "\n\n\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
   std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
   delete l_setup;
   delete l_waveProp;
   delete l_netCdf;
-  std::cout << "\033[1;32m\u2713 finished, exiting \033[0m " << std::endl;
+  std::cout << "\033[1;32m\u2713 finished, exiting \033[0m" << std::endl;
   return EXIT_SUCCESS;
 }

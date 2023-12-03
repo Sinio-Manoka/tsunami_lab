@@ -16,9 +16,9 @@ class Timer {
         int minutes = (duration % 3600) / 60;
         int seconds = duration % 60;
 
-        std::cout << "\nProgram started at: " << getFormattedTime(start_time)
+        std::cout << "\033[1;34m\nProgram started at: " << getFormattedTime(start_time)
                   << "\nProgram ended at: " << getFormattedTime(end_time)
-                  << "\nProgram duration: " << hours << " hours, " << minutes << " minutes, " << seconds << " seconds\n";
+                  << "\nProgram duration: " << hours << " hours, " << minutes << " minutes, " << seconds << " seconds\n\033[0m\n";
     }
 
     std::chrono::high_resolution_clock::time_point getStartTime() const {
