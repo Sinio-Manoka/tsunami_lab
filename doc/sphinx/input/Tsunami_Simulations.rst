@@ -9,9 +9,9 @@ Make yourself familiar with the input data
 ...........................................
 
 As input data, we obtained bathymetry and displacements for the events
-in Chile and Tohoku. The data we obtained can be visualized using ParaView.
-While visualizing the data, we will apply a scalar warp to the bathymetry, setting the scaler value to 10.
-Additionally, we will adjust the opacity of the bathymetry to 0.6 to enhance the visibility of displacement
+in Chile and Tohoku. The data can be visualized using ParaView.
+While visualizing the data, we will apply the filter  " warp by scalar" to the bathymetry, setting the scaler value to 10.
+Additionally, we will adjust the opacity of the bathymetry to 0.6 to enhance the visibility of the displacement.
 
 In ParaView, we will use the following color maps `here`_:
 
@@ -45,9 +45,9 @@ Simulate the tsunami event and visualize the output
 
 .. important:: 
 
-   Considering performance issues and time constraints, we werent able to simulate everything.
-   For example After visualizing Chile event for 2 days for every resolution given in the question, we realized that we made a mistake in
-   our tsunamievent2d setup and we tried to simulate everything again and fixed the function.
+   Considering performance issues and time constraints, we weren't able to simulate those with the 250 m Cell width .
+   For example After visualizing Chile event for 2 days, we realized that we made a mistake in
+   our tsunamievent2d setup in submission 5 and we tried to simulate everything again and fixed the function.
 
 .. code-block:: cpp
 
@@ -77,15 +77,15 @@ For the performance issues we always got something like this:
    :alt: alternate text
    :align: right
 
-This image pertains to the 250m Chile event, depicting the estimated completion time for our solver.
+This image shows to the 250m Chile event, depicting the estimated completion time for our solver.
 
 We had also tried to just let it run because we thought that the expected duration would not be the same as the real simulation duration
-but after more than 30 hours of simulation we stopped because the 250m cell width variants take too long
+but after more than 30 hours of simulation we stopped because the 250m cell width variants took too long.
 
 
-After visualizing the Chile 500m event, we identified an additional unknown issue
-with our solver in the following video. However, we observed that by downgrading the resolution,
-the problem no longer occurs .This is why we will downgrade the resolution to 5000m and simulate it for 10 hours
+After visualizing the Chile 500m event, we identified an additional unknown issue shown 
+in the following video. However, we observed that by downgrading the resolution,
+the problem no longer occurs. But you can still see the wave in the video if you look closely.
 
 
 .. video:: _static/Chile_500m_problem.mp4
@@ -102,7 +102,8 @@ number of cell updates
 For the question: **What are the computational demands of your simulations (number of required cells and cell updates)?**
 we will use the following formula: 
 
-::math:`l_{\text{nx} * l_{\text{ny}} * timestep_{\text{amount}} * 4`
+.. math:: l_{\text{nx}} * l_{\text{ny}} * timestep_{\text{amount}} * 4
+   
 
 .. important:: 
 
@@ -112,20 +113,20 @@ we will use the following formula:
 
    amount_of_time_steps: amount of timesteps
 
-the multiplication with `4` is due to the number of netupdates for each cell per time step. 2 time ``x_sweep`` and 2 time ``y_sweep`` netupdates.
+the multiplication with `4` is due to the number of netupdates for each cell per time step. we got  2 times ``x_sweep``and ``y_sweep`` for our netupdates.
 
-The number of timesteps can be calculated using this formula::
+The amount of timesteps can be calculated using this formula
 
-.. code_block:: cpp
+.. code-block:: cpp
 
-   tsunami_lab::t_real amount_time_steps = l_temp_endtime/l_dt;
+   tsunami_lab::t_real amount_time_steps = ceil(l_temp_endtime/l_dt);
 
 
 visualiztion
 .............
 
 For the Chile events, we will use different grid resolutions. However, before doing that,
-we need to adjust the number of timesteps we go through in main ``main.cpp``
+we need to adjust the amound of frames we want for our simulation in  ``main.cpp``
 
 
 .. code-block:: cpp 
@@ -133,17 +134,14 @@ we need to adjust the number of timesteps we go through in main ``main.cpp``
     if( l_timeStep % 1250 == 0 )
 
 
-and will add a progressbar to kn
+Let's now simulate the tsunami for the following resolutions:
 
 
-lets now simulate the tsunami for the following resolutions:
-
-
-**1. 2500m:**
+**1. 2500m Cell width :**
 
 
 
-For this resolution, we will use the following config file with a specified cell width and we will visualize it for 10 hours.
+For this resolution, we will use the following config file and we will visualize it for 10 hours.
 
 .. code-block:: cpp 
 
@@ -162,7 +160,7 @@ For this resolution, we will use the following config file with a specified cell
    "domain_start_x" : -3000000,
    "domain_start_y" : -1450000,
    "wavepropagation" : "2d",
-   "endtime" : 28800,
+   "endtime" : 36000,
    "writer" : "netcdf",
    "bathfile" : "data/output/chile_gebco20_usgs_250m_bath_fixed.nc",
    "disfile" : "data/output/chile_gebco20_usgs_250m_displ_fixed.nc"
@@ -184,19 +182,21 @@ For this resolution, we will use the following config file with a specified cell
 
 
 
-As evident in the image, the wave exits our domain approximately at the time of 15319
+As evident in the image, the wave exits our domain approximately after 15319 seconds.
+(its the white part/string on the top left side of the picture)
+
 
 Now let's compute the number of net updates using our formula:
 
-::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+.. math:: l_{\text{nx}} * l_{\text{ny}} * timestep_{\text{amount}} * 4
 
 .. math:: 1400 * 1180 * 6533.12 * 4  = 43170856960
 
-..
 
-**2. 5000m:**
 
-For the 5000m option, we will use the following config file, and we will visualize it for 10 hours:
+**2. 5000m Cell width:**
+
+For the 5000m Cell width resolution, we will use the following config file, and we will visualize it for 10 hours:
 
 
 .. code-block:: cpp 
@@ -229,26 +229,25 @@ For the 5000m option, we will use the following config file, and we will visuali
    :autoplay:
 
 
-.. image:: _static/2500_Wave_left_domain.png
+.. image:: _static/chile_5000m_10h_wave_leave_domain.png
    :width: 700px
    :height: 500px
    :scale: 100 %
    :alt: alternate text
    :align: right
 
-As evident in the image, the wave exits our domain approximately at the time of 15957
+As evident in the image, the wave exits our domain approximately at the time of 15 957
 
 
 Now let's compute the number of net updates using our formula:
 
-::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+.. math:: l_{\text{nx}} * l_{\text{ny}} * timestep_{\text{amount}} * 4
 
 .. math:: 700 * 590 * 4060.92 * 4 = 17533.68
 
 
 
-
-**3. 1000m:**
+**3. 1000m Cell width:**
 
 and for the 1000m option we will use the following config file : 
 
@@ -282,7 +281,7 @@ and for the 1000m option we will use the following config file :
    :autoplay:
 
 
-.. image:: _static/chile_1000m_5h_wave_leave_domain.png
+.. image:: _static/Chile_1000_5h.png
    :width: 700px
    :height: 500px
    :scale: 100 %
@@ -291,11 +290,11 @@ and for the 1000m option we will use the following config file :
 
 
 
-As evident in the image, the wave exits our domain approximately at the time of 14477
+As evident in the image, the wave exits our domain approximately after 14 477 seconds
 
-now lets comput the number of netupdate using our formula:
+now let's compute the number of netupdates using our formula:
 
-::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+.. math:: l_{\text{nx}} * l_{\text{ny}} * timestep_{\text{amount}} * 4
 
 .. math:: 3500 * 2950 * 10257.4 = 105907655000
  
@@ -306,9 +305,9 @@ Tohoku Event
 simulate the tsunami event and visualize the output
 ...................................................
 
-lets now simulate the tsunami for the following resolutions:
+Let's now simulate the tsunami for the following resolution:
 
-**1. 2500m:**
+**1. 2500m Cell width:**
 
 .. code-block:: cpp 
 
@@ -349,17 +348,20 @@ lets now simulate the tsunami for the following resolutions:
 
 
 
-As evident in the image, the wave exits our domain approximately at the time of 14477
+As evident in the image, the wave exits our domain approximately after 14 477 seconds.
 
-now lets comput the number of netupdate using our formula:
+Now let's compute the number of netupdate using our formula:
 
-::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+.. math:: l_{\text{nx}} * l_{\text{ny}} * timestep_{\text{amount}} * 4
 
 .. math:: 1080 * 600 * 4417.32 * 4 = 11449693440
 
 
 
-**2. 500m:**
+Now we start with
+
+
+**2. 500m Cell width:**
 
 
 .. code-block:: cpp 
@@ -401,18 +403,56 @@ now lets comput the number of netupdate using our formula:
    :align: right
 
 
-As evident in the image, the wave exits our domain approximately at the time of 10000
+As evident in the image, the wave exits our domain approximately after 10 000 seconds
 
 Now let's compute the number of net updates using our formula:
-::math::`l_{\text{nx}  l_{\text{ny}} * timestep_{\text{amount}} * 4`
+
+.. math:: l_{\text{nx}} * l_{\text{ny}} * timestep_{\text{amount}} * 4
 
 .. math:: 5400 * 3000 * 8625 * 4 = 558900000000
  
 
 
 
-**3. 1000m:**
+**3. 1000m Cell width:**
 
+For the 1000m cell width the simulated time is 3.5 hours 
+
+.. code-block:: cpp 
+
+   {
+      "solver" : "fwave",
+      "dimension_x" : 2700000,
+      "dimension_y" : 1500000,
+      "setup" :  "tsunamievent2d",
+      "nx" : 2700,
+      "ny" : 1500,
+      "hu" : 0,
+      "location" : 0,
+      "hv":0.0,
+      "hr": 55,
+      "hl": 25,
+      "domain_start_x" : -200000,
+      "domain_start_y" : -750000,
+      "wavepropagation" : "2d",
+      "endtime" : 12600,
+      "writer" : "netcdf",
+      "bathfile" : "data/tohoku_gebco20_ucsb3_250m_bath.nc",
+      "disfile" : "data/tohoku_gebco20_ucsb3_250m_displ.nc"
+
+   }
+
+.. video:: _static/Tohoku_1000m_3,5h.mp4
+   :width: 700
+   :height: 500
+   :autoplay:
+
+.. image:: _static/Tohoku_1000_3.5h.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
 
 
 The time between the earthquake rupture and the arrival of the first tsunami waves in Sõma
