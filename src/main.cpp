@@ -145,43 +145,49 @@ int main() {
 
   bool l_use_cp = tsunami_lab::io::Configuration::readFromConfigBoolean("usecheckpoint");
   std::string l_temp_outputfilename = tsunami_lab::io::Configuration::readFromConfigString("outputfilename");
-  std::string l_temp_outputfile =  folder_path + "/" + l_temp_outputfilename;
-
+  std::string l_temp_outputfile =  "outputs/" + l_temp_outputfilename;
+  tsunami_lab::setups::Setup *l_setup = nullptr;
+  std::string l_temp_setup,l_temp_solver,l_temp_waveprop,l_temp_bathFile,l_temp_disFile,l_temp_writer;
+  tsunami_lab::t_real l_domain_start_x,l_domain_start_y,l_temp_dimension_x,l_temp_dimension_y,l_frequency,l_temp_endtime;
   if(l_use_cp){
     if (!std::filesystem::exists(l_temp_outputfile)) {
-      std::cout << "\033[1;31m\u2717 Cannot use Checkpoint " << "\033[0m"<< std::endl;
+
+      std::cout <<"\033[1;31m\u2717 Cannot use Checkpoint " << "\033[0m"<< std::endl;
       std::cout << "\033[1;31mReason : there is no output file matchs the config file name" <<"\033[0m"<< std::endl;
       return EXIT_FAILURE; 
     }
+    //Reading Data from the Checkpoint File
+    l_temp_waveprop = "2d";
+    l_temp_writer   = "netcdf";
 
+  }else{
+    //Reading Data from the Json File
+    l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
+    l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+    l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
+    l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
+    l_temp_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
+    l_domain_start_x = tsunami_lab::io::Configuration::readFromConfigReal("domain_start_x");
+    l_domain_start_y = tsunami_lab::io::Configuration::readFromConfigReal("domain_start_y");
+    l_temp_dimension_x =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_x");
+    l_temp_dimension_y =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_y");
+    l_frequency = tsunami_lab::io::Configuration::getFrequency();
+    l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
+    l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
+    l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
+    l_temp_disFile = tsunami_lab::io::Configuration::readFromConfigString("disfile");
   }
 
-
-      
-  //New:: Reading the length and Width from the Json File
-  tsunami_lab::setups::Setup *l_setup = nullptr;
-  
-  //New:: Reading Data from the Json File
-  l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
-  l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
-  // we are working on it asking breuer next time
-  
-  std::string l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
-  std::string l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
-  std::string l_temp_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
-  tsunami_lab::t_real l_domain_start_x = tsunami_lab::io::Configuration::readFromConfigReal("domain_start_x");
-  tsunami_lab::t_real l_domain_start_y = tsunami_lab::io::Configuration::readFromConfigReal("domain_start_y");
   tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
   tsunami_lab::t_real l_temp_hl = tsunami_lab::io::Configuration::readFromConfigReal("hl");
   tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
   tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
-  tsunami_lab::t_real l_temp_dimension_x =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_x");
-  tsunami_lab::t_real l_temp_dimension_y =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_y");
-  tsunami_lab::t_real l_frequency = tsunami_lab::io::Configuration::getFrequency();
-  tsunami_lab::t_real l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
-  std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
-  std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
-  std::string l_temp_disFile = tsunami_lab::io::Configuration::readFromConfigString("disfile");
+
+    
+
+
+  
+
 
   const char * l_bathFile = l_temp_bathFile.c_str();
   const char * l_disFile = l_temp_disFile.c_str();
