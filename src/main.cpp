@@ -54,6 +54,22 @@ void updateProgressBar(double current, double total, const std::chrono::high_res
     std::cout.flush();
 }
 
+
+bool checkCheckpoint(const std::string& outputFolder, const std::string& checkpointsFolder, const std::string& outputFile) {
+ 
+    std::string outputFullPath = outputFolder + "/" + outputFile;
+    std::string checkpointFullPath = checkpointsFolder + "/" + outputFile;
+
+    
+    std::ifstream checkpointFile(checkpointFullPath);
+    if (checkpointFile.is_open()) {
+        return true;
+    } else {
+        std::cout << "Checkpoint file does not exist for " << outputFile << std::endl;
+        return false;
+    }
+}
+
 int main() {
   Timer timer; 
   tsunami_lab::t_idx l_nx = 0;
@@ -130,7 +146,6 @@ int main() {
   const char * l_bathFile = l_temp_bathFile.c_str();
   const char * l_disFile = l_temp_disFile.c_str();
   std::string l_temp_outputfile =  "outputs/" + l_temp_outputfilename;
-  std::cout << l_temp_outputfile << std::endl;
   const char * l_outputFile = l_temp_outputfile.c_str();
   
   std::vector<tsunami_lab::Station> l_stations;
@@ -325,7 +340,8 @@ int main() {
   //stations ---------------------------------------------------------------------------------end
 
   //create the netCdf file reader/writer
-  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_outputFile); 
+  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_outputFile);
+  
 
   if(l_temp_writer == "netcdf"){
     l_netCdf->fillConstants(l_nx,
@@ -427,6 +443,12 @@ int main() {
     updateProgressBar(l_simTime, l_temp_endtime,timer.getStartTime());
 
   }
+
+  //std::cout << std::boolalpha << checkCheckpoint("outputs/" , "outputs/cp", "l_temp_outputfilename")<< std::endl; 
+
+  
+
+
   std::cout << "\n\n\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
   std::cout << "\033[1;32m\u2713 freeing memory" << std::endl;
