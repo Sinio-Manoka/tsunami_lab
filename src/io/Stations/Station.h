@@ -35,6 +35,8 @@ class tsunami_lab::io::Station{
                           std::string                     i_csv_path);
         static void resetToLastCheckPoint(t_real l_simTime,
                                           t_real i_csv_path);
+        static std::string Stringify();
+
 };
 
 #endif

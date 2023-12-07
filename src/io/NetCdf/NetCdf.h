@@ -121,6 +121,7 @@ class tsunami_lab::io::NetCdf {
                           t_idx i_nx,
                           t_idx i_ny,
                           std::string i_setup,
+                          std::string i_stations_string,
                           std::string i_name_cp
                           );                 
 };
