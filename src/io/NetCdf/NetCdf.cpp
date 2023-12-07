@@ -408,8 +408,87 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     checkNcErr(l_err,__FILE__, __LINE__);
 
 }
+/*
+readCheckPoint(std::string & i_solver,
+                t_real & i_domain_start_x,
+                t_real & i_domain_start_y,
+                t_real & i_dimension_x,
+                t_real & i_dimension_y,
+                t_real & i_endtime,
+                t_real & i_simTime,
+                t_real & i_frequency,
+                t_real & i_dt,
+                const t_real **i_b,
+                const t_real **i_h,
+                const t_real **i_hu,
+                const t_real **i_hv,
+                t_idx & i_time_step_index,
+                t_idx & i_stride,
+                t_idx & o_nx,
+                t_idx & o_ny,
+                std::string & i_path_cp,
+                std::string & i_setup,
+                std::string & i_stations_string,
+                std::string & i_disfile,
+                std::string & i_batfile){
+    
+    int l_ncId = 0,l_err = 0;
 
+    l_err = nc_open(i_path_cp, NC_NOWRITE, &l_ncId) 
+    checkNcErr(l_err,__FILE__, __LINE__);
 
+    int l_dimXId, l_dimYId;
+    l_err = nc_inq_dimid(l_ncId, "x", &l_dimXId);
+    checkNcErr(l_err,__FILE__, __LINE__);
+    l_err = nc_inq_dimid(l_ncId, "y", &l_dimYId);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_dimlen(l_ncId,l_dimXId,o_nx);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_dimlen(l_ncId,l_dimYId,o_ny);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    int l_var_domain_start_x_id, l_var_domain_start_y_id , l_var_solver_id, l_var_dimension_x_id,
+        l_var_dimension_y_id,l_var_endtime_id, l_var_simTime_id, l_var_frequency_id, l_var_b_id,
+        l_var_h_id,l_var_hu_id,l_var_hv_id, l_var_dt_id , l_var_disfile_id,l_var_batfile_id;    
+    int  l_var_time_step_index_id,l_var_stations_string,l_var_setup;
+
+    l_err = nc_inq_varid(l_ncId,"domain_start_x",&l_var_domain_start_x_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"domain_start_y",&l_var_domain_start_y_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"solver",&l_var_solver_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"dimension_x",&l_var_dimension_x_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"dimension_y",&l_var_dimension_y_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"endtime",&l_var_endtime_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"simTime",&l_var_simTime_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"setup",&l_var_setup);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"stations",&l_var_stations_string);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"timeStep",&l_var_time_step_index_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"frequency",&l_var_frequency_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+}
+*/
 
 
 

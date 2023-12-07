@@ -148,7 +148,7 @@ int main() {
   std::string l_temp_outputfile =  "outputs/" + l_temp_outputfilename;
   tsunami_lab::setups::Setup *l_setup = nullptr;
   std::string l_temp_setup,l_temp_solver,l_temp_waveprop,l_temp_bathFile,l_temp_disFile,l_temp_writer;
-  tsunami_lab::t_real l_domain_start_x,l_domain_start_y,l_temp_dimension_x,l_temp_dimension_y,l_frequency,l_temp_endtime;
+  tsunami_lab::t_real l_domain_start_x = -1,l_domain_start_y = -1,l_temp_dimension_x = -1,l_temp_dimension_y = -1,l_frequency = -1,l_temp_endtime = -1;
   if(l_use_cp){
     if (!std::filesystem::exists(l_temp_outputfile)) {
 
@@ -159,6 +159,7 @@ int main() {
     //Reading Data from the Checkpoint File
     l_temp_waveprop = "2d";
     l_temp_writer   = "netcdf";
+    
 
   }else{
     //Reading Data from the Json File
@@ -454,6 +455,7 @@ int main() {
                                   l_temp_disFile,
                                   l_temp_bathFile);
       }
+      l_time_step_index++;
     }
 
     //STATIONS_---------------------------------------------START 
@@ -473,7 +475,8 @@ int main() {
         const tsunami_lab::t_real* l_water_height =  l_waveProp->getHeight();
         const tsunami_lab::t_real* l_water_hu =  l_waveProp->getMomentumX();
         const tsunami_lab::t_real* l_water_hv =  l_waveProp->getMomentumY();
-        std::string l_station_path = l_foldername +"/"+ station.i_name+".csv"; 
+        std::string l_station_path = l_foldername +"/"+ station.i_name+".csv";
+        std::cout << "WAAAA1 " << l_station_path << std::endl; 
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,

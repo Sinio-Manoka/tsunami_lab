@@ -2,6 +2,11 @@
     "frequency": 20,
     "stations":
     [
+        {
+            "i_name": "Dam2+WP1",
+            "i_x": 0,
+            "i_y": 0
+        }  
     ]
 
 }

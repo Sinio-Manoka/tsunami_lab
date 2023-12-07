@@ -125,7 +125,29 @@ class tsunami_lab::io::NetCdf {
                           std::string i_name_cp,
                           std::string i_disfile,
                           std::string i_batfile
-                          );                 
+                          );
+    void readCheckPoint(std::string & i_solver,
+                        t_real & i_domain_start_x,
+                        t_real & i_domain_start_y,
+                        t_real & i_dimension_x,
+                        t_real & i_dimension_y,
+                        t_real & i_endtime,
+                        t_real & i_simTime,
+                        t_real & i_frequency,
+                        t_real & i_dt,
+                        const t_real **i_b,
+                        const t_real **i_h,
+                        const t_real **i_hu,
+                        const t_real **i_hv,
+                        t_idx & i_time_step_index,
+                        t_idx & i_stride,
+                        t_idx & i_nx,
+                        t_idx & i_ny,
+                        std::string & i_path_cp,
+                        std::string & i_setup,
+                        std::string & i_stations_string,
+                        std::string & i_disfile,
+                        std::string & i_batfile);                   
 };
 
 #endif

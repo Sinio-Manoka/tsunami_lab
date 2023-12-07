@@ -3,8 +3,8 @@
     "dimension_x" : 2700000,
     "dimension_y" : 1500000,
     "setup" :  "tsunamievent2d",
-    "nx" : 5,
-    "ny" : 5,
+    "nx" : 14000,
+    "ny" : 600,
     "hu" : 0,
     "location" : 0,
     "hv":0.0,
@@ -13,10 +13,10 @@
     "domain_start_x" : -200000,
     "domain_start_y" : -750000,
     "wavepropagation" : "2d",
-    "endtime" : 40000,
+    "endtime" : 18000,
     "writer" : "netcdf",
     "bathfile" : "data/chile_gebco20_usgs_250m_bath_fixed.nc",
     "disfile"  : "data/chile_gebco20_usgs_250m_displ_fixed.nc",
     "outputfilename": "dadad.nc",
-    "usecheckpoint" : true
+    "usecheckpoint" : false
 }
