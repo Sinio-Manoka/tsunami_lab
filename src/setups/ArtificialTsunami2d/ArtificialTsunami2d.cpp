@@ -8,9 +8,9 @@
 #include <cstddef> 
 
 
-tsunami_lab::setups::ArtificialTsunami2d::ArtificialTsunami2d(t_real i_delta){
+tsunami_lab::setups::ArtificialTsunami2d::ArtificialTsunami2d(){
 
-    m_delta = i_delta;
+    
 
 }
 

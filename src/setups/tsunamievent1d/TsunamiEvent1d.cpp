@@ -10,9 +10,7 @@
 #include <cstddef> 
 
 
-tsunami_lab::setups::TsunamiEvent1d::TsunamiEvent1d(t_real i_delta){
-
-    m_delta = i_delta;
+tsunami_lab::setups::TsunamiEvent1d::TsunamiEvent1d(){
 
     const std::string filename = "data/data_end.csv";
     std::size_t columnIndex = 3;

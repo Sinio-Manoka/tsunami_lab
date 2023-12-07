@@ -28,7 +28,7 @@ class tsunami_lab::setups::TsunamiEvent1d: public Setup {
     /**
      * @param m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
      */
-    t_real m_delta = 0; 
+    t_real m_delta = 20; 
 
     /**
     * @param m_bathymetry_values contains all bathymetry values 
@@ -48,7 +48,7 @@ class tsunami_lab::setups::TsunamiEvent1d: public Setup {
      * @param i_delta to avoid running into numerical issues (small value)
      **/
 
-    TsunamiEvent1d( t_real i_delta);
+    TsunamiEvent1d();
 
     /**
      * @brief Gets the water height at a given point.

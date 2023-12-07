@@ -4,13 +4,12 @@
 #include <cstddef> 
 
 
-tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(t_real i_delta ,const char*  i_bathFile, const char*    i_disFile)
+tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(const char*  i_bathFile, const char*    i_disFile)
 {
 
     tsunami_lab::io::NetCdf::read(i_bathFile,"z",m_nx_bat,m_ny_bat,&m_bathymetry_values,&m_bathymetry_x_values,&m_bathymetry_y_values);
     tsunami_lab::io::NetCdf::read(i_disFile,"z",m_nx_dis,m_ny_dis,&m_displacement_values,&m_displacement_x_values,&m_displacement_y_values);
-
-    m_delta = i_delta;
+    
     
 }
 

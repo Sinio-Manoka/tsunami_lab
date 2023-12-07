@@ -3,8 +3,8 @@
     "dimension_x" : 2700000,
     "dimension_y" : 1500000,
     "setup" :  "tsunamievent2d",
-    "nx" : 2700,
-    "ny" : 1500,
+    "nx" : 5,
+    "ny" : 5,
     "hu" : 0,
     "location" : 0,
     "hv":0.0,
@@ -13,9 +13,9 @@
     "domain_start_x" : -200000,
     "domain_start_y" : -750000,
     "wavepropagation" : "2d",
-    "endtime" : 12600,
+    "endtime" : 40000,
     "writer" : "netcdf",
-    "bathfile" : "data/tohoku_gebco20_ucsb3_250m_bath.nc",
-    "disfile" : "data/tohoku_gebco20_ucsb3_250m_displ.nc"
-
- }
+    "bathfile" : "data/chile_gebco20_usgs_250m_bath_fixed.nc",
+    "disfile"  : "data/chile_gebco20_usgs_250m_displ_fixed.nc",
+    "outputfilename": "daddy.nc"
+}

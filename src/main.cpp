@@ -91,8 +91,12 @@ int main() {
     return EXIT_FAILURE;
   }
   std::cout << "\033[0m"; 
-  if (std::filesystem::exists("outputs")) std::filesystem::remove_all("outputs");
-  std::filesystem::create_directory("outputs");
+  std::string folder_path = "outputs";
+  if (std::filesystem::exists(folder_path)){
+          std::filesystem::remove_all(folder_path);
+  }
+  std::filesystem::create_directory(folder_path);
+
   if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
   std::filesystem::create_directory("stations");
   //Errors checking-----------------------------------------------------------------------END
@@ -122,8 +126,10 @@ int main() {
   std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
   std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
   std::string l_temp_disFile = tsunami_lab::io::Configuration::readFromConfigString("disfile");
+  std::string l_temp_outputfilename = tsunami_lab::io::Configuration::readFromConfigString("outputfilename");
   const char * l_bathFile = l_temp_bathFile.c_str();
   const char * l_disFile = l_temp_disFile.c_str();
+  
   std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
@@ -150,12 +156,12 @@ int main() {
     if(l_temp_setup == "artificialtsunami2D")
     {
       std::cout << "\033[1;32m\u2713 Setup : ArtificialTsunami2D \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::ArtificialTsunami2d(20);
+      l_setup = new tsunami_lab::setups::ArtificialTsunami2d();
     }
     else if(l_temp_setup == "tsunamievent2d")
     {
       std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent2d \033[0m" << std::endl;
-      l_setup = new tsunami_lab::setups::TsunamiEvent2d(20,l_bathFile ,l_disFile);
+      l_setup = new tsunami_lab::setups::TsunamiEvent2d(l_bathFile ,l_disFile);
     }
     else
     {
@@ -169,7 +175,7 @@ int main() {
       l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
       if(l_temp_setup == "tsunamievent1d"){
         std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
-        l_setup = new tsunami_lab::setups::TsunamiEvent1d(20);
+        l_setup = new tsunami_lab::setups::TsunamiEvent1d();
       }else if(l_temp_setup == "dambreak1d"){
         std::cout << "\033[1;32m\u2713 Setup : dambreak1d \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::DamBreak1d(l_temp_hl ,l_temp_hr,l_temp_location); 
@@ -264,9 +270,8 @@ int main() {
 
   // set up time and print control
   tsunami_lab::t_idx  l_timeStep = 0;
-  tsunami_lab::t_idx  l_nOut = 0;
-  tsunami_lab::t_real l_endTime = l_temp_endtime;
   tsunami_lab::t_real l_simTime = 0;
+  tsunami_lab::t_real l_time_step_index = 0;
   tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "\033[1;34mGentering time loop" << "\033[0m\n" << std::endl;
   
@@ -285,12 +290,15 @@ int main() {
   }
   //stations removing out of boundary-------------------------------------------------------------start
   //removing out of boundary stations
+  //string l_stations_string = "";
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
     std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
     if (station.i_x < l_domain_start_x || station.i_x >= l_temp_dimension_x + l_domain_start_x ||
         station.i_y < l_domain_start_y || station.i_y >= l_temp_dimension_y + l_domain_start_y) {
         std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
+        //std::string l_foldername = "stations/"+station.i_name;
+        //l_stations_string+= l_foldername +"/"+ station.i_name+".csv"+"$$"; 
         return true; // Remove the station
     }
     std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
@@ -327,11 +335,11 @@ int main() {
                             "outputs/output.nc");
   }
 
-  while( l_simTime < l_endTime ){
+  while( l_simTime < l_temp_endtime ){
     l_waveProp->setGhostOutflow(false);
     if( l_timeStep % 25 == 0 ) {
       if(l_temp_writer == "csv"){
-        std::string l_path = "outputs/solution_" + std::to_string(l_nOut) + ".csv";
+        std::string l_path = "outputs/solution_" + std::to_string(l_time_step_index) + ".csv";
         std::ofstream l_file;
         l_file.open( l_path );
         tsunami_lab::io::Csv::write(l_dxy,
@@ -345,22 +353,41 @@ int main() {
                                     l_waveProp->getMomentumX(),
                                     l_waveProp->getMomentumY(),
                                     l_waveProp->getBathymetry(),
-                                    l_file );
+                                    l_file);
 
         l_file.close();
-        l_nOut++;
       }else{
-         l_netCdf->updateFile( l_nx,
-                            l_ny,
-                            l_waveProp->getStride(),
-                            l_simTime,
-                            l_waveProp->getHeight(),
-                            l_waveProp->getMomentumX(),
-                            l_waveProp->getMomentumY(),
-                            "outputs/output.nc");
+        l_netCdf->updateFile( l_nx,
+                              l_ny,
+                              l_waveProp->getStride(),
+                              l_time_step_index,
+                              l_simTime,
+                              l_waveProp->getHeight(),
+                              l_waveProp->getMomentumX(),
+                              l_waveProp->getMomentumY(),
+                              "outputs/output.nc");
+        l_netCdf->createCheckPoint(l_temp_solver,
+                                  l_domain_start_x,
+                                  l_domain_start_y,
+                                  l_temp_dimension_x,
+                                  l_temp_dimension_y,
+                                  l_temp_endtime,
+                                  l_simTime,
+                                  l_frequency,
+                                  l_dt,
+                                  l_waveProp->getBathymetry(),
+                                  l_waveProp->getHeight(),
+                                  l_waveProp->getMomentumX(),
+                                  l_waveProp->getMomentumY(),
+                                  l_time_step_index,
+                                  l_waveProp->getStride(),
+                                  l_nx,
+                                  l_ny,
+                                  l_temp_setup,
+                                  l_temp_outputfilename);
       }
     }
-    
+
     //STATIONS_---------------------------------------------START 
     if(l_current_frequency_time <= l_simTime){
       for (const auto& station : l_stations) {
@@ -385,8 +412,7 @@ int main() {
                                         l_water_height[l_id],
                                         l_water_hu[l_id],
                                         l_water_hv[l_id],
-                                        l_station_path
-                                        );
+                                        l_station_path);
       }
       l_current_frequency_time = l_current_frequency_time + l_frequency;
     }
@@ -394,7 +420,7 @@ int main() {
     l_waveProp->timeStep( l_scaling);
     l_timeStep++;
     l_simTime += l_dt;
-    updateProgressBar(l_simTime, l_endTime,timer.getStartTime());
+    updateProgressBar(l_simTime, l_temp_endtime,timer.getStartTime());
 
   }
   std::cout << "\n\n\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;

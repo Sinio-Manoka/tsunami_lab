@@ -8,7 +8,7 @@
 #include "TsunamiEvent1d.h"
 
 TEST_CASE( "Test the TsunamiEvent1d setup.", "[TsunamiEvent1d]" ) {
-  tsunami_lab::setups::TsunamiEvent1d l_tsunamiEvent1d(20);
+  tsunami_lab::setups::TsunamiEvent1d l_tsunamiEvent1d;
 
   // left side
   REQUIRE( l_tsunamiEvent1d.getHeight( 2, 0 ) == 20.0f );

@@ -27,7 +27,7 @@ class tsunami_lab::setups::ArtificialTsunami2d: public Setup {
     /**
      * @param m_delta avoids running into numerical issues due to missing support for wetting and drying in our solver.
      */
-    t_real m_delta = 0;
+    t_real m_delta = 20;
     /**
      * @param m_Bin The swimming pool has a constant bathymetry of -100m before the “earthquake” 
      */
@@ -59,7 +59,7 @@ class tsunami_lab::setups::ArtificialTsunami2d: public Setup {
      * @param i_delta to avoid running into numerical issues (small value)
      **/
 
-    ArtificialTsunami2d( t_real i_delta);
+    ArtificialTsunami2d();
 
     /**
      * @brief is an arificial simulation so no inputs needed

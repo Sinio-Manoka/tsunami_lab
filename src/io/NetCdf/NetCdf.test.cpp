@@ -16,7 +16,7 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
 
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,"testsFiles/test.nc");
     l_netCdf->fillConstants(5,2,1,-50,-50,0,l_b,"testsFiles/test.nc");
-    l_netCdf->updateFile(5,2,1,1,l_h,l_hu,l_hv,"testsFiles/test.nc");
+    l_netCdf->updateFile(5,2,1,0,1,l_h,l_hu,l_hv,"testsFiles/test.nc");
     int l_err;
     int l_ncidp;
     int  l_dimXId,l_dimYId,l_TimeId;
@@ -26,25 +26,25 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     REQUIRE(std::filesystem::exists("testsFiles/test.nc"));
 
     l_err = nc_open("testsFiles/test.nc", NC_NOWRITE, &l_ncidp);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_inq_dimid(l_ncidp,"x",&l_dimXId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_inq_dimid(l_ncidp,"y",&l_dimYId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err= nc_inq_dimid(l_ncidp, "time", &l_TimeId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_inq_dimlen(l_ncidp, l_dimXId, &l_nx);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_inq_dimlen(l_ncidp, l_dimYId, &l_ny);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_inq_dimlen(l_ncidp, l_TimeId, &l_nt);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     REQUIRE(l_nx == 5);
     REQUIRE(l_ny == 2);
@@ -52,19 +52,19 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
 
 
     l_err = nc_inq_varid(l_ncidp, "x", &l_vXId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_inq_varid(l_ncidp, "y", &l_vYId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_inq_varid(l_ncidp, "time", &l_vTimeId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_inq_varid(l_ncidp, "h", &l_vHId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_inq_varid(l_ncidp, "hu", &l_vHuId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_inq_varid(l_ncidp, "hv", &l_vHvId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_inq_varid(l_ncidp, "b", &l_vBId);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
 
     std::vector<tsunami_lab::t_real> x(10);
@@ -77,19 +77,19 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     
     
     l_err = nc_get_var_float(l_ncidp, l_vXId, &x[0]);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_get_var_float(l_ncidp, l_vYId, &y[0]);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_get_var_float(l_ncidp, l_vTimeId, &time[0]);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_get_var_float(l_ncidp, l_vHId, &height[0]);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_get_var_float(l_ncidp, l_vHuId, &momentum_x[0]);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_get_var_float(l_ncidp, l_vHvId, &momentum_y[0]);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_get_var_float(l_ncidp, l_vBId, &bathymetry[0]);
-    l_netCdf->checkNcErr(l_err);
+    l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
     REQUIRE(x[0] == Approx(-49.5));
     REQUIRE(x[1] == Approx(-48.5));
