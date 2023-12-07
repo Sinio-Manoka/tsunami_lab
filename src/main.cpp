@@ -97,7 +97,7 @@ int main() {
   //2. Are all the needed Keys there??
   std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
                                           "nx","hu","location","hl","ny","domain_start_x",
-                                          "domain_start_y","wavepropagation","endtime","writer","bathfile","disfile","outputfilename"};
+                                          "domain_start_y","wavepropagation","endtime","writer","bathfile","disfile","outputfilename","usecheckpoint"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -122,7 +122,7 @@ int main() {
         std::filesystem::create_directory(folder_path);
         std::filesystem::create_directory(l_check_point_path);
     }
-    
+
   }else if(!std::filesystem::exists(folder_path)){
     std::filesystem::create_directory(folder_path);
     std::filesystem::create_directory(l_check_point_path);
@@ -132,6 +132,22 @@ int main() {
   std::filesystem::create_directory("stations");
   //Errors checking-----------------------------------------------------------------------END
   //Declaration---------------------------------------------------------------------------START
+
+
+  bool l_use_cp = tsunami_lab::io::Configuration::readFromConfigBoolean("usecheckpoint");
+  std::string l_temp_outputfilename = tsunami_lab::io::Configuration::readFromConfigString("outputfilename");
+  std::string l_temp_outputfile =  folder_path + "/" + l_temp_outputfilename;
+
+  if(l_use_cp){
+    if (!std::filesystem::exists(l_temp_outputfile)) {
+      std::cout << "\033[1;31m\u2717 Cannot use Checkpoint " << "\033[0m"<< std::endl;
+      std::cout << "\033[1;31mReason : there is no output file matchs the config file name" <<"\033[0m"<< std::endl;
+      return EXIT_FAILURE; 
+    }
+
+  }
+
+
       
   //New:: Reading the length and Width from the Json File
   tsunami_lab::setups::Setup *l_setup = nullptr;
@@ -157,10 +173,9 @@ int main() {
   std::string l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
   std::string l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
   std::string l_temp_disFile = tsunami_lab::io::Configuration::readFromConfigString("disfile");
-  std::string l_temp_outputfilename = tsunami_lab::io::Configuration::readFromConfigString("outputfilename");
+
   const char * l_bathFile = l_temp_bathFile.c_str();
   const char * l_disFile = l_temp_disFile.c_str();
-  std::string l_temp_outputfile =  "outputs/" + l_temp_outputfilename;
   const char * l_outputFile = l_temp_outputfile.c_str();
   
   std::vector<tsunami_lab::Station> l_stations;
