@@ -55,18 +55,18 @@ void updateProgressBar(double current, double total, const std::chrono::high_res
 }
 
 
-bool checkCheckpoint(const std::string& outputFolder, const std::string& checkpointsFolder, const std::string& outputFile) {
- 
-    std::string outputFullPath = outputFolder + "/" + outputFile;
-    std::string checkpointFullPath = checkpointsFolder + "/" + outputFile;
+void checkAndDeleteMismatchedFiles(const std::string& checkpointFolder, const std::string& outputFolder) {
+  
+    for (const auto& outputFile : fs::directory_iterator(outputFolder)) {
+        std::string outputFileName = outputFile.path().filename().string();
 
-    
-    std::ifstream checkpointFile(checkpointFullPath);
-    if (checkpointFile.is_open()) {
-        return true;
-    } else {
-        std::cout << "Checkpoint file does not exist for " << outputFile << std::endl;
-        return false;
+        
+        std::string checkpointFilePath = checkpointFolder + "/" + outputFileName;
+        if (!fs::exists(checkpointFilePath)) {
+         
+            fs::remove(outputFile.path());
+            std::cout << "Deleted: " << outputFile.path() << std::endl;
+        }
     }
 }
 
