@@ -81,7 +81,7 @@ int main() {
   //2. Are all the needed Keys there??
   std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
                                           "nx","hu","location","hl","ny","domain_start_x",
-                                          "domain_start_y","wavepropagation","endtime","writer","bathfile","disfile"};
+                                          "domain_start_y","wavepropagation","endtime","writer","bathfile","disfile","outputfilename"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
     std::cout << "\033[1;31m\u2717 Some Keys are missing. "  << std::endl;
@@ -129,6 +129,9 @@ int main() {
   std::string l_temp_outputfilename = tsunami_lab::io::Configuration::readFromConfigString("outputfilename");
   const char * l_bathFile = l_temp_bathFile.c_str();
   const char * l_disFile = l_temp_disFile.c_str();
+  std::string l_temp_outputfile =  "outputs/" + l_temp_outputfilename;
+  std::cout << l_temp_outputfile << std::endl;
+  const char * l_outputFile = l_temp_outputfile.c_str();
   
   std::vector<tsunami_lab::Station> l_stations;
 
@@ -322,7 +325,7 @@ int main() {
   //stations ---------------------------------------------------------------------------------end
 
   //create the netCdf file reader/writer
-  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,"outputs/output.nc"); 
+  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_outputFile); 
 
   if(l_temp_writer == "netcdf"){
     l_netCdf->fillConstants(l_nx,
@@ -332,7 +335,7 @@ int main() {
                             l_domain_start_y,
                             l_waveProp->getStride(),
                             l_waveProp->getBathymetry(),
-                            "outputs/output.nc");
+                            l_outputFile);
   }
 
   while( l_simTime < l_temp_endtime ){
@@ -365,7 +368,7 @@ int main() {
                               l_waveProp->getHeight(),
                               l_waveProp->getMomentumX(),
                               l_waveProp->getMomentumY(),
-                              "outputs/output.nc");
+                              l_outputFile);
         l_netCdf->createCheckPoint(l_temp_solver,
                                   l_domain_start_x,
                                   l_domain_start_y,
