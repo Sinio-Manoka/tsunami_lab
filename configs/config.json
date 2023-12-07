@@ -17,5 +17,6 @@
     "writer" : "netcdf",
     "bathfile" : "data/chile_gebco20_usgs_250m_bath_fixed.nc",
     "disfile"  : "data/chile_gebco20_usgs_250m_displ_fixed.nc",
-    "outputfilename": "habiiii.nc"
+    "outputfilename": "dadad.nc",
+    "usecheckpoint" : true
 }
