@@ -55,19 +55,46 @@ void updateProgressBar(double current, double total, const std::chrono::high_res
 }
 
 
-bool checkCheckpoint(const std::string& outputFolder, const std::string& checkpointsFolder, const std::string& outputFile) {
- 
-    std::string outputFullPath = outputFolder + "/" + outputFile;
-    std::string checkpointFullPath = checkpointsFolder + "/" + outputFile;
 
-    
-    std::ifstream checkpointFile(checkpointFullPath);
-    if (checkpointFile.is_open()) {
-        return true;
-    } else {
-        std::cout << "Checkpoint file does not exist for " << outputFile << std::endl;
-        return false;
+void checkAndDeleteMismatchedFiles() {
+
+ 
+  std::string folder_path = "outputs";
+  std::string l_check_point_path= folder_path + "/cp";
+
+  
+  if (std::filesystem::exists(folder_path)){
+    if(std::filesystem::exists(l_check_point_path)){
+      bool isCpEmpty = std::filesystem::is_empty(l_check_point_path);
+      if(isCpEmpty){
+        std::filesystem::remove_all(folder_path);
+        std::filesystem::create_directory(folder_path);
+        std::filesystem::create_directory(l_check_point_path);
+      }else{   
+          
+    for (const auto& outputFile : std::filesystem::directory_iterator(folder_path)) {
+        std::string outputFileName = outputFile.path().filename().string();
+        if(std::filesystem::path(outputFileName).filename().string() != "cp" ){
+        std::string checkpointFilePath = l_check_point_path + "/CheckPoint-" + outputFileName;
+         if (!std::filesystem::exists(checkpointFilePath)) {
+            std::filesystem::remove(outputFile.path());
+            std::cout << "Deleted: " << outputFile.path() << std::endl;
+        }
+      }
+       
     }
+         
+      }
+    }else{
+        std::filesystem::remove_all(folder_path);
+        std::filesystem::create_directory(folder_path);
+        std::filesystem::create_directory(l_check_point_path);
+    }
+    
+  }else if(!std::filesystem::exists(folder_path)){
+    std::filesystem::create_directory(folder_path);
+    std::filesystem::create_directory(l_check_point_path);
+  }
 }
 
 int main() {
@@ -107,26 +134,8 @@ int main() {
     return EXIT_FAILURE;
   }
   std::cout << "\033[0m"; 
-  std::string folder_path = "outputs";
-  std::string l_check_point_path= folder_path + "/cp";
-  if (std::filesystem::exists(folder_path)){
-    if(std::filesystem::exists(l_check_point_path)){
-      bool isCpEmpty = std::filesystem::is_empty(l_check_point_path);
-      if(isCpEmpty){
-        std::filesystem::remove_all(folder_path);
-        std::filesystem::create_directory(folder_path);
-        std::filesystem::create_directory(l_check_point_path);
-      }
-    }else{
-        std::filesystem::remove_all(folder_path);
-        std::filesystem::create_directory(folder_path);
-        std::filesystem::create_directory(l_check_point_path);
-    }
-
-  }else if(!std::filesystem::exists(folder_path)){
-    std::filesystem::create_directory(folder_path);
-    std::filesystem::create_directory(l_check_point_path);
-  }
+  checkAndDeleteMismatchedFiles();
+  
 
   if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
   std::filesystem::create_directory("stations");
