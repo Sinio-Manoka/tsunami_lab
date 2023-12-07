@@ -108,10 +108,25 @@ int main() {
   }
   std::cout << "\033[0m"; 
   std::string folder_path = "outputs";
+  std::string l_check_point_path= folder_path + "/cp";
   if (std::filesystem::exists(folder_path)){
-          std::filesystem::remove_all(folder_path);
+    if(std::filesystem::exists(l_check_point_path)){
+      bool isCpEmpty = std::filesystem::is_empty(l_check_point_path);
+      if(isCpEmpty){
+        std::filesystem::remove_all(folder_path);
+        std::filesystem::create_directory(folder_path);
+        std::filesystem::create_directory(l_check_point_path);
+      }
+    }else{
+        std::filesystem::remove_all(folder_path);
+        std::filesystem::create_directory(folder_path);
+        std::filesystem::create_directory(l_check_point_path);
+    }
+    
+  }else if(!std::filesystem::exists(folder_path)){
+    std::filesystem::create_directory(folder_path);
+    std::filesystem::create_directory(l_check_point_path);
   }
-  std::filesystem::create_directory(folder_path);
 
   if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
   std::filesystem::create_directory("stations");
@@ -353,7 +368,7 @@ int main() {
                             l_waveProp->getBathymetry(),
                             l_outputFile);
   }
-
+  std::string l_checkPointName = "CheckPoint-" + l_temp_outputfilename;
   while( l_simTime < l_temp_endtime ){
     l_waveProp->setGhostOutflow(false);
     if( l_timeStep % 25 == 0 ) {
@@ -385,6 +400,7 @@ int main() {
                               l_waveProp->getMomentumX(),
                               l_waveProp->getMomentumY(),
                               l_outputFile);
+                              
         l_netCdf->createCheckPoint(l_temp_solver,
                                   l_domain_start_x,
                                   l_domain_start_y,
@@ -404,7 +420,7 @@ int main() {
                                   l_ny,
                                   l_temp_setup,
                                   tsunami_lab::io::Station::Stringify(),
-                                  l_temp_outputfilename);
+                                  l_checkPointName);
       }
     }
 
@@ -437,17 +453,13 @@ int main() {
       l_current_frequency_time = l_current_frequency_time + l_frequency;
     }
     //STATIONS----------------------------------------------END
+
     l_waveProp->timeStep( l_scaling);
     l_timeStep++;
     l_simTime += l_dt;
     updateProgressBar(l_simTime, l_temp_endtime,timer.getStartTime());
 
   }
-
-  //std::cout << std::boolalpha << checkCheckpoint("outputs/" , "outputs/cp", "l_temp_outputfilename")<< std::endl; 
-
-  
-
 
   std::cout << "\n\n\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
   // free memory
