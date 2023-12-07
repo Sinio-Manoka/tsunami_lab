@@ -23,6 +23,58 @@ void tsunami_lab::io::Station::write(tsunami_lab::t_idx              i_x,
 }
 
 
+
+void tsunami_lab::io::Station::updateStation(t_real simulation_time, std::string csv_file_path) {
+    std::ifstream inFile(csv_file_path);
+    if (!inFile) {
+        std::cerr << "Error opening file: " << csv_file_path << std::endl;
+        return;
+    }
+
+    std::vector<DataPoint> dataPoints;
+    std::string line;
+
+    while (std::getline(inFile, line)) {
+        std::istringstream iss(line);
+        DataPoint point;
+        char comma;
+        if (iss >> point.x >> comma >> point.y >> comma >> point.water_height >> comma
+            >> point.water_hu >> comma >> point.water_hv >> comma >> point.time_in_seconds) {
+            dataPoints.push_back(point);
+        }
+    }
+
+    inFile.close();
+
+    auto it = std::find_if(dataPoints.begin(), dataPoints.end(),
+        [simulation_time](const DataPoint& point) {
+            return point.time_in_seconds == simulation_time;
+        });
+
+    if (it != dataPoints.end()) {
+        // Erase elements after the found point
+        dataPoints.erase(it + 1, dataPoints.end());
+
+        // Write the modified data back to the file
+        std::ofstream outFile(csv_file_path);
+        if (!outFile) {
+            std::cerr << "Error opening file for writing: " << csv_file_path << std::endl;
+            return;
+        }
+
+        for (const auto& point : dataPoints) {
+            outFile << point.x << ',' << point.y << ',' << point.water_height << ','
+                << point.water_hu << ',' << point.water_hv << ',' << point.time_in_seconds << '\n';
+        }
+
+        std::cout << "Data after " << simulation_time << " seconds replaced with empty strings." << std::endl;
+    }
+    else {
+        std::cout << "No match found for " << simulation_time << " seconds in the 'time_in_seconds' column." << std::endl;
+    }
+}
+
+
 std::string tsunami_lab::io::Station::Stringify() {
     
     std::string json_file_path = "configs/stations.json";

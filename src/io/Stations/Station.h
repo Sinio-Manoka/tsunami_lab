@@ -33,8 +33,7 @@ class tsunami_lab::io::Station{
                       tsunami_lab::t_real             i_water_hu,
                       tsunami_lab::t_real             i_water_hv,
                       std::string                     i_csv_path);
-    static void resetToLastCheckPoint(t_real l_simTime,
-                                      t_real i_csv_path);
+    static void updateStation(t_real simulation_time, std::string csv_file_path);
     static std::string Stringify();
 
 };

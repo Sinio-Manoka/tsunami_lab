@@ -103,6 +103,10 @@ class tsunami_lab::io::NetCdf {
                       t_real ** o_xdata,
                       t_real ** o_ydata);
     
+    char** convertStringArrayToCharPointerArray(const std::string* stringArray, size_t arraySize);
+    int* convertSizeTArrayToIntArray(const size_t* originalArray, size_t arraySize);
+
+
     void createCheckPoint(std::string i_solver,
                           t_real i_domain_start_x,
                           t_real i_domain_start_y,

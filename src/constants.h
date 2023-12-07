@@ -21,5 +21,10 @@ namespace tsunami_lab {
     std::string i_name;
     tsunami_lab::t_real i_x,i_y;
   };
+
+  struct DataPoint {
+    int x, y;
+    double water_height, water_hu, water_hv, time_in_seconds;
+  };
 }
 #endif
