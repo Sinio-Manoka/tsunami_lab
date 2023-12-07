@@ -2,7 +2,7 @@
 
 void tsunami_lab::io::Station::write(tsunami_lab::t_idx              i_x,
                                      tsunami_lab::t_idx              i_y,
-                                     tsunami_lab::t_idx              i_time_in_seconds,
+                                     tsunami_lab::t_real             i_time_in_seconds,
                                      tsunami_lab::t_real             i_water_height,
                                      tsunami_lab::t_real             i_water_hu,
                                      tsunami_lab::t_real             i_water_hv,

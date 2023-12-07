@@ -1,10 +1,10 @@
 {
     "solver" : "fwave",
-    "dimension_x" : 2700000,
-    "dimension_y" : 1500000,
+    "dimension_x" : 3500000,
+    "dimension_y" : 2450000,
     "setup" :  "tsunamievent2d",
     "nx" : 14000,
-    "ny" : 600,
+    "ny" : 11800,
     "hu" : 0,
     "location" : 0,
     "hv":0.0,

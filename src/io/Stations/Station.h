@@ -25,17 +25,17 @@ class tsunami_lab::io::Station{
     * @param i_time_in_seconds  This is the time for the values.
     * @param i_water_height     The water height at the station.
     * @param i_csv_path         The path to the CSV file to which the station data will be appended.
- */
-        static void write(tsunami_lab::t_idx              i_x,
-                          tsunami_lab::t_idx              i_y,
-                          tsunami_lab::t_idx              i_time_in_seconds,
-                          tsunami_lab::t_real             i_water_height,
-                          tsunami_lab::t_real             i_water_hu,
-                          tsunami_lab::t_real             i_water_hv,
-                          std::string                     i_csv_path);
-        static void resetToLastCheckPoint(t_real l_simTime,
-                                          t_real i_csv_path);
-        static std::string Stringify();
+    */
+    static void write(tsunami_lab::t_idx              i_x,
+                      tsunami_lab::t_idx              i_y,
+                      tsunami_lab::t_real             i_time_in_seconds,
+                      tsunami_lab::t_real             i_water_height,
+                      tsunami_lab::t_real             i_water_hu,
+                      tsunami_lab::t_real             i_water_hv,
+                      std::string                     i_csv_path);
+    static void resetToLastCheckPoint(t_real l_simTime,
+                                      t_real i_csv_path);
+    static std::string Stringify();
 
 };
 

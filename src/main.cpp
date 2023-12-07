@@ -184,12 +184,6 @@ int main() {
   tsunami_lab::t_real l_temp_hu = tsunami_lab::io::Configuration::readFromConfigReal("hu");
   tsunami_lab::t_real l_temp_location = tsunami_lab::io::Configuration::readFromConfigReal("location");
 
-    
-
-
-  
-
-
   const char * l_bathFile = l_temp_bathFile.c_str();
   const char * l_disFile = l_temp_disFile.c_str();
   const char * l_outputFile = l_temp_outputfile.c_str();
@@ -476,7 +470,6 @@ int main() {
         const tsunami_lab::t_real* l_water_hu =  l_waveProp->getMomentumX();
         const tsunami_lab::t_real* l_water_hv =  l_waveProp->getMomentumY();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv";
-        std::cout << "WAAAA1 " << l_station_path << std::endl; 
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,

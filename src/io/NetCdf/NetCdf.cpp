@@ -408,33 +408,32 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     checkNcErr(l_err,__FILE__, __LINE__);
 
 }
-/*
-readCheckPoint(std::string & i_solver,
-                t_real & i_domain_start_x,
-                t_real & i_domain_start_y,
-                t_real & i_dimension_x,
-                t_real & i_dimension_y,
-                t_real & i_endtime,
-                t_real & i_simTime,
-                t_real & i_frequency,
-                t_real & i_dt,
-                const t_real **i_b,
-                const t_real **i_h,
-                const t_real **i_hu,
-                const t_real **i_hv,
-                t_idx & i_time_step_index,
-                t_idx & i_stride,
-                t_idx & o_nx,
-                t_idx & o_ny,
-                std::string & i_path_cp,
-                std::string & i_setup,
-                std::string & i_stations_string,
-                std::string & i_disfile,
-                std::string & i_batfile){
+
+void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
+                                            std::string & o_solver,
+                                            t_real * o_domain_start_x,
+                                            t_real * o_domain_start_y,
+                                            t_real * o_dimension_x,
+                                            t_real * o_dimension_y,
+                                            t_real * o_endtime,
+                                            t_real * o_simTime,
+                                            t_real * o_frequency,
+                                            t_real * o_dt,
+                                            t_real ** o_b,
+                                            t_real ** o_h,
+                                            t_real ** o_hu,
+                                            t_real ** o_hv,
+                                            t_idx * o_time_step_index,
+                                            t_idx * o_nx,
+                                            t_idx * o_ny,
+                                            std::string * o_setup,
+                                            std::string * o_stations_string,
+                                            std::string * o_disfile,
+                                            std::string * o_batfile){
     
     int l_ncId = 0,l_err = 0;
 
-    l_err = nc_open(i_path_cp, NC_NOWRITE, &l_ncId) 
+    l_err = nc_open(i_path_cp.data(), NC_NOWRITE, &l_ncId); 
     checkNcErr(l_err,__FILE__, __LINE__);
 
     int l_dimXId, l_dimYId;
@@ -487,8 +486,101 @@ readCheckPoint(std::string & i_solver,
     l_err = nc_inq_varid(l_ncId,"frequency",&l_var_frequency_id);
     checkNcErr(l_err,__FILE__, __LINE__);
 
+    l_err = nc_inq_varid(l_ncId,"dt",&l_var_dt_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"disfile",&l_var_disfile_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+  
+    l_err = nc_inq_varid(l_ncId,"batfile",&l_var_batfile_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId, "b", &l_var_b_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId, "hu", &l_var_hu_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId, "h", &l_var_h_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId, "hv", &l_var_hv_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_enddef(l_ncId);
+    checkNcErr(l_err,__FILE__, __LINE__);
+    // GET THE VARIABLES
+    l_err = nc_get_var_string(l_ncId,l_var_setup,o_setup);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_string(l_ncId,l_var_disfile_id,o_batfile);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_string(l_ncId,l_var_batfile_id,o_disfile);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_string(l_ncId,l_var_stations_string,o_stations_string);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_var_domain_start_x_id,o_domain_start_x);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_var_domain_start_y_id,o_domain_start_y);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_var_dimension_x_id,o_dimension_x);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_var_dimension_y_id,o_dimension_y);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_var_endtime_id,o_endtime);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_var_simTime_id,o_simTime);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_var_frequency_id,o_frequency);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId, l_var_dt_id, o_dt);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_int(l_ncId, l_var_time_step_index_id, o_time_step_index);
+    checkNcErr(l_err,__FILE__, __LINE__);
+    int l_solver = 0;
+
+    l_err = nc_get_var_int(l_ncId, l_var_solver_id, &l_solver);
+    checkNcErr(l_err,__FILE__, __LINE__);
+    
+    if(l_solver == 1){
+        o_solver = "roe";
+    }else{
+        o_solver = "fwave";  
+    }
+
+    *o_b = new t_real[*o_nx * *o_ny];
+    *o_h = new t_real[*o_nx * *o_ny];
+    *o_hu = new t_real[*o_nx * *o_ny];
+    *o_hv = new t_real[*o_nx * *o_ny];
+
+    l_err = nc_get_var_float(l_ncId, l_var_b_id, *o_b);
+    checkNcErr(l_err,__FILE__, __LINE__); 
+
+    l_err = nc_get_var_float(l_ncId, l_var_h_id, *o_h);
+    checkNcErr(l_err,__FILE__, __LINE__); 
+
+    l_err = nc_get_var_float(l_ncId, l_var_hu_id, *o_hu);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId, l_var_hv_id, *o_hv);
+    checkNcErr(l_err,__FILE__, __LINE__);  
+
+    l_err = nc_close(l_ncId);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
 }
-*/
+
 
 
 
