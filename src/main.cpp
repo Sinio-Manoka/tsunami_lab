@@ -293,15 +293,15 @@ int main() {
   }
   //stations removing out of boundary-------------------------------------------------------------start
   //removing out of boundary stations
-  //string l_stations_string = "";
+  std::string l_stations_string;
   if(l_temp_waveprop == "2d"){
     l_stations.erase(
     std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
     if (station.i_x < l_domain_start_x || station.i_x >= l_temp_dimension_x + l_domain_start_x ||
         station.i_y < l_domain_start_y || station.i_y >= l_temp_dimension_y + l_domain_start_y) {
         std::cout << "\033[1;31m\u2717 " << station.i_name << " is out of boundary \033[0m " << std::endl;
-        //std::string l_foldername = "stations/"+station.i_name;
-        //l_stations_string+= l_foldername +"/"+ station.i_name+".csv"+"$$"; 
+        std::string l_foldername = "stations/"+station.i_name;
+        l_stations_string= l_stations_string + l_foldername +"/"+ station.i_name+".csv"+"$$"; 
         return true; // Remove the station
     }
     std::cout << "\033[1;32m\u2713 " << station.i_name << " is in boundary \033[0m " << std::endl;
@@ -387,6 +387,7 @@ int main() {
                                   l_nx,
                                   l_ny,
                                   l_temp_setup,
+                                  tsunami_lab::io::Station::Stringify(),
                                   l_temp_outputfilename);
       }
     }

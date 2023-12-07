@@ -269,6 +269,7 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
                                                t_idx i_nx,
                                                t_idx i_ny,
                                                std::string i_setup,
+                                               std::string i_stations_string,
                                                std::string i_name_cp){
     
     std::string folder_path = "outputs/cp";
@@ -289,7 +290,7 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     int l_var_domain_start_x_id, l_var_domain_start_y_id , l_var_solver_id, l_var_dimension_x_id,
         l_var_dimension_y_id,l_var_endtime_id, l_var_simTime_id, l_var_frequency_id, l_var_b_id,
         l_var_h_id,l_var_hu_id,l_var_hv_id, l_var_dt_id;    
-    int  l_var_time_step_index_id,l_var_setup;
+    int  l_var_time_step_index_id,l_var_stations_string,l_var_setup;
     //-----------------------------------------------------Define Variables
     l_err = nc_def_var(l_ncId,"domain_start_x",NC_FLOAT,0 , nullptr, &l_var_domain_start_x_id);
     checkNcErr(l_err,__FILE__, __LINE__);
@@ -306,6 +307,8 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     l_err = nc_def_var(l_ncId,"simTime",NC_FLOAT,0 , nullptr, &l_var_simTime_id);
     checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_def_var(l_ncId,"setup",NC_STRING,0 , nullptr, &l_var_setup);
+    checkNcErr(l_err,__FILE__, __LINE__);
+    l_err = nc_def_var(l_ncId,"stations",NC_STRING,0 , nullptr, &l_var_stations_string);
     checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_def_var(l_ncId,"timeStep",NC_INT,0 , nullptr, &l_var_time_step_index_id);
@@ -335,6 +338,10 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     //-----------------------------------------------------Write Variables
     const char* setupData = i_setup.data();
     l_err = nc_put_var_string(l_ncId, l_var_setup, &setupData);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    const char* l_stations_string = i_stations_string.data();
+    l_err = nc_put_var_string(l_ncId, l_var_stations_string, &l_stations_string);
     checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_put_var_float(l_ncId,l_var_domain_start_x_id,&i_domain_start_x);
