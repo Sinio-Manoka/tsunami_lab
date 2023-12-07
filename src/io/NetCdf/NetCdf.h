@@ -122,7 +122,9 @@ class tsunami_lab::io::NetCdf {
                           t_idx i_ny,
                           std::string i_setup,
                           std::string i_stations_string,
-                          std::string i_name_cp
+                          std::string i_name_cp,
+                          std::string i_disfile,
+                          std::string i_batfile
                           );                 
 };
 

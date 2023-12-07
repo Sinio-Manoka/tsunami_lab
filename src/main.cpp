@@ -429,7 +429,9 @@ int main() {
                                   l_ny,
                                   l_temp_setup,
                                   tsunami_lab::io::Station::Stringify(),
-                                  l_checkPointName);
+                                  l_checkPointName,
+                                  l_temp_disFile,
+                                  l_temp_bathFile);
       }
     }
 
