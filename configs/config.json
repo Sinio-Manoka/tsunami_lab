@@ -15,7 +15,7 @@
     "wavepropagation" : "2d",
     "endtime" : 40000,
     "writer" : "netcdf",
-    "bathfile" : "data/output/chile_gebco20_usgs_250m_bath_fixed.nc",
-    "disfile"  : "data/output/chile_gebco20_usgs_250m_displ_fixed.nc",
-    "outputfilename": "moe.nc"
+    "bathfile" : "data/chile_gebco20_usgs_250m_bath_fixed.nc",
+    "disfile"  : "data/chile_gebco20_usgs_250m_displ_fixed.nc",
+    "outputfilename": "habiiii.nc"
 }

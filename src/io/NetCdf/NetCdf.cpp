@@ -273,9 +273,6 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
                                                std::string i_name_cp){
     
     std::string folder_path = "outputs/cp";
-    if (std::filesystem::exists(folder_path)) std::filesystem::remove_all(folder_path);
-    std::filesystem::create_directory(folder_path);
-
     std::string l_name_cp = "outputs/cp/"+i_name_cp;
     int l_err,l_ncId;
     l_err = nc_create(l_name_cp.data(), NC_NETCDF4,&l_ncId);
