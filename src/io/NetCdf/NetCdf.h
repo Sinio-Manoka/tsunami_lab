@@ -128,9 +128,8 @@ class tsunami_lab::io::NetCdf {
                           std::string i_disfile,
                           std::string i_batfile
                           );
-    
-    void readCheckPoint(std::string i_path_cp,
-                        std::string & o_solver,
+  static void readCheckPoint(std::string i_path_cp,
+                        std::string * o_solver,
                         t_real * o_domain_start_x,
                         t_real * o_domain_start_y,
                         t_real * o_dimension_x,

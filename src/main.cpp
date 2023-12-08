@@ -9,7 +9,6 @@
 #include "setups/subcriticalflow/SubcriticalFlow.h"
 #include "setups/supercriticalflow/SupercriticalFlow.h"
 #include "setups/tsunamievent1d/TsunamiEvent1d.h"
-#include "util/Timer.h"
 #include "io/Csv/Csv.h"
 #include "io/NetCdf/NetCdf.h"
 #include "io/Stations/Station.h"
@@ -28,30 +27,15 @@
 
 
 
-void updateProgressBar(double current, double total, const std::chrono::high_resolution_clock::time_point& start_time, int width = 50) {
-    const double progress = std::min(std::max((current / total) * 100.0, 0.0), 100.0);
-    const int numHashes = static_cast<int>((progress / 100.0) * width);
+void updateProgressBar(double current, double total, int width) {
+  const double progress = std::min(std::max((current / total) * 100.0, 0.0), 100.0);
+  const int numHashes = static_cast<int>((progress / 100.0) * width);
 
-    std::cout << "\r\033[1;33mProgress: ["
-              << std::string(numHashes, '#') << std::string(width - numHashes, ' ')
-              << "] " << static_cast<int>(progress) << "%";
+  std::cout << "\r\033[1;33mProgress: ["
+            << std::string(numHashes, '#') << std::string(width - numHashes, ' ')
+            << "] " << static_cast<int>(progress) << "%";
 
-    if (current > 0.0) {
-        const auto now = std::chrono::high_resolution_clock::now();
-        const auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(now - start_time).count();
-        const int remaining_time = static_cast<int>((100.0 - progress) / (progress / elapsed_time));
-
-        const int remaining_hours = remaining_time / 3600;
-        const int remaining_minutes = (remaining_time % 3600) / 60;
-        const int remaining_seconds = remaining_time % 60;
-
-        std::cout << " | Estimated time remaining: "
-                  << remaining_hours << " hours, "
-                  << remaining_minutes << " minutes, "
-                  << remaining_seconds << " seconds" << "\033[0m";
-    }
-
-    std::cout.flush();
+  std::cout.flush();
 }
 
 
@@ -98,7 +82,6 @@ void checkAndDeleteMismatchedFiles() {
 }
 
 int main() {
-  Timer timer; 
   tsunami_lab::t_idx l_nx = 0;
   tsunami_lab::t_idx l_ny = 1;
   tsunami_lab::t_real l_dxy = 25;
@@ -149,6 +132,16 @@ int main() {
   tsunami_lab::setups::Setup *l_setup = nullptr;
   std::string l_temp_setup,l_temp_solver,l_temp_waveprop,l_temp_bathFile,l_temp_disFile,l_temp_writer;
   tsunami_lab::t_real l_domain_start_x = -1,l_domain_start_y = -1,l_temp_dimension_x = -1,l_temp_dimension_y = -1,l_frequency = -1,l_temp_endtime = -1;
+  tsunami_lab::t_idx  l_timeStep = 0, l_counter_forcheckpoint = 1;
+  tsunami_lab::t_real l_simTime = 0,l_dt = 0;
+  tsunami_lab::t_idx l_time_step_index = 0;
+
+  tsunami_lab::t_real *l_cp_b = nullptr;
+  tsunami_lab::t_real *l_cp_h = nullptr;
+  tsunami_lab::t_real *l_cp_hu = nullptr;
+  tsunami_lab::t_real *l_cp_hv = nullptr;
+  
+  std::vector<tsunami_lab::Station> l_stations;
   if(l_use_cp){
     if (!std::filesystem::exists(l_temp_outputfile)) {
 
@@ -159,8 +152,31 @@ int main() {
     //Reading Data from the Checkpoint File
     l_temp_waveprop = "2d";
     l_temp_writer   = "netcdf";
-    
 
+    std::string l_cp_path= "outputs/cp/CheckPoint-" + l_temp_outputfilename;
+
+    std::string l_stations_json_file = "";
+    tsunami_lab::io::NetCdf::readCheckPoint(l_cp_path,
+                                            &l_temp_solver,
+                                            &l_domain_start_x,
+                                            &l_domain_start_y,
+                                            &l_temp_dimension_x,
+                                            &l_temp_dimension_y,
+                                            &l_temp_endtime,
+                                            &l_simTime,
+                                            &l_frequency,
+                                            &l_dt,
+                                            &l_cp_b,
+                                            &l_cp_h,
+                                            &l_cp_hu,
+                                            &l_cp_hv,
+                                            &l_time_step_index,
+                                            &l_nx,
+                                            &l_ny,
+                                            &l_temp_setup,
+                                            &l_stations_json_file,
+                                            &l_temp_disFile,
+                                            &l_temp_bathFile);
   }else{
     //Reading Data from the Json File
     l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
@@ -188,7 +204,6 @@ int main() {
   const char * l_disFile = l_temp_disFile.c_str();
   const char * l_outputFile = l_temp_outputfile.c_str();
   
-  std::vector<tsunami_lab::Station> l_stations;
 
   tsunami_lab::io::Configuration::readStationsFromJson(l_stations);
   l_dxy = l_temp_dimension_x / l_nx;
@@ -278,46 +293,61 @@ int main() {
   {
     l_ny = 1;
   }
+  if(!l_use_cp){
+    for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ){
+      tsunami_lab::t_real l_y = l_cy * l_dxy + l_domain_start_y;
+      for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ){
+        tsunami_lab::t_real l_x = l_cx * l_dxy + l_domain_start_x;
 
-  for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ )
-  { 
-    tsunami_lab::t_real l_y = l_cy * l_dxy + l_domain_start_y;
-  
-    for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ )
-    {
-      tsunami_lab::t_real l_x = l_cx * l_dxy + l_domain_start_x;
-
-      // get initial values of the setup
-      tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
-                                                    l_y );
-      l_hMax = std::max( l_h, l_hMax );
-      tsunami_lab::t_real l_hu = l_setup->getMomentumX( l_x,
-                                                        l_y );
-      tsunami_lab::t_real l_hv = l_setup->getMomentumY( l_x,
-                                                        l_y );
-      tsunami_lab::t_real l_bv = l_setup->getBathymetry(l_x,
-                                                        l_y );                                       
-      // set initial values in wave propagation solver
-      l_waveProp->setHeight( l_cx,
-                             l_cy,
-                             l_h );
-      l_waveProp->setMomentumX( l_cx,
-                                l_cy,
-                                l_hu );
-      l_waveProp->setMomentumY( l_cx,
-                                l_cy,
-                                l_hv );
-      l_waveProp->setBathymetry( l_cx,
-                                 l_cy,
-                                 l_bv);
-          
+        // get initial values of the setup
+        tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
+                                                      l_y );
+        l_hMax = std::max( l_h, l_hMax );
+        tsunami_lab::t_real l_hu = l_setup->getMomentumX( l_x,
+                                                          l_y );
+        tsunami_lab::t_real l_hv = l_setup->getMomentumY( l_x,
+                                                          l_y );
+        tsunami_lab::t_real l_bv = l_setup->getBathymetry(l_x,
+                                                          l_y );                                       
+        // set initial values in wave propagation solver
+        l_waveProp->setHeight( l_cx,
+                              l_cy,
+                              l_h );
+        l_waveProp->setMomentumX( l_cx,
+                                  l_cy,
+                                  l_hu );
+        l_waveProp->setMomentumY( l_cx,
+                                  l_cy,
+                                  l_hv );
+        l_waveProp->setBathymetry( l_cx,
+                                  l_cy,
+                                  l_bv);
+      }
     }
+    // derive maximum wave speed in setup; the momentum is ignored
+    tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
+    l_dt = 0.50 * l_dxy / l_speedMax;
+  }else{
+    for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ){
+
+      for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ){ 
+
+        l_waveProp->setHeight(l_cx,
+                              l_cy,
+                              l_cp_h[l_cx+l_cy*l_nx]);
+        l_waveProp->setMomentumX( l_cx,
+                                  l_cy,
+                                  l_cp_hu[l_cx+l_cy*l_nx]);
+        l_waveProp->setMomentumY( l_cx,
+                                  l_cy,
+                                  l_cp_hv[l_cx+l_cy*l_nx]);
+        l_waveProp->setBathymetry( l_cx,
+                                  l_cy,
+                                  l_cp_b[l_cx+l_cy*l_nx]);
+      }
+    }    
   }
-  // derive maximum wave speed in setup; the momentum is ignored
- 
-  tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
   
-  tsunami_lab::t_real l_dt = 0.50 * l_dxy / l_speedMax;
   // derive scaling for a time step
   tsunami_lab::t_real l_scaling = l_dt/l_dxy;
   
@@ -327,10 +357,6 @@ int main() {
   std::cout << "\033[1;34mAmount of Time steps: " << amount_time_steps << "\033[0m" << std::endl;
 
   // set up time and print control
-  tsunami_lab::t_idx  l_timeStep = 0;
-  tsunami_lab::t_real l_simTime = 0;
-  tsunami_lab::t_real l_time_step_index = 0;
-  tsunami_lab::t_real  l_current_frequency_time = l_frequency;
   std::cout << "\033[1;34mGentering time loop" << "\033[0m\n" << std::endl;
   
 
@@ -378,6 +404,8 @@ int main() {
   }
 
   //stations ---------------------------------------------------------------------------------end
+  tsunami_lab::t_real  l_current_frequency_time = l_frequency;
+  std::string l_checkPointName = "CheckPoint-" + l_temp_outputfilename;
 
   //create the netCdf file reader/writer
   tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_outputFile);
@@ -393,7 +421,6 @@ int main() {
                             l_waveProp->getBathymetry(),
                             l_outputFile);
   }
-  std::string l_checkPointName = "CheckPoint-" + l_temp_outputfilename;
   while( l_simTime < l_temp_endtime ){
     l_waveProp->setGhostOutflow(false);
     if( l_timeStep % 25 == 0 ) {
@@ -426,7 +453,13 @@ int main() {
                               l_waveProp->getMomentumY(),
                               l_outputFile);
                               
-        l_netCdf->createCheckPoint(l_temp_solver,
+      }
+      l_time_step_index++;
+      l_counter_forcheckpoint++;
+    }
+    if(l_counter_forcheckpoint%15 == 0 ){
+      std::cout << "\n\033[1;34m" << "Started writing a new Checkpoint ."<< "\033[0m" << std::endl;
+      l_netCdf->createCheckPoint(l_temp_solver,
                                   l_domain_start_x,
                                   l_domain_start_y,
                                   l_temp_dimension_x,
@@ -448,10 +481,9 @@ int main() {
                                   l_checkPointName,
                                   l_temp_disFile,
                                   l_temp_bathFile);
-      }
-      l_time_step_index++;
+      l_counter_forcheckpoint++;
+      std::cout << "\033[1;32m\u2713 " << "Done writing the Checkpoint ."<< "\033[0m"<< std::endl;
     }
-
     //STATIONS_---------------------------------------------START 
     if(l_current_frequency_time <= l_simTime){
       for (const auto& station : l_stations) {
@@ -485,7 +517,7 @@ int main() {
     l_waveProp->timeStep( l_scaling);
     l_timeStep++;
     l_simTime += l_dt;
-    updateProgressBar(l_simTime, l_temp_endtime,timer.getStartTime());
+    updateProgressBar(l_simTime, l_temp_endtime,50);
 
   }
 

@@ -413,7 +413,7 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
 
 
 void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
-                                            std::string & o_solver,
+                                            std::string * o_solver,
                                             t_real * o_domain_start_x,
                                             t_real * o_domain_start_y,
                                             t_real * o_dimension_x,
@@ -435,8 +435,7 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
                                             std::string * o_batfile){
     
     int l_ncId = 0,l_err = 0;
-
-    l_err = nc_open(i_path_cp.data(), NC_NOWRITE, &l_ncId); 
+    l_err = nc_open(i_path_cp.c_str(), NC_NOWRITE, &l_ncId); 
     checkNcErr(l_err,__FILE__, __LINE__);
 
     int l_dimXId, l_dimYId;
@@ -572,15 +571,15 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
     checkNcErr(l_err,__FILE__, __LINE__);
     
     if(l_solver == 1){
-        o_solver = "roe";
+        *o_solver = "roe";
     }else{
-        o_solver = "fwave";  
+        *o_solver = "fwave";  
     }
 
-    *o_b = new t_real[*o_nx * *o_ny];
-    *o_h = new t_real[*o_nx * *o_ny];
-    *o_hu = new t_real[*o_nx * *o_ny];
-    *o_hv = new t_real[*o_nx * *o_ny];
+    *o_b = new t_real[(*o_nx) * (*o_ny)];
+    *o_h = new t_real[(*o_nx) * (*o_ny)];
+    *o_hu = new t_real[(*o_nx) * (*o_ny)];
+    *o_hv = new t_real[(*o_nx) * (*o_ny)];
 
     l_err = nc_get_var_float(l_ncId, l_var_b_id, *o_b);
     checkNcErr(l_err,__FILE__, __LINE__); 
