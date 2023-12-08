@@ -416,7 +416,6 @@ int main() {
 
   //stations ---------------------------------------------------------------------------------end
   tsunami_lab::t_real  l_current_frequency_time = l_frequency+l_last_simTime_time;
-  std::cout << l_current_frequency_time << "HABIBIB" << std::endl;
   std::string l_checkPointName = "CheckPoint-" + l_temp_outputfilename;
 
   //create the netCdf file reader/writer
