@@ -7,6 +7,9 @@
 #include <vector>
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
+
+
 namespace tsunami_lab {
   namespace io {
     class Station;
