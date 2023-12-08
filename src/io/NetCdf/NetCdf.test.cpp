@@ -188,7 +188,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(2,2,"testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc");
     REQUIRE(std::filesystem::exists("testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc"));
     
-    l_netCdf->createCheckPoint("fwave",1,2,3,4,5,6,7,10,l_b,l_h,l_hu,l_hv,1,4,2,2,"test2","test3","CheckpointsTest.nc","test5","test6");
+    l_netCdf->createCheckPoint("fwave",1,2,3,4,5,6,7,10,3,l_b,l_h,l_hu,l_hv,1,4,2,2,"test2","test3","CheckpointsTest.nc","test5","test6");
     REQUIRE(std::filesystem::exists("outputs/cp/CheckpointsTest.nc"));
     tsunami_lab::t_real *l_ha; 
     tsunami_lab::t_real *l_ba ;
@@ -203,9 +203,10 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     tsunami_lab::t_real  o_simTime;
     tsunami_lab::t_real  o_frequency;
     tsunami_lab::t_real  o_dt;
+    tsunami_lab::t_real  o_simulation_time_for_last_cp;
     tsunami_lab::t_idx  o_time_step_index;
-    tsunami_lab::t_idx  o_nx = 2;
-    tsunami_lab::t_idx  o_ny = 2;
+    tsunami_lab::t_idx  o_nx;
+    tsunami_lab::t_idx  o_ny;
     std::string  o_setup ;
     std::string  o_stations_string;
     std::string  o_disfile;
@@ -213,7 +214,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
 
 
     tsunami_lab::io::NetCdf::readCheckPoint("outputs/cp/CheckpointsTest.nc",&solver,&o_domain_start_x,
-    &o_domain_start_y,&o_dimension_x,&o_dimension_y,&o_endtime,&o_simTime,&o_frequency, &o_dt,
+    &o_domain_start_y,&o_dimension_x,&o_dimension_y,&o_endtime,&o_simTime,&o_frequency, &o_dt,&o_simulation_time_for_last_cp,
     &l_ba,&l_ha,&l_hua,
     &l_hva,&o_time_step_index,&o_nx,&o_ny,&o_setup,&o_stations_string,
     &o_disfile,&o_batfile);
@@ -233,6 +234,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     REQUIRE(o_dt == 10);
     REQUIRE(o_disfile == "test6");
     REQUIRE(o_batfile == "test5");
+    REQUIRE(o_simulation_time_for_last_cp == 3);
     for (tsunami_lab::t_idx l_i = 0; l_i < 2 * 2; l_i++)
     {
         REQUIRE(l_ba[l_i] == l_b_read_result[l_i]);

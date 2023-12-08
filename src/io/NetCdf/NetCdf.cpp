@@ -260,6 +260,7 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
                                                t_real i_simTime,
                                                t_real i_frequency,
                                                t_real i_dt,
+                                               t_real i_simulation_time_for_last_cp,
                                                const t_real *i_b,
                                                const t_real *i_h,
                                                const t_real *i_hu,
@@ -289,7 +290,7 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     int l_var_domain_start_x_id, l_var_domain_start_y_id , l_var_solver_id, l_var_dimension_x_id,
         l_var_dimension_y_id,l_var_endtime_id, l_var_simTime_id, l_var_frequency_id, l_var_b_id,
         l_var_h_id,l_var_hu_id,l_var_hv_id, l_var_dt_id , l_var_disfile_id,l_var_batfile_id;    
-    int  l_var_time_step_index_id,l_var_stations_string,l_var_setup;
+    int  l_var_time_step_index_id,l_var_stations_string,l_var_setup, l_simulation_time_for_last_cp_id;
     //-----------------------------------------------------Define Variables
     l_err = nc_def_var(l_ncId,"domain_start_x",NC_FLOAT,0 , nullptr, &l_var_domain_start_x_id);
     checkNcErr(l_err,__FILE__, __LINE__);
@@ -299,6 +300,11 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_def_var(l_ncId,"dimension_x",NC_FLOAT,0 , nullptr, &l_var_dimension_x_id);
     checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_def_var(l_ncId,"simulationtimeforlastcp",NC_FLOAT,0 , nullptr, &l_simulation_time_for_last_cp_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+
     l_err = nc_def_var(l_ncId,"dimension_y",NC_FLOAT,0 , nullptr, &l_var_dimension_y_id);
     checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_def_var(l_ncId,"endtime",NC_FLOAT,0 , nullptr, &l_var_endtime_id);
@@ -309,7 +315,6 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
     checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_def_var(l_ncId,"stations",NC_STRING,0 , nullptr, &l_var_stations_string);
     checkNcErr(l_err,__FILE__, __LINE__);
-
     l_err = nc_def_var(l_ncId,"timeStep",NC_INT,0 , nullptr, &l_var_time_step_index_id);
     checkNcErr(l_err,__FILE__, __LINE__);
     l_err = nc_def_var(l_ncId,"frequency",NC_FLOAT,0 , nullptr, &l_var_frequency_id);
@@ -359,6 +364,10 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
 
     l_err = nc_put_var_float(l_ncId,l_var_domain_start_x_id,&i_domain_start_x);
     checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_put_var_float(l_ncId,l_simulation_time_for_last_cp_id,&i_simulation_time_for_last_cp);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
 
     l_err = nc_put_var_float(l_ncId, l_var_domain_start_y_id, &i_domain_start_y);
     checkNcErr(l_err,__FILE__, __LINE__);
@@ -422,6 +431,7 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
                                             t_real * o_simTime,
                                             t_real * o_frequency,
                                             t_real * o_dt,
+                                            t_real *o_simulation_time_for_last_cp,
                                             t_real ** o_b,
                                             t_real ** o_h,
                                             t_real ** o_hu,
@@ -453,7 +463,7 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
     int l_var_domain_start_x_id, l_var_domain_start_y_id , l_var_solver_id, l_var_dimension_x_id,
         l_var_dimension_y_id,l_var_endtime_id, l_var_simTime_id, l_var_frequency_id, l_var_b_id,
         l_var_h_id,l_var_hu_id,l_var_hv_id, l_var_dt_id , l_var_disfile_id,l_var_batfile_id;    
-    int  l_var_time_step_index_id,l_var_stations_string,l_var_setup;
+    int  l_var_time_step_index_id,l_var_stations_string,l_var_setup,l_simulation_time_for_last_cp_id;
 
     l_err = nc_inq_varid(l_ncId,"domain_start_x",&l_var_domain_start_x_id);
     checkNcErr(l_err,__FILE__, __LINE__);
@@ -462,6 +472,9 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
     checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_inq_varid(l_ncId,"solver",&l_var_solver_id);
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_inq_varid(l_ncId,"simulationtimeforlastcp", &l_simulation_time_for_last_cp_id);
     checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_inq_varid(l_ncId,"dimension_x",&l_var_dimension_x_id);
@@ -535,6 +548,9 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
     l_err = nc_get_var_string(l_ncId,l_var_stations_string,&l_stations_string);
     *o_stations_string = std::string(l_stations_string);
     delete[] l_stations_string;
+    checkNcErr(l_err,__FILE__, __LINE__);
+
+    l_err = nc_get_var_float(l_ncId,l_simulation_time_for_last_cp_id,o_simulation_time_for_last_cp);
     checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_get_var_float(l_ncId,l_var_domain_start_x_id,o_domain_start_x);
