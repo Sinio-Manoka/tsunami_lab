@@ -101,7 +101,7 @@ void tsunami_lab::io::Configuration::readStationsFromString(const std::string& j
     }
 }
 
-tsunami_lab::t_real  tsunami_lab::io::Configuration::getFrequencyFromJson(){
+tsunami_lab::t_real tsunami_lab::io::Configuration::getFrequencyFromJson(){
     std::string filename = "configs/stations.json";
     std::ifstream file(filename);
     if (!file.is_open()) {

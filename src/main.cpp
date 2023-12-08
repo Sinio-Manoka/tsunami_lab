@@ -122,7 +122,7 @@ int main() {
   }
   std::cout << "\033[0m"; 
   checkAndDeleteMismatchedFiles();
-  
+
 
   //if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
   //std::filesystem::create_directory("stations");
@@ -182,14 +182,11 @@ int main() {
                                             &l_stations_json_file,
                                             &l_temp_disFile,
                                             &l_temp_bathFile);
-
-
     tsunami_lab::io::Configuration::readStationsFromString(l_stations_json_file,l_stations);
     for (const auto& station : l_stations) {
       std::string l_station_path = "stations/" + station.i_name + "/" + station.i_name + ".csv";
       tsunami_lab::io::Station::updateStation(l_last_simTime_time,l_station_path);
     }
-    l_frequency = tsunami_lab::io::Configuration::readFromConfigReal("frequency");
 
   }else{
     //Reading Data from the Json File
@@ -418,7 +415,8 @@ int main() {
   }
 
   //stations ---------------------------------------------------------------------------------end
-  tsunami_lab::t_real  l_current_frequency_time = l_frequency;
+  tsunami_lab::t_real  l_current_frequency_time = l_frequency+l_last_simTime_time;
+  std::cout << l_current_frequency_time << "HABIBIB" << std::endl;
   std::string l_checkPointName = "CheckPoint-" + l_temp_outputfilename;
 
   //create the netCdf file reader/writer
@@ -469,7 +467,7 @@ int main() {
                               
       }
       l_time_step_index++;
-      if(l_time_step_index%15 == 0 ){
+      if(l_time_step_index%7 == 0 ){
         std::cout << "\n\033[1;34m" << "Started writing a new Checkpoint ."<< "\033[0m" << std::endl;
         l_netCdf->createCheckPoint(l_temp_solver,
                                     l_domain_start_x,
