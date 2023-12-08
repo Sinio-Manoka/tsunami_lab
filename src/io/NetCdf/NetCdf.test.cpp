@@ -212,7 +212,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     std::string  o_batfile;
 
 
-    l_netCdf->readCheckPoint("outputs/cp/CheckpointsTest.nc",solver,&o_domain_start_x,
+    tsunami_lab::io::NetCdf::readCheckPoint("outputs/cp/CheckpointsTest.nc",&solver,&o_domain_start_x,
     &o_domain_start_y,&o_dimension_x,&o_dimension_y,&o_endtime,&o_simTime,&o_frequency, &o_dt,
     &l_ba,&l_ha,&l_hua,
     &l_hva,&o_time_step_index,&o_nx,&o_ny,&o_setup,&o_stations_string,
