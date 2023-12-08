@@ -409,32 +409,8 @@ void tsunami_lab::io::NetCdf::createCheckPoint(std::string i_solver,
 
 }
 
-char** tsunami_lab::io::NetCdf::convertStringArrayToCharPointerArray(const std::string* stringArray, size_t arraySize) {
-    // Allocate memory for an array of char*
-    char** result = new char*[arraySize];
 
-    // Convert each std::string to a char*
-    for (size_t i = 0; i < arraySize; ++i) {
-        // Allocate memory for the C-style string
-        result[i] = new char[stringArray[i].length() + 1];
 
-        // Copy the content of the std::string to the char array
-        strcpy(result[i], stringArray[i].c_str());
-    }
-
-    return result;
-}
-
-int* tsunami_lab::io::NetCdf::convertSizeTArrayToIntArray(const size_t* originalArray, size_t arraySize) {
-    int* result = new int[arraySize];
-
-    for (size_t i = 0; i < arraySize; ++i) {
-        // Assuming no overflow concerns, you can directly cast
-        result[i] = static_cast<int>(originalArray[i]);
-    }
-
-    return result;
-}
 
 void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
                                             std::string & o_solver,
@@ -534,21 +510,32 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
     l_err = nc_inq_varid(l_ncId, "hv", &l_var_hv_id);
     checkNcErr(l_err,__FILE__, __LINE__);
 
-    l_err = nc_enddef(l_ncId);
-    checkNcErr(l_err,__FILE__, __LINE__);
+
     // GET THE VARIABLES
 
+    char *l_setup;
+    l_err = nc_get_var_string(l_ncId,l_var_setup,&l_setup);
+    *o_setup = std::string(l_setup);
+    delete[] l_setup;
+    checkNcErr(l_err,__FILE__, __LINE__);
+    
 
-    l_err = nc_get_var_string(l_ncId,l_var_setup,convertStringArrayToCharPointerArray(o_setup,1));
+    char *l_batfile;
+    l_err = nc_get_var_string(l_ncId,l_var_batfile_id,&l_batfile);
+    *o_batfile = std::string(l_batfile);
+    delete[] l_batfile;
+    checkNcErr(l_err,__FILE__, __LINE__);
+    
+    char *l_disfile;
+    l_err = nc_get_var_string(l_ncId,l_var_disfile_id,&l_disfile);
+    *o_disfile = std::string(l_disfile);
+    delete[] l_disfile;
     checkNcErr(l_err,__FILE__, __LINE__);
 
-    l_err = nc_get_var_string(l_ncId,l_var_disfile_id,convertStringArrayToCharPointerArray(o_batfile,1));
-    checkNcErr(l_err,__FILE__, __LINE__);
-
-    l_err = nc_get_var_string(l_ncId,l_var_batfile_id,convertStringArrayToCharPointerArray(o_disfile,1));
-    checkNcErr(l_err,__FILE__, __LINE__);
-
-    l_err = nc_get_var_string(l_ncId,l_var_stations_string,convertStringArrayToCharPointerArray(o_stations_string,1));
+    char *l_stations_string;
+    l_err = nc_get_var_string(l_ncId,l_var_stations_string,&l_stations_string);
+    *o_stations_string = std::string(l_stations_string);
+    delete[] l_stations_string;
     checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_get_var_float(l_ncId,l_var_domain_start_x_id,o_domain_start_x);
@@ -575,7 +562,9 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
     l_err = nc_get_var_float(l_ncId, l_var_dt_id, o_dt);
     checkNcErr(l_err,__FILE__, __LINE__);
 
-    l_err = nc_get_var_int(l_ncId, l_var_time_step_index_id, convertSizeTArrayToIntArray(o_time_step_index,1));
+    int l_time_step_index;
+    l_err = nc_get_var_int(l_ncId, l_var_time_step_index_id, &l_time_step_index);
+    *o_time_step_index = l_time_step_index;
     checkNcErr(l_err,__FILE__, __LINE__);
     int l_solver = 0;
 

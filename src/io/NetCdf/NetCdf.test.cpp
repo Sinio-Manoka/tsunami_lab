@@ -150,3 +150,103 @@ TEST_CASE( "Test the NetCdf-reader ", "[NetCdfreader]" ) {
     REQUIRE(12 == l_ny);
     delete[] l_data; 
 }
+
+TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
+    
+    tsunami_lab::t_real l_h[16]  =  {0,0,0,0, 
+                                     0,1,2,0, 
+                                     0,3,4,0, 
+                                     0,0,0,0 };
+
+    tsunami_lab::t_real l_hu[16] = { 0,0,0,0, 
+                                     0,5,8,0, 
+                                     0,6,7,0, 
+                                     0,0,0,0};
+
+    tsunami_lab::t_real l_hv[16] = { 0,0,0,0, 
+                                     0,2,2,0,
+                                     0,2,2,0, 
+                                     0,0,0,0};
+
+    tsunami_lab::t_real l_b[16]  = { 0,0,0,0, 
+                                     0,0,0,0, 
+                                     0,0,0,0, 
+                                     0,0,0,0};
+
+
+    tsunami_lab::t_real l_h_read_result[4]  ={ 1,2,
+                                               3,4};
+    tsunami_lab::t_real l_hu_read_result[4]  ={5,8,
+                                              6,7};
+    tsunami_lab::t_real l_hv_read_result[4]  ={2,2,
+                                              2,2};
+
+    tsunami_lab::t_real l_b_read_result[4]  ={0,0,
+                                              0,0};
+
+
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(2,2,"testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc");
+    REQUIRE(std::filesystem::exists("testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc"));
+    
+    l_netCdf->createCheckPoint("fwave",1,2,3,4,5,6,7,10,l_b,l_h,l_hu,l_hv,1,4,2,2,"test2","test3","CheckpointsTest.nc","test5","test6");
+    REQUIRE(std::filesystem::exists("outputs/cp/CheckpointsTest.nc"));
+    tsunami_lab::t_real *l_ha; 
+    tsunami_lab::t_real *l_ba ;
+    tsunami_lab::t_real *l_hva;
+    tsunami_lab::t_real *l_hua;
+    tsunami_lab::t_real o_domain_start_x;
+    tsunami_lab::t_real o_domain_start_y;
+    tsunami_lab::t_real o_dimension_x;
+    tsunami_lab::t_real o_dimension_y;
+    std::string solver;
+    tsunami_lab::t_real  o_endtime;
+    tsunami_lab::t_real  o_simTime;
+    tsunami_lab::t_real  o_frequency;
+    tsunami_lab::t_real  o_dt;
+    tsunami_lab::t_idx  o_time_step_index;
+    tsunami_lab::t_idx  o_nx = 2;
+    tsunami_lab::t_idx  o_ny = 2;
+    std::string  o_setup ;
+    std::string  o_stations_string;
+    std::string  o_disfile;
+    std::string  o_batfile;
+
+
+    l_netCdf->readCheckPoint("outputs/cp/CheckpointsTest.nc",solver,&o_domain_start_x,
+    &o_domain_start_y,&o_dimension_x,&o_dimension_y,&o_endtime,&o_simTime,&o_frequency, &o_dt,
+    &l_ba,&l_ha,&l_hua,
+    &l_hva,&o_time_step_index,&o_nx,&o_ny,&o_setup,&o_stations_string,
+    &o_disfile,&o_batfile);
+
+    REQUIRE(o_nx == 2);
+    REQUIRE(o_ny == 2);
+    REQUIRE(o_domain_start_x == 1.0);
+    REQUIRE(o_domain_start_y == 2.0);
+    REQUIRE(o_dimension_y == 4);
+    REQUIRE(o_dimension_x == 3);
+    REQUIRE(o_endtime == 5);
+    REQUIRE(o_simTime == 6);
+    REQUIRE(o_setup == "test2");//problem fix its not saved
+    REQUIRE(o_stations_string == "test3");
+    REQUIRE(o_time_step_index == 1);
+    REQUIRE(o_frequency == 7);
+    REQUIRE(o_dt == 10);
+    REQUIRE(o_disfile == "test6");
+    REQUIRE(o_batfile == "test5");
+    for (tsunami_lab::t_idx l_i = 0; l_i < 2 * 2; l_i++)
+    {
+        REQUIRE(l_ba[l_i] == l_b_read_result[l_i]);
+        REQUIRE(l_ha[l_i] == l_h_read_result[l_i]);
+        REQUIRE(l_hua[l_i] == l_hu_read_result[l_i]);
+        REQUIRE(l_hva[l_i] == l_hv_read_result[l_i]);
+        
+    }
+    
+    
+    
+
+
+
+   
+   
+}
