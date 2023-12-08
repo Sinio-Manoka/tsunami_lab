@@ -23,8 +23,8 @@ namespace tsunami_lab {
   };
 
   struct DataPoint {
-    int x, y;
-    double water_height, water_hu, water_hv, time_in_seconds;
+    t_idx x, y;
+    t_real water_height, water_hu, water_hv, time_in_seconds;
   };
 }
 #endif

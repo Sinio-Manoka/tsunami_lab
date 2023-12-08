@@ -49,9 +49,12 @@ class tsunami_lab::io::Configuration {
          * @param stations an empty vector which is filled with stations from the json file.
          */
         static void readStationsFromJson(std::vector<tsunami_lab::Station> & stations);
+
+
+        static void readStationsFromString(const std::string& json_str, std::vector<tsunami_lab::Station>& stations);
         /**
          * @return frequency value tells us after how many secons the next time step is.
          */
-        static tsunami_lab::t_real getFrequency();
+        static tsunami_lab::t_real getFrequencyFromJson();
 };
 #endif

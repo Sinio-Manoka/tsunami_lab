@@ -45,11 +45,11 @@ void checkAndDeleteMismatchedFiles() {
  
   std::string folder_path = "outputs";
   std::string l_check_point_path= folder_path + "/cp";
-
+  bool isCpEmpty = false;
   
   if (std::filesystem::exists(folder_path)){
     if(std::filesystem::exists(l_check_point_path)){
-      bool isCpEmpty = std::filesystem::is_empty(l_check_point_path);
+      isCpEmpty = std::filesystem::is_empty(l_check_point_path);
       if(isCpEmpty){
         std::filesystem::remove_all(folder_path);
         std::filesystem::create_directory(folder_path);
@@ -78,6 +78,10 @@ void checkAndDeleteMismatchedFiles() {
   }else if(!std::filesystem::exists(folder_path)){
     std::filesystem::create_directory(folder_path);
     std::filesystem::create_directory(l_check_point_path);
+  }
+  if(isCpEmpty){
+    if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
+     std::filesystem::create_directory("stations");
   }
 }
 
@@ -120,8 +124,8 @@ int main() {
   checkAndDeleteMismatchedFiles();
   
 
-  if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
-  std::filesystem::create_directory("stations");
+  //if (std::filesystem::exists("stations")) std::filesystem::remove_all("stations");
+  //std::filesystem::create_directory("stations");
   //Errors checking-----------------------------------------------------------------------END
   //Declaration---------------------------------------------------------------------------START
 
@@ -132,8 +136,8 @@ int main() {
   tsunami_lab::setups::Setup *l_setup = nullptr;
   std::string l_temp_setup,l_temp_solver,l_temp_waveprop,l_temp_bathFile,l_temp_disFile,l_temp_writer;
   tsunami_lab::t_real l_domain_start_x = -1,l_domain_start_y = -1,l_temp_dimension_x = -1,l_temp_dimension_y = -1,l_frequency = -1,l_temp_endtime = -1;
-  tsunami_lab::t_idx  l_timeStep = 0, l_counter_forcheckpoint = 1;
-  tsunami_lab::t_real l_simTime = 0,l_dt = 0;
+  tsunami_lab::t_idx  l_timeStep = 0;
+  tsunami_lab::t_real l_simTime = 0,l_dt = 0,l_last_simTime_time = 0;
   tsunami_lab::t_idx l_time_step_index = 0;
 
   tsunami_lab::t_real *l_cp_b = nullptr;
@@ -166,6 +170,7 @@ int main() {
                                             &l_simTime,
                                             &l_frequency,
                                             &l_dt,
+                                            &l_last_simTime_time,
                                             &l_cp_b,
                                             &l_cp_h,
                                             &l_cp_hu,
@@ -177,6 +182,15 @@ int main() {
                                             &l_stations_json_file,
                                             &l_temp_disFile,
                                             &l_temp_bathFile);
+
+
+    tsunami_lab::io::Configuration::readStationsFromString(l_stations_json_file,l_stations);
+    for (const auto& station : l_stations) {
+      std::string l_station_path = "stations/" + station.i_name + "/" + station.i_name + ".csv";
+      tsunami_lab::io::Station::updateStation(l_last_simTime_time,l_station_path);
+    }
+    l_frequency = tsunami_lab::io::Configuration::readFromConfigReal("frequency");
+
   }else{
     //Reading Data from the Json File
     l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
@@ -188,7 +202,7 @@ int main() {
     l_domain_start_y = tsunami_lab::io::Configuration::readFromConfigReal("domain_start_y");
     l_temp_dimension_x =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_x");
     l_temp_dimension_y =  tsunami_lab::io::Configuration::readFromConfigReal("dimension_y");
-    l_frequency = tsunami_lab::io::Configuration::getFrequency();
+    l_frequency = tsunami_lab::io::Configuration::getFrequencyFromJson();
     l_temp_endtime = tsunami_lab::io::Configuration::readFromConfigReal("endtime");
     l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
     l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
@@ -455,35 +469,35 @@ int main() {
                               
       }
       l_time_step_index++;
-      l_counter_forcheckpoint++;
+      if(l_time_step_index%15 == 0 ){
+        std::cout << "\n\033[1;34m" << "Started writing a new Checkpoint ."<< "\033[0m" << std::endl;
+        l_netCdf->createCheckPoint(l_temp_solver,
+                                    l_domain_start_x,
+                                    l_domain_start_y,
+                                    l_temp_dimension_x,
+                                    l_temp_dimension_y,
+                                    l_temp_endtime,
+                                    l_simTime,
+                                    l_frequency,
+                                    l_dt,
+                                    l_last_simTime_time,
+                                    l_waveProp->getBathymetry(),
+                                    l_waveProp->getHeight(),
+                                    l_waveProp->getMomentumX(),
+                                    l_waveProp->getMomentumY(),
+                                    l_time_step_index,
+                                    l_waveProp->getStride(),
+                                    l_nx,
+                                    l_ny,
+                                    l_temp_setup,
+                                    tsunami_lab::io::Station::Stringify(),
+                                    l_checkPointName,
+                                    l_temp_disFile,
+                                    l_temp_bathFile);
+        std::cout << "\033[1;32m\u2713 " << "Done writing the Checkpoint ."<< "\033[0m"<< std::endl;
+      }
     }
-    if(l_counter_forcheckpoint%15 == 0 ){
-      std::cout << "\n\033[1;34m" << "Started writing a new Checkpoint ."<< "\033[0m" << std::endl;
-      l_netCdf->createCheckPoint(l_temp_solver,
-                                  l_domain_start_x,
-                                  l_domain_start_y,
-                                  l_temp_dimension_x,
-                                  l_temp_dimension_y,
-                                  l_temp_endtime,
-                                  l_simTime,
-                                  l_frequency,
-                                  l_dt,
-                                  l_waveProp->getBathymetry(),
-                                  l_waveProp->getHeight(),
-                                  l_waveProp->getMomentumX(),
-                                  l_waveProp->getMomentumY(),
-                                  l_time_step_index,
-                                  l_waveProp->getStride(),
-                                  l_nx,
-                                  l_ny,
-                                  l_temp_setup,
-                                  tsunami_lab::io::Station::Stringify(),
-                                  l_checkPointName,
-                                  l_temp_disFile,
-                                  l_temp_bathFile);
-      l_counter_forcheckpoint++;
-      std::cout << "\033[1;32m\u2713 " << "Done writing the Checkpoint ."<< "\033[0m"<< std::endl;
-    }
+    
     //STATIONS_---------------------------------------------START 
     if(l_current_frequency_time <= l_simTime){
       for (const auto& station : l_stations) {
@@ -510,6 +524,7 @@ int main() {
                                         l_water_hv[l_id],
                                         l_station_path);
       }
+      l_last_simTime_time = l_simTime;
       l_current_frequency_time = l_current_frequency_time + l_frequency;
     }
     //STATIONS----------------------------------------------END

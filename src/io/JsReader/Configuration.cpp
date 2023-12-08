@@ -82,7 +82,26 @@ void tsunami_lab::io::Configuration::readStationsFromJson(std::vector<tsunami_la
     }
 }
 
-tsunami_lab::t_real  tsunami_lab::io::Configuration::getFrequency(){
+
+void tsunami_lab::io::Configuration::readStationsFromString(const std::string& json_str, std::vector<tsunami_lab::Station>& stations) {
+    try {
+        json json_data = json::parse(json_str);
+
+        stations.clear();
+
+        for (const auto& station_data : json_data["stations"]) {
+            tsunami_lab::Station station;
+            station.i_name = station_data["i_name"];
+            station.i_x = station_data["i_x"];
+            station.i_y = station_data["i_y"];
+            stations.push_back(station);
+        }
+    } catch (const json::parse_error& e) {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+    }
+}
+
+tsunami_lab::t_real  tsunami_lab::io::Configuration::getFrequencyFromJson(){
     std::string filename = "configs/stations.json";
     std::ifstream file(filename);
     if (!file.is_open()) {
