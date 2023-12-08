@@ -48,11 +48,11 @@ void tsunami_lab::io::Station::updateStation(tsunami_lab::t_real simulation_time
     inFile.close();
 
 
-    tsunami_lab::t_real l_simulation_time = std::round(simulation_time * 100.0)/100.0;
+    //tsunami_lab::t_real l_simulation_time = floor(simulation_time); //= std::round(simulation_time * 1)/1;
 
     auto it = std::find_if(dataPoints.begin(), dataPoints.end(),
-        [l_simulation_time](const DataPoint& point) {
-            return point.time_in_seconds == l_simulation_time;
+        [simulation_time](const DataPoint& point) {
+            return floor(point.time_in_seconds) == floor(simulation_time);
         });
 
     if (it != dataPoints.end()) {
