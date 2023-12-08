@@ -1,5 +1,7 @@
 #include "Station.h"
 
+
+
 void tsunami_lab::io::Station::write(tsunami_lab::t_idx              i_x,
                                      tsunami_lab::t_idx              i_y,
                                      tsunami_lab::t_real             i_time_in_seconds,
@@ -23,8 +25,7 @@ void tsunami_lab::io::Station::write(tsunami_lab::t_idx              i_x,
 }
 
 
-
-void tsunami_lab::io::Station::updateStation(t_real simulation_time, std::string csv_file_path) {
+void tsunami_lab::io::Station::updateStation(tsunami_lab::t_real simulation_time, std::string csv_file_path) {
     std::ifstream inFile(csv_file_path);
     if (!inFile) {
         std::cerr << "Error opening file: " << csv_file_path << std::endl;
@@ -46,9 +47,12 @@ void tsunami_lab::io::Station::updateStation(t_real simulation_time, std::string
 
     inFile.close();
 
+
+    tsunami_lab::t_real l_simulation_time = std::round(simulation_time * 10.0)/10.0;
+
     auto it = std::find_if(dataPoints.begin(), dataPoints.end(),
-        [simulation_time](const DataPoint& point) {
-            return point.time_in_seconds == simulation_time;
+        [l_simulation_time](const DataPoint& point) {
+            return point.time_in_seconds == l_simulation_time;
         });
 
     if (it != dataPoints.end()) {
