@@ -41,13 +41,12 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     checkNcErr(l_err,__FILE__, __LINE__);
     delete[] l_coordinateX;
 
-    for( t_idx l_iy = 0; l_iy < i_ny; l_iy++)
+    for( t_idx l_iy = 2; l_iy < i_ny+1; l_iy++)
     {
-        for( t_idx l_ix = 0; l_ix < i_nx; l_ix++)
+        for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++)
         {
-            t_idx l_id = (l_iy+1) * i_stride + (l_ix+1);
-
-            l_temp_data_bathymetry[(l_iy) * i_nx + (l_ix) ] = i_b[l_id];
+            t_idx l_id = (l_iy) * i_stride + l_ix;
+            l_temp_data_bathymetry[(l_iy-1) * i_nx + (l_ix-1) ] = i_b[l_id];
         }
     }
     

@@ -1,22 +1,29 @@
 {
     "solver" : "fwave",
-    "dimension_x" : 3500000,
-    "dimension_y" : 2950000,
+    "dimension_x" : 2700000,
+    "dimension_y" : 1500000,
     "setup" :  "tsunamievent2d",
-    "nx" : 3500,
-    "ny" : 2950,
+    "nx" : 2700,
+    "ny" : 1500,
     "hu" : 0,
     "location" : 0,
     "hv":0.0,
     "hr": 55,
     "hl": 25,
-    "domain_start_x" : -3000000,
-    "domain_start_y" : -1450000,
+    "domain_start_x" : -200000,
+    "domain_start_y" : -750000,
     "wavepropagation" : "2d",
     "endtime" : 3600,
     "writer" : "netcdf",
+<<<<<<< HEAD
     "bathfile" : "data/output/tohoku_gebco08_ucsb3_250m_displ.nc",
     "disfile"  : "data/output/tohoku_gebco08_ucsb3_250m_displ.nc",
     "outputfilename": "1000.nc",
     "usecheckpoint" : false
+=======
+    "bathfile" : "data/tohoku_gebco08_ucsb3_250m_bath.nc",
+    "disfile"  : "data/tohoku_gebco08_ucsb3_250m_displ.nc",
+    "outputfilename": "tiz.nc",
+    "usecheckpoint" : true
+>>>>>>> 6c5300468c4b01ec690933711aede26f2a3f3d01
 }
