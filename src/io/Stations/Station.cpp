@@ -43,6 +43,7 @@ void tsunami_lab::io::Station::updateStation(tsunami_lab::t_real simulation_time
             >> point.water_hu >> comma >> point.water_hv >> comma >> point.time_in_seconds) {
             dataPoints.push_back(point);
         }
+        
     }
 
     inFile.close();

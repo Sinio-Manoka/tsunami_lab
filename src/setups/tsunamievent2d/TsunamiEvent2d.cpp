@@ -8,8 +8,17 @@ tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(const char*  i_bathFile, con
 {
 
     tsunami_lab::io::NetCdf::read(i_bathFile,"z",m_nx_bat,m_ny_bat,&m_bathymetry_values,&m_bathymetry_x_values,&m_bathymetry_y_values);
+    for(t_idx i = 0; i < m_nx_bat*m_ny_bat; ++i){
+        if(std::isnan(m_bathymetry_values[i])){
+            m_bathymetry_values[i] = 0;
+        }
+    }
     tsunami_lab::io::NetCdf::read(i_disFile,"z",m_nx_dis,m_ny_dis,&m_displacement_values,&m_displacement_x_values,&m_displacement_y_values);
-    
+    for(t_idx i = 0; i < m_nx_dis*m_ny_dis; ++i){
+        if(std::isnan(m_displacement_values[i])){
+            m_displacement_values[i] = 0;
+        }
+    }    
     
 }
 

@@ -41,7 +41,7 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     checkNcErr(l_err,__FILE__, __LINE__);
     delete[] l_coordinateX;
 
-    for( t_idx l_iy = 2; l_iy < i_ny+1; l_iy++)
+    for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++)
     {
         for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++)
         {
