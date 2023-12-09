@@ -37,10 +37,10 @@ jobs:
       - name: Sanitize
         run: |
           scons mode=debug+san
-          sudo ./build/tests
+          ./build/tests
           ./build/tsunami_lab
           scons mode=release+san
-          sudo ./build/tests
+          ./build/tests
           ./build/tsunami_lab
 
       - name: Valgrind
