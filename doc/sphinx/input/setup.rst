@@ -129,22 +129,25 @@ Usage
 
       {
          "solver" : "fwave",
-         "dimension_x" : 100,
-         "dimension_y" : 100,
-         "setup" :  "dambreak2d",
-         "nx" : 100,
-         "ny" : 100,
-         "hu" : 1,
+         "dimension_x" : 2700000,
+         "dimension_y" : 1500000,
+         "setup" :  "tsunamievent2d",
+         "nx" : 540,
+         "ny" : 300,
+         "hu" : 0,
          "location" : 0,
          "hv":0.0,
          "hr": 55,
          "hl": 25,
-         "domain_start_x" : -50,
-         "domain_start_y" : -50,
+         "domain_start_x" : -200000,
+         "domain_start_y" : -750000,
          "wavepropagation" : "2d",
-         "endtime" : 20,
-         "writer" : "csv"
-         
+         "endtime" : 3600,
+         "writer" : "netcdf",
+         "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
+         "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc",
+         "outputfilename": "tests.nc",
+         "usecheckpoint" : false
       }
 
 .. important::
@@ -180,6 +183,18 @@ Usage
       dimension_x : Width and length of our domain at this point for the x coordinates. l_dx = dimension_x / l_nx; 
 
       dimension_y : Width and length of our domain at this point in for the y coordinates. l_dy = dimension_y / l_ny; 
+
+      bathfile : path file of the bathymetry for the tsunamievent2d setup
+
+      disfile : displacement file path for the tsunamievent2d setup.
+
+      outputfilename : The outputfilename is the name of both the output file and the checkpoint. 
+                        They will share the same name, and the checkpoint can be found in the following path: /outputs/cp.
+                        input example : output.nc
+                        
+      usecheckpoint : false or true. If true, it would use the checkpoint in the 'cp' folder. If false, it would not use any checkpoint. Additionally, if there is a checkpoint with the same name as the one for the output file
+                     we are generating now, the old checkpoint would be overwritten.checkpoint would be made automatically after every 7 timestep
+
 
       Feel free to adjust the arguments to suit your needs. 
       And don't forget to build the project after every change.
