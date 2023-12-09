@@ -244,11 +244,9 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
         
     }
     
-    
-    
-
-
-
-   
-   
+    delete[] l_ba;
+    delete[] l_ha;
+    delete[] l_hva;
+    delete[] l_hua;
+    delete l_netCdf;
 }
