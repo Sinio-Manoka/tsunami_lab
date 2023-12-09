@@ -152,6 +152,7 @@ TEST_CASE( "Test the NetCdf-reader ", "[NetCdfreader]" ) {
 }
 
 TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
+
     
     tsunami_lab::t_real l_h[16]  =  {0,0,0,0, 
                                      0,1,2,0, 
@@ -188,6 +189,13 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(2,2,"testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc");
     REQUIRE(std::filesystem::exists("testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc"));
     
+    std::string folder_path = "outputs";
+    std::string l_check_point_path= folder_path + "/cp";
+
+    if (!std::filesystem::exists(folder_path)) std::filesystem::create_directory(folder_path);
+    if (!std::filesystem::exists(l_check_point_path)) std::filesystem::create_directory(l_check_point_path);
+
+
     l_netCdf->createCheckPoint("fwave",1,2,3,4,5,6,7,10,3,l_b,l_h,l_hu,l_hv,1,4,2,2,"test2","test3","CheckpointsTest.nc","test5","test6");
     REQUIRE(std::filesystem::exists("outputs/cp/CheckpointsTest.nc"));
     tsunami_lab::t_real *l_ha; 
