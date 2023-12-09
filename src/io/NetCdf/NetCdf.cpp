@@ -527,26 +527,21 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
     char *l_setup;
     l_err = nc_get_var_string(l_ncId,l_var_setup,&l_setup);
     *o_setup = std::string(l_setup);
-    delete[] l_setup;
     checkNcErr(l_err,__FILE__, __LINE__);
-    
 
     char *l_batfile;
     l_err = nc_get_var_string(l_ncId,l_var_batfile_id,&l_batfile);
     *o_batfile = std::string(l_batfile);
-    delete[] l_batfile;
     checkNcErr(l_err,__FILE__, __LINE__);
-    
+ 
     char *l_disfile;
     l_err = nc_get_var_string(l_ncId,l_var_disfile_id,&l_disfile);
     *o_disfile = std::string(l_disfile);
-    delete[] l_disfile;
     checkNcErr(l_err,__FILE__, __LINE__);
 
     char *l_stations_string;
     l_err = nc_get_var_string(l_ncId,l_var_stations_string,&l_stations_string);
     *o_stations_string = std::string(l_stations_string);
-    delete[] l_stations_string;
     checkNcErr(l_err,__FILE__, __LINE__);
 
     l_err = nc_get_var_float(l_ncId,l_simulation_time_for_last_cp_id,o_simulation_time_for_last_cp);
@@ -610,8 +605,13 @@ void tsunami_lab::io::NetCdf::readCheckPoint(std::string i_path_cp,
 
     l_err = nc_close(l_ncId);
     checkNcErr(l_err,__FILE__, __LINE__);
-
+    
+    free(l_setup);
+    free(l_stations_string);
+    free(l_batfile);
+    free(l_disfile);
 }
+
 
 
 
