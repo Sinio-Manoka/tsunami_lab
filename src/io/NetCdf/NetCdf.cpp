@@ -103,8 +103,6 @@ void tsunami_lab::io::NetCdf::read( const char* i_filename,
     if (nc_close(l_ncId) != NC_NOERR) {
         std::cerr << "Error closing NetCDF file: " << i_filename << std::endl;
     }
-    
-
 }
 
 void tsunami_lab::io::NetCdf::updateFile(t_idx               i_nx,
