@@ -133,9 +133,12 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     }
 
     delete l_netCdf;
-    
-    
+    std::string path = "testsFiles/test.nc";
+    remove(path.c_str());
 }
+ 
+    
+
 
 
 TEST_CASE( "Test the NetCdf-reader ", "[NetCdfreader]" ) {
@@ -150,8 +153,11 @@ TEST_CASE( "Test the NetCdf-reader ", "[NetCdfreader]" ) {
     }
     REQUIRE(6 == l_nx);
     REQUIRE(12 == l_ny);
-    delete[] l_data; 
+      delete[] l_data; 
+
 }
+  
+
 
 TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
 
@@ -261,5 +267,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     delete l_netCdf;
 
     std::string path = "outputs/cp/CheckpointsTest.nc" ;
+    remove(path.c_str());
+    path = "testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc";
     remove(path.c_str());
 }
