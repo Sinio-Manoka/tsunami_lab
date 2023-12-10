@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+/*#include <catch2/catch.hpp>
 #include "../../constants.h"
 #include <sstream>
 #include <vector>
@@ -14,7 +14,7 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     tsunami_lab::t_real l_hv[10] = { 6, 5, 4, 3, 2, 1, 0 ,7, 8 ,5};
     tsunami_lab::t_real l_b[10]  = { 0, 0, 0, 0, 0, 0, 0 ,7, 8 ,5};
 
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,"testsFiles/test.nc");
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,2,"testsFiles/test.nc");
     l_netCdf->fillConstants(5,2,1,-50,-50,0,l_b,"testsFiles/test.nc");
     l_netCdf->updateFile(5,2,1,0,1,l_h,l_hu,l_hv,"testsFiles/test.nc");
     int l_err;

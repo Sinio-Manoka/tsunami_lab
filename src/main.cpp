@@ -110,7 +110,7 @@ int main() {
   }
   //2. Are all the needed Keys there??
   std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
-                                          "nx","hu","location","hl","ny","domain_start_x",
+                                          "nx","k","hu","location","hl","ny","domain_start_x",
                                           "domain_start_y","wavepropagation","endtime","writer","bathfile","disfile","outputfilename","usecheckpoint"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
   if(missingKeys.size() > 0){
@@ -136,7 +136,7 @@ int main() {
   tsunami_lab::setups::Setup *l_setup = nullptr;
   std::string l_temp_setup,l_temp_solver,l_temp_waveprop,l_temp_bathFile,l_temp_disFile,l_temp_writer;
   tsunami_lab::t_real l_domain_start_x = -1,l_domain_start_y = -1,l_temp_dimension_x = -1,l_temp_dimension_y = -1,l_frequency = -1,l_temp_endtime = -1;
-  tsunami_lab::t_idx  l_timeStep = 0;
+  tsunami_lab::t_idx  l_timeStep = 0,l_k = 0;
   tsunami_lab::t_real l_simTime = 0,l_dt = 0,l_last_simTime_time = 0;
   tsunami_lab::t_idx l_time_step_index = 0;
 
@@ -178,6 +178,7 @@ int main() {
                                             &l_time_step_index,
                                             &l_nx,
                                             &l_ny,
+                                            &l_k,
                                             &l_temp_setup,
                                             &l_stations_json_file,
                                             &l_temp_disFile,
@@ -192,6 +193,7 @@ int main() {
     //Reading Data from the Json File
     l_nx =  tsunami_lab::io::Configuration::readFromConfigIndex("nx");
     l_ny =  tsunami_lab::io::Configuration::readFromConfigIndex("ny");
+    l_k =  tsunami_lab::io::Configuration::readFromConfigIndex("k");
     l_temp_setup = tsunami_lab::io::Configuration::readFromConfigString("setup");
     l_temp_solver = tsunami_lab::io::Configuration::readFromConfigString("solver");
     l_temp_waveprop = tsunami_lab::io::Configuration::readFromConfigString("wavepropagation");
@@ -319,7 +321,8 @@ int main() {
         tsunami_lab::t_real l_hv = l_setup->getMomentumY( l_x,
                                                           l_y );
         tsunami_lab::t_real l_bv = l_setup->getBathymetry(l_x,
-                                                          l_y );                                       
+                                                          l_y ); 
+                                   
         // set initial values in wave propagation solver
         l_waveProp->setHeight( l_cx,
                               l_cy,
@@ -419,12 +422,13 @@ int main() {
   std::string l_checkPointName = "CheckPoint-" + l_temp_outputfilename;
 
   //create the netCdf file reader/writer
-  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_outputFile);
+  tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_k,l_outputFile);
   
 
   if(l_temp_writer == "netcdf"){
     l_netCdf->fillConstants(l_nx,
                             l_ny,
+                            l_k,
                             l_dxy,
                             l_domain_start_x,
                             l_domain_start_y,
@@ -458,6 +462,7 @@ int main() {
                               l_ny,
                               l_waveProp->getStride(),
                               l_time_step_index,
+                              l_k,
                               l_simTime,
                               l_waveProp->getHeight(),
                               l_waveProp->getMomentumX(),
@@ -486,6 +491,7 @@ int main() {
                                     l_waveProp->getStride(),
                                     l_nx,
                                     l_ny,
+                                    l_k,
                                     l_temp_setup,
                                     tsunami_lab::io::Station::Stringify(),
                                     l_checkPointName,

@@ -17,11 +17,11 @@ tsunami_lab::patches::WavePropagation2d::WavePropagation2d( t_idx i_xCells,t_idx
 
   // allocate memory including a single ghost cell on each side
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
-    m_h[l_st]  = new t_real[ (m_xCells+2) * (m_yCells+2) ];
-    m_hu[l_st] = new t_real[ (m_xCells+2) * (m_yCells+2) ];
-    m_hv[l_st] = new t_real[ (m_xCells+2) * (m_yCells+2) ];
+    m_h[l_st]  = new t_real[ (m_xCells+2) * (m_yCells+2) ]{};
+    m_hu[l_st] = new t_real[ (m_xCells+2) * (m_yCells+2) ]{};
+    m_hv[l_st] = new t_real[ (m_xCells+2) * (m_yCells+2) ]{};
   }
-  m_b = new t_real[(m_xCells+2) * (m_yCells+2)];
+  m_b = new t_real[(m_xCells+2) * (m_yCells+2)]{};
 
   // init to zero
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
@@ -47,13 +47,13 @@ tsunami_lab::patches::WavePropagation2d::~WavePropagation2d() {
 
 void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
   // pointers to old and new data
-  t_real * l_hOld  = m_h[m_step];
+  t_real * l_hOld  = m_h[m_step]; //0
   t_real * l_huOld = m_hu[m_step];
   t_real * l_hvOld = m_hv[m_step];
 
   t_real * l_b  = m_b; 
   m_step = (m_step+1) % 2;
-  t_real * l_hNew =  m_h[m_step];
+  t_real * l_hNew =  m_h[m_step]; //1
   t_real * l_huNew = m_hu[m_step];
   t_real * l_hvNew = m_hv[m_step];
 
@@ -63,21 +63,10 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
     l_huNew[l_ce] = l_huOld[l_ce];
     l_hvNew[l_ce] = l_hvOld[l_ce];
   }
-  setGhostOutflow(true);
-  /*
+  setGhostOutflow(false);
   
-  for(t_idx l_ex = 0; l_ex < m_yCells +1;l_ex++){ 
-    for(t_idx l_ey = 0; l_ey < m_xCells +1;l_ey++){
-      t_real l_netUpdates[2][2];
-      t_idx l_ceL = getIndex(l_ex,l_ey);
-      t_idx l_ceR = getIndex(l_ex,l_ey+1);
-      t_idx l_ceL = getIndex(l_ey,l_ex);
-      t_idx l_ceR = getIndex(l_ey+1,l_ex);
-  
-  
-  */
- for(t_idx l_ey = 0; l_ey < m_yCells +1;l_ey++){ 
-    for(t_idx l_ex = 0; l_ex < m_xCells +1;l_ex++){
+ for(t_idx l_ey = 1; l_ey < m_yCells +1;l_ey++){ 
+    for(t_idx l_ex = 1; l_ex < m_xCells +1;l_ex++){
       t_real l_netUpdates[2][2];
       t_idx l_ceL = getIndex(l_ex,l_ey);
       t_idx l_ceR = getIndex(l_ex+1,l_ey);
@@ -107,23 +96,23 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
     }
 
   }
-  l_hOld  = m_h[m_step];
+  l_hOld  = m_h[m_step]; //l_hOld zeigt nun auf l_hNew
   l_huOld = m_hu[m_step];
   l_hvOld = m_hv[m_step];
   m_step = (m_step+1) % 2;
   l_hNew =  m_h[m_step];
-  l_huNew = m_hu[m_step];
+  l_huNew = m_hu[m_step]; //l_huNew zeigt nun auf die alten werte
   l_hvNew = m_hv[m_step];
 
   for( t_idx l_ce = 0; l_ce < ((m_xCells+2) * (m_yCells+2)); l_ce++ ) {
     l_hNew[l_ce]  = l_hOld[l_ce];
     l_huNew[l_ce] = l_huOld[l_ce];
     l_hvNew[l_ce] = l_hvOld[l_ce];
-  }
-  setGhostOutflow(true);
+  } //da l_hold nun auf die neuen werte zeigt werden die neuen in in hnew geschrieben in den sich die alten werte befinden
+  setGhostOutflow(false);
 
-  for(t_idx l_ex = 0; l_ex < m_xCells +1;l_ex++){
-    for(t_idx l_ey = 0; l_ey < m_yCells +1;l_ey++){
+  for(t_idx l_ex = 1; l_ex < m_xCells +1;l_ex++){
+    for(t_idx l_ey = 1; l_ey < m_yCells +1;l_ey++){
       t_real l_netUpdates[2][2];
 
       t_idx l_ceL = getIndex(l_ex,l_ey);
@@ -150,8 +139,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
       l_hvNew[l_ceL] -= i_scaling * l_netUpdates[0][1];
       l_hNew[l_ceR]  -= i_scaling * l_netUpdates[1][0];
       l_hvNew[l_ceR] -= i_scaling * l_netUpdates[1][1];
-      
-    }
+    }//die berechnungen werden in l_New geschrieben
   }
 }
 

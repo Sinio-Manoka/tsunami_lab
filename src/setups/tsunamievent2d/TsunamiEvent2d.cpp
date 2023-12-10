@@ -6,8 +6,7 @@
 
 tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(const char*  i_bathFile, const char*    i_disFile)
 {
-
-    tsunami_lab::io::NetCdf::read(i_bathFile,"z",m_nx_bat,m_ny_bat,&m_bathymetry_values,&m_bathymetry_x_values,&m_bathymetry_y_values);
+tsunami_lab::io::NetCdf::read(i_bathFile,"z",m_nx_bat,m_ny_bat,&m_bathymetry_values,&m_bathymetry_x_values,&m_bathymetry_y_values);
     for(t_idx i = 0; i < m_nx_bat*m_ny_bat; ++i){
         if(std::isnan(m_bathymetry_values[i])){
             m_bathymetry_values[i] = 0;
@@ -18,7 +17,7 @@ tsunami_lab::setups::TsunamiEvent2d::TsunamiEvent2d(const char*  i_bathFile, con
         if(std::isnan(m_displacement_values[i])){
             m_displacement_values[i] = 0;
         }
-    }    
+    }
     
 }
 
