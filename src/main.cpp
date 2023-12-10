@@ -423,18 +423,21 @@ int main() {
 
   //create the netCdf file reader/writer
   tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_k,l_outputFile);
+ /* 
+  const tsunami_lab::t_real * test = l_waveProp->getBathymetry();
+  std::cout <<"der wert ist "<<test[33*l_waveProp->getStride()+2]<<std::endl;
+  delete[] test;*/
   
-
   if(l_temp_writer == "netcdf"){
     l_netCdf->fillConstants(l_nx,
                             l_ny,
                             l_k,
+                            l_waveProp->getStride(),
                             l_dxy,
                             l_domain_start_x,
                             l_domain_start_y,
-                            l_waveProp->getStride(),
                             l_waveProp->getBathymetry(),
-                            l_outputFile);
+                            l_outputFile);                   
   }
   while( l_simTime < l_temp_endtime ){
     l_waveProp->setGhostOutflow(false);

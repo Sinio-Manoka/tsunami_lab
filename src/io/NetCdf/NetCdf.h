@@ -52,6 +52,7 @@ class tsunami_lab::io::NetCdf {
                                   t_idx i_k,
                                   t_idx i_stride,
                                   t_idx i_time_step,
+                                  bool twoDimensionsOnly,
                                   int m_varId,
                                   int l_ncId);
 

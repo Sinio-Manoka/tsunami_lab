@@ -12,7 +12,7 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                             t_idx                   i_k,
                                             t_idx                   i_stride,
                                             t_real                  i_dxy,
-                                            t_real                  i_l_domainstart_y_Id,
+                                            t_real                  i_domainstart_x,
                                             t_real                  i_domainstart_y,
                                             t_real          const * i_b,
                                             const char*           filename){
@@ -37,38 +37,18 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     delete[] l_coordinateY;
     for(t_idx l_ix = 0; l_ix < result_x; l_ix++) 
     {
-        l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dxy * i_k)+ i_l_domainstart_y_Id;
+        l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dxy * i_k)+ i_domainstart_x;
     }
     // put x coordinates
     l_err = nc_put_var_float(l_ncId, m_varIdX, l_coordinateX);
     checkNcErr(l_err,__FILE__, __LINE__);
     delete[] l_coordinateX;
 
-    t_real *l_temp_data_bathymetry = new t_real[(result_x) * (result_y)]{};
-
-    for (t_idx l_iy = 0; l_iy < result_y; l_iy++) // für y wert neues feld
-    {
-        for (t_idx l_ix = 0; l_ix < result_x; l_ix++) // für x wert neues feld
-        {
-            for (t_idx l_jy = 0 ; l_jy < i_k; l_jy++) // iterator von 0 bis k um von l_iy and zu zählen
-            {
-                for (t_idx l_jx = 0; l_jx < i_k; l_jx++) // iterator von 0 bis k um von l_ix and zu zählen
-                {   
-                    l_temp_data_bathymetry[l_iy * (result_x) + l_ix] += i_b[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)];
-                }
-            }
-            l_temp_data_bathymetry[l_iy * (result_x) + l_ix] /= (i_k * i_k);
-        }
-    }
-    
     // put bathymetry values
-    l_err = nc_put_var_float(l_ncId, m_varIdBathymetry, l_temp_data_bathymetry);
-    checkNcErr(l_err,__FILE__, __LINE__);
-
-    delete[] l_temp_data_bathymetry;
+    makeLowerResGrid(i_b, i_nx, i_ny, i_k, i_stride,1,true, m_varIdBathymetry, l_ncId);
 
     l_err = nc_close(l_ncId);
-    checkNcErr(l_err,__FILE__, __LINE__);
+    checkNcErr(l_err,__FILE__, __LINE__);       
 
 }
 
@@ -127,7 +107,7 @@ void tsunami_lab::io::NetCdf::read( const char* i_filename,
 
 }
 
-void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
+void tsunami_lab::io::NetCdf::updateFile(t_idx               i_nx,
                                         t_idx                i_ny,
                                         t_idx                i_stride,
                                         t_idx                i_time_step,
@@ -142,9 +122,9 @@ void tsunami_lab::io::NetCdf::updateFile(t_idx                i_nx,
     l_err = nc_open(filename,NC_WRITE,&l_ncId); 
     checkNcErr(l_err,__FILE__, __LINE__);
 
-    makeLowerResGrid( i_h, i_nx, i_ny, i_k, i_stride, i_time_step, m_varIdHeight, l_ncId);
-    makeLowerResGrid(i_hu, i_nx, i_ny, i_k, i_stride, i_time_step, m_varIdImpulseX, l_ncId);
-    makeLowerResGrid(i_hv, i_nx, i_ny, i_k, i_stride, i_time_step, m_varIdImpulseY, l_ncId);
+    makeLowerResGrid( i_h, i_nx, i_ny, i_k, i_stride, i_time_step,false, m_varIdHeight, l_ncId);
+    makeLowerResGrid(i_hu, i_nx, i_ny, i_k, i_stride, i_time_step,false, m_varIdImpulseX, l_ncId);
+    makeLowerResGrid(i_hv, i_nx, i_ny, i_k, i_stride, i_time_step,false, m_varIdImpulseY, l_ncId);
 
     //time step is how many timesteps there are and i_time what simtime it is
     l_err = nc_put_var1_float(l_ncId, m_varIdTime, &i_time_step, &i_time);
@@ -160,9 +140,10 @@ void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
                                                 t_idx i_k,
                                                 t_idx i_stride,
                                                 t_idx i_time_step,
+                                                bool twoDimensionsOnly,
                                                 int m_varId,
                                                 int l_ncId) {
-    //std::cout<< i_k << std::endl;
+
     t_idx result_x = i_nx / i_k;
     t_idx result_y = i_ny / i_k;
     std::vector<t_real> grid(result_x * result_y);
@@ -175,16 +156,29 @@ void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
             {
                 for (t_idx l_jx = 0; l_jx < i_k; l_jx++) // iterator von 0 bis k um von l_ix and zu zählen
                 {  
-                     grid[l_iy * result_x + l_ix] += oldgrid[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)];
-                } 
+                    
+                    //std::cout <<"index : ["<<(l_iy * i_k + l_jy+1)<<" | "<< (l_ix * i_k + l_jx+1)<<"]     Wert vom oldgrid:  "<<oldgrid[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)]<<std::endl;
+                    grid[l_iy * result_x + l_ix] += oldgrid[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)];
+                }
             }
             grid[l_iy * result_x + l_ix] /= (i_k * i_k);
         }
     }
 
-    std::vector<size_t> l_startp     = {i_time_step,0,0};
-    std::vector<size_t> l_endp       = {1,result_y,result_x};
-    std::vector<ptrdiff_t> l_stridep = {1,1,1}; //no elements get skipped
+    //std::cout << i_time_step <<" "<< twoDimensionsOnly <<" "<< m_varId<<" "<<l_ncId<< std::endl;
+    std::vector<size_t> l_startp;
+    std::vector<size_t> l_endp;
+    std::vector<ptrdiff_t> l_stridep;
+    if(twoDimensionsOnly)
+    {
+        l_startp     = {0,0};
+        l_endp      = {result_y,result_x};
+        l_stridep = {1,1};
+    } else {
+        l_startp     = {i_time_step,0,0};
+        l_endp      = {1,result_y,result_x};
+        l_stridep = {1,1,1}; 
+    }
     int l_err;
     l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), grid.data());
     checkNcErr(l_err,__FILE__, __LINE__);

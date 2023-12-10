@@ -1,3 +1,4 @@
+
 /*#include <catch2/catch.hpp>
 #include "../../constants.h"
 #include <sstream>
@@ -14,9 +15,9 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     tsunami_lab::t_real l_hv[10] = { 6, 5, 4, 3, 2, 1, 0 ,7, 8 ,5};
     tsunami_lab::t_real l_b[10]  = { 0, 0, 0, 0, 0, 0, 0 ,7, 8 ,5};
 
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,2,"testsFiles/test.nc");
-    l_netCdf->fillConstants(5,2,1,-50,-50,0,l_b,"testsFiles/test.nc");
-    l_netCdf->updateFile(5,2,1,0,1,l_h,l_hu,l_hv,"testsFiles/test.nc");
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,1,"testsFiles/test.nc");
+    l_netCdf->fillConstants(5,2,1,7,0.5,-50,-50,l_b,"testsFiles/test.nc");
+    l_netCdf->updateFile(5,2,1,0,1,1,l_h,l_hu,l_hv,"testsFiles/test.nc");
     int l_err;
     int l_ncidp;
     int  l_dimXId,l_dimYId,l_TimeId;
@@ -186,7 +187,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
                                               0,0};
 
 
-    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(2,2,"testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc");
+    tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(2,2,1,"testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc");
     REQUIRE(std::filesystem::exists("testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc"));
     
     std::string folder_path = "outputs";
@@ -196,7 +197,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     if (!std::filesystem::exists(l_check_point_path)) std::filesystem::create_directory(l_check_point_path);
 
 
-    l_netCdf->createCheckPoint("fwave",1,2,3,4,5,6,7,10,3,l_b,l_h,l_hu,l_hv,1,4,2,2,"test2","test3","CheckpointsTest.nc","test5","test6");
+    l_netCdf->createCheckPoint("fwave",1,2,3,4,5,6,7,10,3,l_b,l_h,l_hu,l_hv,1,4,2,2,1,"test2","test3","CheckpointsTest.nc","test5","test6");
     REQUIRE(std::filesystem::exists("outputs/cp/CheckpointsTest.nc"));
     tsunami_lab::t_real *l_ha; 
     tsunami_lab::t_real *l_ba ;
@@ -215,16 +216,16 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     tsunami_lab::t_idx  o_time_step_index;
     tsunami_lab::t_idx  o_nx;
     tsunami_lab::t_idx  o_ny;
+    tsunami_lab::t_idx  o_k;
     std::string  o_setup ;
     std::string  o_stations_string;
     std::string  o_disfile;
     std::string  o_batfile;
 
-
     tsunami_lab::io::NetCdf::readCheckPoint("outputs/cp/CheckpointsTest.nc",&solver,&o_domain_start_x,
     &o_domain_start_y,&o_dimension_x,&o_dimension_y,&o_endtime,&o_simTime,&o_frequency, &o_dt,&o_simulation_time_for_last_cp,
     &l_ba,&l_ha,&l_hua,
-    &l_hva,&o_time_step_index,&o_nx,&o_ny,&o_setup,&o_stations_string,
+    &l_hva,&o_time_step_index,&o_nx,&o_ny,&o_k,&o_setup,&o_stations_string,
     &o_disfile,&o_batfile);
 
     REQUIRE(o_nx == 2);

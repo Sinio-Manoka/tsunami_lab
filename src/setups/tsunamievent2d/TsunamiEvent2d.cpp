@@ -60,7 +60,6 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetry( t_real i
             return l_batNetCdf + displacement(i_x, i_y);
         }
     }
-
 }
 
 tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::displacement( t_real i_x,t_real i_y) const {
