@@ -1,5 +1,6 @@
 
 #include <catch2/catch.hpp>
+#include <catch2/catch.hpp>
 #include "../../constants.h"
 #include <sstream>
 #include <vector>
@@ -165,6 +166,8 @@ TEST_CASE("Test the NetCdf-writer", "[NetCdfWrite]")
     delete l_netCdf;
     std::string path = "testsFiles/test.nc";
     remove(path.c_str());
+    std::string path = "testsFiles/test.nc";
+    remove(path.c_str());
 }
 
 TEST_CASE("Test the NetCdf-reader ", "[NetCdfreader]")
@@ -311,6 +314,11 @@ TEST_CASE("Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]")
     delete l_netCdf;
 
     std::string path = "outputs/cp/CheckpointsTest.nc";
+    remove(path.c_str());
+    path = "testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc";
+    remove(path.c_str());
+
+    std::string path = "outputs/cp/CheckpointsTest.nc" ;
     remove(path.c_str());
     path = "testsFiles/testCheckPoint(the_test_is_in_output_cp_folder).nc";
     remove(path.c_str());

@@ -50,7 +50,7 @@ l_tests = [ 'tests.cpp',
             'io/NetCdf/NetCdf.test.cpp'
             ]
             
-            #'io/NetCdf/NetCdf.test.cpp'
+            
 
 
 for l_te in l_tests:

@@ -85,6 +85,23 @@ void checkAndDeleteMismatchedFiles() {
   }
 }
 
+std::string generateNewName( std::string name,  std::string filePath) {
+    std::string newName = name;
+    std::string fullPath = filePath + newName;
+
+    int counter = 1;
+    while (std::ifstream(fullPath)) {
+        std::ostringstream oss;
+        oss << name.substr(0, name.find_last_of(".")) << "_" << counter << name.substr(name.find_last_of("."));
+        newName = oss.str();
+        fullPath = filePath + newName;
+        counter++;
+    }
+
+    return newName;
+}
+
+
 int main() {
   tsunami_lab::t_idx l_nx = 0;
   tsunami_lab::t_idx l_ny = 1;
@@ -132,6 +149,9 @@ int main() {
 
   bool l_use_cp = tsunami_lab::io::Configuration::readFromConfigBoolean("usecheckpoint");
   std::string l_temp_outputfilename = tsunami_lab::io::Configuration::readFromConfigString("outputfilename");
+  if(!l_use_cp){
+   l_temp_outputfilename = generateNewName(l_temp_outputfilename,"outputs/");
+  }
   std::string l_temp_outputfile =  "outputs/" + l_temp_outputfilename;
   tsunami_lab::setups::Setup *l_setup = nullptr;
   std::string l_temp_setup,l_temp_solver,l_temp_waveprop,l_temp_bathFile,l_temp_disFile,l_temp_writer;

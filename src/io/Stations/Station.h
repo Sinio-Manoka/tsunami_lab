@@ -37,8 +37,23 @@ class tsunami_lab::io::Station{
                       tsunami_lab::t_real             i_water_hu,
                       tsunami_lab::t_real             i_water_hv,
                       std::string                     i_csv_path);
+    /**
+    * @brief resets a station file to the last Checkpoint.
+    *
+    * This function resets the station to the last checkpoint and writes the station data to a CSV file specified
+    * by the provided path.
+    *
+    * @param simulation_time    The time where the station will be reseted too.
+    * @param csv_file_path      The path to the CSV file to which the station data will be reseted.
+    */
     static void updateStation(t_real simulation_time, std::string csv_file_path);
 
+    /**
+    * @brief Converts the station data (json) to a string.
+    *
+    * This function converts the station data (json) to a string and then returns it.
+    * @return Json as a string.
+    */
     static std::string Stringify();
 
 };
