@@ -90,9 +90,9 @@ class tsunami_lab::io::NetCdf {
     
     /**
      * @brief  fills a NetCDF file with bathymetry data, generating X and Y coordinates based on input parameters 
-     * 
      * @param i_nx amount of cells in x direction.
      * @param i_ny amount of cells in y direction.
+     * @param i_k  reduction in the output quantity
      * @param i_dxy width of a cell.
      * @param i_domainstart_x offset in x direction.
      * @param i_domainstart_y offset in y direction.
@@ -127,7 +127,32 @@ class tsunami_lab::io::NetCdf {
                       t_real ** o_ydata);
     
 
-
+    /**
+     * @brief Generate and establish a checkpoint for the output file.
+     * @param i_solver: type of solver.
+     * @param i_domain_start_x: offset in x direction.
+     * @param i_domain_start_y: offset in y direction.
+     * @param i_endtime: end time for our simulation.
+     * @param i_simTime: simulation time.
+     * @param i_frequency: frequency of the station.
+     * @param i_dt: l_dt = 0.50 * width / speedMax;
+     * @param i_simulation_time_for_last_cp Final simulation time for the station in relation to the checkpoint.
+     * @param i_b: Values of bathymetry.
+     * @param i_h: Values of height.
+     * @param i_hu: X-direction momentum values.
+     * @param i_hv: Y-direction momentum values.
+     * @param i_time_step_index: The last timestep in relation to the checkpoint.
+     * @param i_stride: amount of cells in x direction + ghostzells (2).
+     * @param i_nx: amount of cells in x direction.
+     * @param i_ny: amount of cells in y direction.
+     * @param i_k : summarizes i_k*i_k to a new cell.
+     * @param i_setup: Type of setup.
+     * @param i_stations_string: All the stations.
+     * @param i_name_cp: Names of the checkpoint and output.
+     * @param i_disfile: File path for displacement.
+     * @param i_batfile: File path for bathymetry.
+    */
+   
     void createCheckPoint(std::string i_solver,
                           t_real i_domain_start_x,
                           t_real i_domain_start_y,
@@ -153,6 +178,32 @@ class tsunami_lab::io::NetCdf {
                           std::string i_disfile,
                           std::string i_batfile
                           );
+
+  /**
+     * @brief Parsing the checkpoint NC file.
+     * @param i_path_cp:  Checkpoint file path.
+     * @param o_solver: type of solver.
+     * @param o_domain_start_x: offset in x direction.
+     * @param o_domain_start_y: offset in y direction.
+     * @param o_endtime: end time for our simulation.
+     * @param o_simTime: simulation time.
+     * @param o_frequency: frequency of the station.
+     * @param o_dt: l_dt = 0.50 * width / speedMax;
+     * @param o_simulation_time_for_last_cp Final simulation time for the station in relation to the checkpoint.
+     * @param o_b: Values of bathymetry.
+     * @param o_h: Values of height.
+     * @param o_hu: X-direction momentum values.
+     * @param o_hv: Y-direction momentum values.
+     * @param o_time_step_index: The last timestep in relation to the checkpoint.
+     * @param o_stride: amount of cells in x direction + ghostzells (2).
+     * @param o_nx: amount of cells in x direction.
+     * @param o_ny: amount of cells in y direction.
+     * @param i_k : summarizes i_k*i_k to a new cell.
+     * @param o_setup: Type of setup.
+     * @param o_stations_string: All the stations.
+     * @param o_disfile: File path for displacement.
+     * @param o_batfile: File path for bathymetry.
+    */
   static void readCheckPoint(std::string i_path_cp,
                         std::string * o_solver,
                         t_real * o_domain_start_x,

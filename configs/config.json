@@ -17,8 +17,8 @@
     "wavepropagation" : "2d",
     "endtime" : 20,
     "writer" : "netcdf",
-    "bathfile" : "data/tohoku_gebco20_ucsb3_250m_bath.nc",
-    "disfile" : "data/tohoku_gebco20_ucsb3_250m_displ.nc",
+    "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
+    "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc",
     "outputfilename": "dashier.nc",
     "usecheckpoint" : false
 }

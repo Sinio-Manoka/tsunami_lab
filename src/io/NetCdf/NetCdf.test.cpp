@@ -1,11 +1,12 @@
 
-/*#include <catch2/catch.hpp>
+#include <catch2/catch.hpp>
 #include "../../constants.h"
 #include <sstream>
 #include <vector>
 #define private public
 #include "NetCdf.h"
 #include <filesystem>
+#include <cstdio> 
 #undef public
 
 TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
@@ -13,7 +14,7 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     tsunami_lab::t_real l_h[10]  = { 0, 1, 2, 3, 4, 5, 6 ,7, 8 ,5};
     tsunami_lab::t_real l_hu[10] = { 6, 5, 4, 3, 2, 1, 0 ,7, 8 ,5};
     tsunami_lab::t_real l_hv[10] = { 6, 5, 4, 3, 2, 1, 0 ,7, 8 ,5};
-    tsunami_lab::t_real l_b[10]  = { 0, 0, 0, 0, 0, 0, 0 ,7, 8 ,5};
+    tsunami_lab::t_real l_b[10]  = { 0, 0, 0, 0, 0, 0, 0 ,0, 0 ,0};
 
     tsunami_lab::io::NetCdf* l_netCdf = new tsunami_lab::io::NetCdf(5,2,1,"testsFiles/test.nc");
     l_netCdf->fillConstants(5,2,1,7,0.5,-50,-50,l_b,"testsFiles/test.nc");
@@ -92,14 +93,14 @@ TEST_CASE( "Test the NetCdf-writer", "[NetCdfWrite]" ) {
     l_err = nc_get_var_float(l_ncidp, l_vBId, &bathymetry[0]);
     l_netCdf->checkNcErr(l_err,__FILE__, __LINE__);
 
-    REQUIRE(x[0] == Approx(-49.5));
-    REQUIRE(x[1] == Approx(-48.5));
-    REQUIRE(x[2] == Approx(-47.5));
-    REQUIRE(x[3] == Approx(-46.5));
-    REQUIRE(x[4] == Approx(-45.5));
+    REQUIRE(x[0] == Approx(-49.75));
+    REQUIRE(x[1] == Approx(-49.25f));
+    REQUIRE(x[2] == Approx(-48.75f));
+    REQUIRE(x[3] == Approx(-48.25f));
+    REQUIRE(x[4] == Approx(-47.75f));
 
-     REQUIRE(y[0] == Approx(-49.5));
-     REQUIRE(y[1] == Approx(-48.5));
+     REQUIRE(y[0] == Approx(-49.75f));
+     REQUIRE(y[1] == Approx(-49.25f));
 
 
     REQUIRE(time[0] == Approx(1));
@@ -258,4 +259,7 @@ TEST_CASE( "Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]" ) {
     delete[] l_hva;
     delete[] l_hua;
     delete l_netCdf;
+
+    std::string path = "outputs/cp/CheckpointsTest.nc" ;
+    remove(path.c_str());
 }
