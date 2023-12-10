@@ -1,4 +1,5 @@
-{
+    {
+
     "solver" : "fwave",
     "dimension_x" : 2700000,
     "dimension_y" : 1500000,
