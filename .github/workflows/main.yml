@@ -28,7 +28,9 @@ jobs:
           sudo apt-get install cppcheck
           sudo apt-get install zlib1g-dev libhdf5-dev libnetcdf-dev
           git submodule init 
-          git submodule update 
+          git submodule update
+          npm install
+          npm install -g firebase-tools
 
       - name: Static Code Analysis
         run:
