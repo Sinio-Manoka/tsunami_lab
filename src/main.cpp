@@ -92,7 +92,6 @@ void checkAndDeleteMismatchedFiles() {
         std::string checkpointFilePath = l_check_point_path + "/CheckPoint-" + outputFileName;
          if (!std::filesystem::exists(checkpointFilePath)) {
             std::filesystem::remove(outputFile.path());
-            std::cout << "Deleted: " << outputFile.path() << std::endl;
         }
       }
        
@@ -590,7 +589,7 @@ int main() {
         if (!std::filesystem::exists(l_foldername)){
           std::filesystem::create_directory(l_foldername);
         }
-        //compute cell IDs
+        //compute cell ID
         tsunami_lab::t_idx l_ix = ((station.i_x - l_domain_start_x ) / l_dxy )+ l_waveProp->getGhostcellX();
         tsunami_lab::t_idx l_iy = ((station.i_y - l_domain_start_y ) / l_dxy )+ l_waveProp->getGhostcellY();
         if(l_temp_waveprop == "1d"){
@@ -601,13 +600,25 @@ int main() {
         const tsunami_lab::t_real* l_water_hu =  l_waveProp->getMomentumX();
         const tsunami_lab::t_real* l_water_hv =  l_waveProp->getMomentumY();
         std::string l_station_path = l_foldername +"/"+ station.i_name+".csv";
+        if(l_temp_waveprop == "2d"){
         tsunami_lab::io::Station::write(l_ix,
                                         l_iy,
                                         l_simTime,
                                         l_water_height[l_id],
                                         l_water_hu[l_id],
                                         l_water_hv[l_id],
-                                        l_station_path);
+                                        l_station_path,
+                                        l_temp_waveprop);
+        }else{
+          tsunami_lab::io::Station::write(l_ix,
+                                        l_iy,
+                                        l_simTime,
+                                        l_water_height[l_id],
+                                        l_water_hu[l_id],
+                                        -1,
+                                        l_station_path,
+                                        l_temp_waveprop);
+        }
       }
       l_last_simTime_time = l_simTime;
       l_current_frequency_time = l_current_frequency_time + l_frequency;

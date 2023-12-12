@@ -36,7 +36,8 @@ class tsunami_lab::io::Station{
                       tsunami_lab::t_real             i_water_height,
                       tsunami_lab::t_real             i_water_hu,
                       tsunami_lab::t_real             i_water_hv,
-                      std::string                     i_csv_path);
+                      std::string                     i_csv_path,
+                      std::string i_dim);
     /**
     * @brief resets a station file to the last Checkpoint.
     *
