@@ -644,15 +644,15 @@ int main() {
   std::cout << "total duration: " << std::endl;
   printDuration(l_duration);
   std::cout << "loop duration: " << std::endl;
-  printDuration(l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting);
+  printDuration(l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting-l_durationWritingConstat);
   std::cout << "Station: " << std::endl;
   printDuration(l_durationWritingStation);
   std::cout << "Checkpoint: " << std::endl;
   printDuration(l_durationWritingCheckpoint);
   std::cout << "time per cell: " << std::endl;
-  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting)/(l_nx * l_ny));
+  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting-l_durationWritingConstat)/(l_nx * l_ny));
   std::cout << "time per iteration: " << std::endl;
-  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting)/(l_timeStep * l_nx * l_ny));
+  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting-l_durationWritingConstat)/(l_timeStep * l_nx * l_ny));
 
 
 
