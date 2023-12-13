@@ -194,6 +194,8 @@ int main() {
   std::chrono::nanoseconds l_durationWriting = std::chrono::nanoseconds::zero();
   std::chrono::nanoseconds l_durationWritingStation = std::chrono::nanoseconds::zero();
   std::chrono::nanoseconds l_durationWritingCheckpoint = std::chrono::nanoseconds::zero();
+  std::chrono::nanoseconds l_durationWritingConstat = std::chrono::nanoseconds::zero();
+  
 
   tsunami_lab::t_real *l_cp_b = nullptr;
   tsunami_lab::t_real *l_cp_h = nullptr;
@@ -495,7 +497,7 @@ int main() {
                             l_waveProp->getBathymetry(),
                             l_outputFile);
     auto l_endWritingCostant = std::chrono::high_resolution_clock::now();
-    auto l_durationWritingConstat =  l_endWritingCostant  - l_startWritingCostant ;            
+    l_durationWritingConstat =  l_endWritingCostant  - l_startWritingCostant ;            
   }
 
   while( l_simTime < l_temp_endtime ){
@@ -644,15 +646,15 @@ int main() {
   std::cout << "total duration: " << std::endl;
   printDuration(l_duration);
   std::cout << "loop duration: " << std::endl;
-  printDuration(l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting-l_durationWritingConstat);
+  printDuration(l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstat);
   std::cout << "Station: " << std::endl;
   printDuration(l_durationWritingStation);
   std::cout << "Checkpoint: " << std::endl;
   printDuration(l_durationWritingCheckpoint);
   std::cout << "time per cell: " << std::endl;
-  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting-l_durationWritingConstat)/(l_nx * l_ny));
+  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstat)/(l_nx * l_ny));
   std::cout << "time per iteration: " << std::endl;
-  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting-l_durationWritingConstat)/(l_timeStep * l_nx * l_ny));
+  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstat)/(l_timeStep * l_nx * l_ny));
 
 
 
