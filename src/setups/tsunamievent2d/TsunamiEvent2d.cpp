@@ -103,7 +103,7 @@ tsunami_lab::t_real tsunami_lab::setups::TsunamiEvent2d::getBathymetryNetCdf(t_r
 
 tsunami_lab::t_idx tsunami_lab::setups::TsunamiEvent2d::findClosestIndex(const t_real* arr,size_t size, t_real value) const {
 
-    if(arr == nullptr) return -1;
+ 
 
     if (size == 0) {
         return 0; 
