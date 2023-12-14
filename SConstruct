@@ -25,11 +25,11 @@ vars.AddVariables(
                  ),
     BoolVariable('use_icpc',
                  'Use Intel C++ Compiler (icpc)',
-                 True
+                 False
                  ),
     BoolVariable('use_report',
                  'Enable compiler optimization report',
-                 True  # Set the default value to False; adjust as needed
+                 False  # Set the default value to False; adjust as needed
                  )
 )
 
@@ -75,7 +75,9 @@ if 'san' in  env['mode']:
 if env['use_icpc']:
     env.Replace(CXX='/opt/intel/oneapi/compiler/2023.2.2/linux/bin/intel64/icpc')
     print("Selected Compiler: Intel C++ Compiler (icpc)")
-
+else:
+    env.Replace(CXX='/usr/bin/g++')
+    print("Selected Compiler: GNU")
      
 
 if env['use_report']:
