@@ -29,7 +29,7 @@ vars.AddVariables(
                  ),
     BoolVariable('use_report',
                  'Enable compiler optimization report',
-                 False  # Set the default value to False; adjust as needed
+                 True  # Set the default value to False; adjust as needed
                  )
 )
 
@@ -75,14 +75,15 @@ if 'san' in  env['mode']:
 if env['use_icpc']:
     env.Replace(CXX='/opt/intel/oneapi/compiler/2023.2.2/linux/bin/intel64/icpc')
     print("Selected Compiler: Intel C++ Compiler (icpc)")
-      
+
+     
 
 if env['use_report']:
   if not env['use_icpc']:
-      print("Warning: Cannot generate report because you are running the code on the GNU Compiler.")
+    print("Warning: Cannot generate report because you are running the code on the GNU Compiler.")
   else:
-      env.Append(CXXFLAGS=['-qopt-report=5'])
-      print("the report is in the build folder")   
+    env.Append(CXXFLAGS=['-qopt-report=5'])
+    print("the report is in the build folder")   
 
 
 env.Append(LIBS=['netcdf'])
@@ -102,7 +103,6 @@ env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
 # add nlohmann json 
 env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
 
-env.Append( CXXFLAGS = [ '-qopt-report=5' ] )
 
 env.Append(LIBPATH=['/home/winter/tools/netcdf/include'])
 
