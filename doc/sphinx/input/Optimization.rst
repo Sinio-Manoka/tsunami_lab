@@ -6,7 +6,7 @@ Optimization
 ARA
 ---
 
-Upload your code and Ch. 6’s input data to the cluster. Compile your code on the cluster
+Upload your code and Ch. 6s input data to the cluster. Compile your code on the cluster
 ........................................................................................
 
 
@@ -290,23 +290,14 @@ We encounter this error when attempting to append the NetCDF, HDF5, and zlib to 
    Did not find netcdf.h, exiting!
 
 
-to build the project with a custom compiler :
-
-
+to build the project with a custom compiler:
 
 .. code-block:: shell
    
    scons custom_cxx=/opt/intel/oneapi/compiler/2023.2.2/linux/bin/intel64/icpc use_report=True
 
-
-
-
-The ``custom_cxx`` option is used to specify the compiler by providing its path. Meanwhile, ``use_report ``
+The ``custom_cxx`` option is used to specify the compiler by providing its path. Meanwhile, ``use_report``
 is utilized to determine whether to generate a report, which is only available when utilizing the Intel compiler.
-
-
-
-
 
    
 Run different scenarios using interactive and batch jobs
@@ -809,12 +800,11 @@ time per iteration:
 
 .. list-table:: Title
    :widths: 25 25 50
-   :header-rows: 1
+   :header-rows: 4
 
    * - Flags
      - GNU Compiler
      - Intel Compiler
-     - Time per iteration
    * - -O0
      - 98 nanoseconds
      - error
@@ -888,23 +878,21 @@ Floating-point precision: Some optimization flags may alter the default floating
 For example, flags like -ffast-math may sacrifice precision for speed by allowing the compiler to use less accurate, but faster, floating-point operations.
 
 
-**Vectorization:**
-
-Vectorization: Flags that enable vectorization can improve performance by allowing the compiler to use SIMD
-(Single Instruction, Multiple Data) instructions. However, this may introduce subtle differences in numerical results due to the use of vectorized operations.
-
-
 **Math Library Replacement:**
 
 Libm replacement: Some compilers allow replacing the standard math library functions
 with potentially faster, but less accurate, implementations. This can impact the accuracy of mathematical computations.
 
 
-Here are a few optimization flags that may impact numerical accuracy:
+**Here are a few optimization flags that may impact numerical accuracy:**
 
 -ffast-math:  flag enables additional optimizations that may violate strict mathematical rules. It can result in faster code but may sacrifice numerical accuracy.
 
+-funsafe-math-optimizations: Similar to -ffast-math, this flag enables additional optimizations that may violate strict mathematical rules. 
+It can result in faster code but may sacrifice numerical accuracy.
 
+-fassociative-math: This flag allows the compiler to associate floating-point operations, potentially changing the order of operations.
+While it can enhance performance, it might introduce small differences in results due to changes in the order of evaluation.
 
 
 Intel compilers option
@@ -1023,7 +1011,7 @@ now lets see the vectorization:
 
 In the context of WavePropagation2D, it becomes apparent that the loop was not successfully vectorized by our compiler.
 
-.. code-block:: cpp
+.. code-block:: shell
 
    LOOP BEGIN at build/src/patches/wavepropagation2d/WavePropagation2d.cpp(19,3)
       remark #15382: vectorization support: call to function __cxa_throw_bad_array_new_length() cannot be vectorized   [ build/src/patches/wavepropagation2d/WavePropagation2d.cpp(20,55) ]
@@ -1056,7 +1044,7 @@ In the context of WavePropagation2D, it becomes apparent that the loop was not s
 
 Now, let's examine whether the compiler successfully vectorized the extensive loops in the NetCDF code.
 
-.. code-block:: cpp 
+.. code-block:: shell
 
    LOOP BEGIN at build/src/patches/wavepropagation2d/WavePropagation2d.cpp(68,2)
    remark #15523: loop was not vectorized: loop control variable l_ey was found, but loop iteration count cannot be computed before executing the loop
@@ -1064,8 +1052,8 @@ Now, let's examine whether the compiler successfully vectorized the extensive lo
    LOOP BEGIN at build/src/patches/wavepropagation2d/WavePropagation2d.cpp(69,5)
       remark #15523: loop was not vectorized: loop control variable l_ex was found, but loop iteration count cannot be computed before executing the loop
       remark #25456: Number of Array Refs Scalar Replaced In Loop: 1
+      LOOP END
    LOOP END
-LOOP END
 
 
 
@@ -1132,9 +1120,30 @@ The function that proved to be the most time-consuming was ``Netupdate``, along 
 was that the decompose function also turned out to be a significant time-consuming component.
 Finally, it's worth noting that the role of ``getBathymetryNetcdf`` in the TsunamiEvent2d had a relatively minor impact on resource consumption. This outcome was unexpected, as I had anticipated that the operation of reading bathymetry data would be more resource-intensive compared to the ``getBathymetryNetcdf`` .
 
+finally let's begin by conducting a Thread analysis:
+
+.. image:: _static/Thread_analysis.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
+In the analysis, we observe that the thread oversubscription becomes
+negligible when considering only the causes leading to it. The effective CPU utilization is approximately 1.4%. This metric gauges
+how efficiently the application makes use of the available CPUs, offering insights into the parallel efficiency. It is important to note that
+the CPU utilization metric is solely based on effective time and excludes spin and overhead time. A 100% CPU utilization implies that all logical CPUs are
+fully engaged in the application's computations.
+The low metric value in our analysis can be attributed to thread/process underutilization. By employing multithreading, there is potential to enhance performance,
+as indicated by the possibility of achieving a better utilization of resources.
 
 
 
+
+
+Think about how you could improve the performance of your code
+...............................................................
 
 
 Personal Contribution
