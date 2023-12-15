@@ -41,17 +41,23 @@ To compile our code, we utilized an sbatch script, necessitating adjustments to 
    #SBATCH --mail-type=BEGIN,END,FAIL
 
    # Load modules 
-   module load tools/python/3.8
-   module load compiler/gcc/11.2.0
-   module load compiler/intel/2020-Update2
-   module load libs/hdf5/1.10.8-gcc-10.2.0
-   module load libs/zlib/1.2.11-intel-2018
-   module load libs/netcdf/4.6.1-intel-2018
-   python3.8 -m pip install --user scons
+      module load tools/python/3.8
+      module load compiler/gcc/11.2.0
+      module load compiler/intel/2020-Update2
+      module load libs/hdf5/1.10.8-gcc-10.2.0
+      module load libs/zlib/1.2.11-intel-2018
+      module load libs/netcdf/4.6.1-intel-2018
+      python3.8 -m pip install --user scons
 
-   date
-   scons
-   ./build/tsunami_lab
+      date
+      cd /beegfs/ni57qip/tsunami_lab
+      scons custom_cxx=/cluster/spack/opt/spack/linux-centos7-broadwell/gcc-10.2.0/gcc-11.2.0-c27urtyjryzoyyqfms5m3ewi6vrtvt44/bin/gcc use_report=false
+      ./build/tsunami_lab
+
+
+
+
+
 
 
 in the sconstruct we had to add pathes fo the compiler to it.
@@ -199,6 +205,14 @@ we tried to load the intel compiler but everytime we load it we get a netcdf err
    env.Program( target = 'build/tests',
                source = env.sources + env.tests )
 
+on the cluster we just changed the pathes of the netcdf to:
+
+
+.. code-block:: python
+
+   conf = Configure(env)
+   if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
+   exit(1)
 
 
 
@@ -264,7 +278,6 @@ We encounter this error when attempting to append the NetCDF, HDF5, and zlib to 
 
    conf = Configure(env)
    if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
-   print('Did not find netcdf.h, exiting!')
    exit(1)
 
 
@@ -279,7 +292,6 @@ We encounter this error when attempting to append the NetCDF, HDF5, and zlib to 
 
 to build the project with a custom compiler :
 
- 
 
 
 .. code-block:: shell
@@ -1062,7 +1074,65 @@ Indeed, it is evident that the compiler was unable to vectorize the large loop.
 
 
 Vtune
-......
+------
+
+We utilized the GCC compiler with the -O2 flag to compile our code on the cluster for Vtune analysis, and subsequently examined the results locally.
+
+the slurm script we used :
+
+.. code-block:: shell 
+
+   #!/bin/bash
+   #SBATCH --job-name=tsunami
+   #SBATCH --output=tsunami_output.txt
+   #SBATCH --error=tsunami_error.txt
+   #SBATCH --partition=s_hadoop
+   #SBATCH --nodes=1
+   #SBATCH --ntasks=1
+   #SBATCH --time=10:00
+   #SBATCH --cpus-per-task=72
+
+
+   # Set the email address where notifications should be sent.
+   #SBATCH --mail-user=minawe.mohamad.khaled@uni-jena.de
+
+   # Specify the types of email notifications you want to receive.
+   #SBATCH --mail-type=BEGIN,END,FAIL
+
+   # Load modules 
+      module load tools/python/3.8
+      module load compiler/gcc/11.2.0
+      module load compiler/intel/2020-Update2
+      module load libs/hdf5/1.10.8-gcc-10.2.0
+      module load libs/zlib/1.2.11-intel-2018
+      module load libs/netcdf/4.6.1-intel-2018
+      python3.8 -m pip install --user scons
+
+      date
+      cd /beegfs/ni57qip/tsunami_lab
+      scons custom_cxx=/cluster/spack/opt/spack/linux-centos7-broadwell/gcc-10.2.0/gcc-11.2.0-c27urtyjryzoyyqfms5m3ewi6vrtvt44/bin/gcc use_report=false
+      /cluster/intel/vtune_profiler_2020.2.0.610396/bin64/vtune -collect hotspots -app-working-dir beegfs/ni57qip/tsunami_lab /beegfs/ni57qip/tsunami_lab/build/tsunami_lab
+
+
+analysis
+........
+
+
+To initiate the process, let's begin by conducting a hotspot analysis:
+
+.. image:: _static/HotspotAnalsis.png
+   :width: 700px
+   :height: 500px
+   :scale: 100 %
+   :alt: alternate text
+   :align: right
+
+
+The function that proved to be the most time-consuming was ``Netupdate``, along with ``timestep`` and ``decompose``. While it was anticipated that NetUpdate operations and the timestep would be resource-intensive in our code, what caught me by surprise 
+was that the decompose function also turned out to be a significant time-consuming component.
+Finally, it's worth noting that the role of ``getBathymetryNetcdf`` in the TsunamiEvent2d had a relatively minor impact on resource consumption. This outcome was unexpected, as I had anticipated that the operation of reading bathymetry data would be more resource-intensive compared to the ``getBathymetryNetcdf`` .
+
+
 
 
 
