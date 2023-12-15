@@ -6,8 +6,8 @@ Optimization
 ARA
 ---
 
-Upload your code and Ch. 6s input data to the cluster. Compile your code on the cluster
-........................................................................................
+Upload your code and Ch. 6s input data to the cluster. Compile your code on the cluster and add support for generic compiler
+.............................................................................................................................
 
 
 To deploy the project on the cluster, we cloned it from our Git repository and included all submodules.
@@ -55,15 +55,9 @@ To compile our code, we utilized an sbatch script, necessitating adjustments to 
       ./build/tsunami_lab
 
 
+then in the sconstruct we had to add pathes for the compiler.
+and we used the following sconstruct:
 
-
-
-
-
-in the sconstruct we had to add pathes fo the compiler to it.
-
-The SConstruct on our PC appears different due to issues encountered when loading the Intel compiler on the cluster.
-we tried to load the intel compiler but everytime we load it we get a netcdf error 
 
 .. code-block:: python
 
@@ -168,16 +162,9 @@ we tried to load the intel compiler but everytime we load it we get a netcdf err
    
 
 
-   env.Append(LIBS=['netcdf'])
-
-   env.Append(LIBS=['z'])
-
-   env.Append(LIBS=['hdf5_serial'])
-
-   if 'LD_LIBRARY_PATH' not in env['ENV']:
-      env['ENV']['LD_LIBRARY_PATH'] = ''
-
-   env['ENV']['LD_LIBRARY_PATH'] = '/usr/lib/x86_64-linux-gnu' + env['ENV']['LD_LIBRARY_PATH']
+   conf = Configure(env)
+   if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
+   exit(1)
 
    # add Catch2
    env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
@@ -185,8 +172,6 @@ we tried to load the intel compiler but everytime we load it we get a netcdf err
    # add nlohmann json 
    env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
 
-
-   env.Append(LIBPATH=['/home/winter/tools/netcdf/include'])
 
    # get source files
    VariantDir( variant_dir = 'build/src',
@@ -205,90 +190,12 @@ we tried to load the intel compiler but everytime we load it we get a netcdf err
    env.Program( target = 'build/tests',
                source = env.sources + env.tests )
 
-on the cluster we just changed the pathes of the netcdf to:
-
-
-.. code-block:: python
-
-   conf = Configure(env)
-   if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
-   exit(1)
 
 
 
 We tried using ``os.environ`` to fetch the compiler paths, but it only retrieved the path of the GNU compiler on the cluster. Everything worked perfectly on our local PC.
 
-However, we encountered two errors on the cluster while compiling the code with the Intel compiler:
-
-
-We encounter this error when attempting to append the NetCDF, HDF5, and zlib to our environment using the provided code.
-
-.. code-block:: python
-
-   
-   env.Append(LIBS=['netcdf'])
-
-   env.Append(LIBS=['z'])
-
-   env.Append(LIBS=['hdf5_serial'])
-
-   if 'LD_LIBRARY_PATH' not in env['ENV']:
-      env['ENV']['LD_LIBRARY_PATH'] = ''
-
-   env['ENV']['LD_LIBRARY_PATH'] = '/usr/lib/x86_64-linux-gnu' + env['ENV']['LD_LIBRARY_PATH']
-
-   # add Catch2
-   env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
-
-   # add nlohmann json 
-   env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
-
-
-   env.Append(LIBPATH=['/home/winter/tools/netcdf/include'])
-
-
-.. code-block:: shell
-
-   
-   Error: A license for Comp-CL could not be obtained.  (-1,359,2).
-
-   Is your license file in the right location and readable?
-   The location of your license file should be specified via
-   the $INTEL_LICENSE_FILE environment variable.
-
-   License file(s) used were (in this order):
-   **  1.  /cluster/intel/compilers_and_libraries_2020.2.254/linux/bin/intel64/../../Licenses
-   **  2.  /home/ni57qip/Licenses
-   **  3.  /home/ni57qip/intel/licenses
-   **  4.  /opt/intel/licenses
-   **  5.  /Users/Shared/Library/Application Support/Intel/Licenses
-   **  6.  /cluster/intel/compilers_and_libraries_2020.2.254/linux/bin/intel64/*.lic
-
-   Please refer http://software.intel.com/sites/support/ for more information..
-
-   icpc: error #10052: could not checkout FLEXlm license
-   scons: *** [build/src/io/Csv/Csv.o] Error 1
-   vtune: Error: Cannot find application file "/home/ni57qip/tsunami_lab/build/tsunami_lab".
-
-
-
-We encounter this error when attempting to append the NetCDF, HDF5, and zlib to our environment using the provided code.
-
-.. code-block:: python
-
-   conf = Configure(env)
-   if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
-   exit(1)
-
-
-.. code-block:: shell 
-
-   runnning build script
-   Selected Compiler: Custom Compiler
-   the report is in the build folder
-   Checking for C++ library netcdf... no
-   Did not find netcdf.h, exiting!
-
+However, we encountered two errors on the cluster while compiling the code with the Intel compiler
 
 to build the project with a custom compiler:
 
@@ -299,7 +206,187 @@ to build the project with a custom compiler:
 The ``custom_cxx`` option is used to specify the compiler by providing its path. Meanwhile, ``use_report``
 is utilized to determine whether to generate a report, which is only available when utilizing the Intel compiler.
 
+
+After discussing with Professor Alex, it appears that we misused os.environ. The correct implementation is as follows:
+
+.. code-block:: python
+   :emphasize-lines: 48,49,50
+
+   ##
+   # @author Alexander Breuer (alex.breuer AT uni-jena.de)
+   #
+   # @section DESCRIPTION
+   # Entry-point for builds.
+   ##
+   import SCons
+   import os
+   import SCons.Script
+
+   print( '####################################' )
+   print( '### Tsunami Lab                  ###' )
+   print( '###                              ###' )
+   print( '### https://scalable.uni-jena.de ###' )
+   print( '####################################' )
+   print()
+   print('runnning build script')
+
+
+   # configuration
+   vars = Variables()
+
+
+
+   vars.AddVariables(
+      EnumVariable('mode',
+                  'compile modes, option \'san\' enables address and undefined behavior sanitizers',
+                  'release',
+                  allowed_values=('release', 'debug', 'release+san', 'debug+san')
+                  ),
+      BoolVariable('use_report',
+                  'Enable compiler optimization report',
+                  False  # Set the default value to False; adjust as needed
+                  ),
+      PathVariable('custom_cxx',
+                  'Path to a custom C++ compiler',
+                  os.environ.get('CXX', ''),
+                  PathVariable.PathAccept
+                  )
+   )
+
+   # exit in the case of unknown variables
+   if vars.UnknownVariables():
+   print( "build configuration corrupted, don't know what to do with: " + str(vars.UnknownVariables().keys()) )
+   exit(1)
+
+
+   # create environment
+   env = Environment( ENV=os.environ,
+                     variables = vars )
    
+
+   if env['custom_cxx']:
+      env.Replace(CXX=env['custom_cxx'])
+      print("Selected Compiler: Custom Compiler")
+
+   compiler_path = env['CXX']     
+   compiler_name = os.path.basename(compiler_path)
+
+   if env['use_report']:
+   if not (compiler_name == 'icpc'):
+      print("Warning: Cannot generate report because you are running the code on the GNU Compiler.")
+   else:
+      env.Append(CXXFLAGS=['-qopt-report=5'])
+      print("the report is in the build folder")  
+
+
+
+
+   # generate help message
+   Help( vars.GenerateHelpText( env ) )
+
+   # add default flags
+   if (compiler_name == 'icpc'):
+      env.Append( CXXFLAGS = [ '-std=c++17',
+                           '-Wall',
+                           '-Wextra',
+                           '-Werror'] )
+   else:    
+   env.Append( CXXFLAGS = [ '-std=c++17',
+                           '-Wall',
+                           '-Wextra',
+                           '-Wpedantic',
+                           '-Werror' ] )
+
+   # set optimization mode
+   if 'debug' in env['mode']:
+   env.Append( CXXFLAGS = [ '-g',
+                              '-O2' ] )
+   else:
+   env.Append( CXXFLAGS = [ '-O1'] )
+
+   # add sanitizers
+   if 'san' in  env['mode']:
+   env.Append( CXXFLAGS =  [ '-g',
+                              '-fsanitize=float-divide-by-zero',
+                              '-fsanitize=bounds',
+                              '-fsanitize=address',
+                              '-fsanitize=undefined',
+                              '-fno-omit-frame-pointer' ] )
+   env.Append( LINKFLAGS = [ '-g',
+                              '-fsanitize=address',
+                              '-fsanitize=undefined' ] )
+   
+   conf = Configure(env)
+   if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
+   exit(1)
+
+   # add Catch2
+   env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
+
+   # add nlohmann json 
+   env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
+
+
+
+   # get source files
+   VariantDir( variant_dir = 'build/src',
+               src_dir     = 'src' )
+
+   env.sources = []
+   env.tests = []
+
+   Export('env')
+   SConscript( 'build/src/SConscript' )
+   Import('env')
+
+   env.Program( target = 'build/tsunami_lab',
+               source = env.sources + env.standalone )
+
+   env.Program( target = 'build/tests',
+               source = env.sources + env.tests )
+
+
+Following the modification, we encountered errors preventing the execution of both the GNU and Intel compilers.
+
+
+.. code-block:: shell 
+
+   CXX=gcc 
+
+   /usr/bin/ld: build/src/tests.o: undefined reference to symbol 'nextafter@@GLIBC_2.2.5'
+   //usr/lib64/libm.so.6: error adding symbols: DSO missing from command line
+   collect2: error: ld returned 1 exit status
+
+   CXX=icpc 
+   /cluster/spack/opt/spack/linux-centos7-broadwell/gcc-10.2.0/gcc-11.2.0-c27urtyjryzoyyqfms5m3ewi6vrtvt44/include/c++/11.2.0/tuple(649): error: pack "_UElements" does not have the same number of elements as "_Elements"
+            __and_<is_nothrow_constructible<_Elements, _UElements>...>::value;
+                                                       ^
+          detected during:
+            instantiation of "bool std::tuple<_Elements...>::__nothrow_constructible<_UElements...>() [with _Elements=<const std::string &>, _UElements=<>]" at line 502 of "/cluster/spack/opt/spack/linux-centos7-broadwell/gcc-10.2.0/gcc-11.2.0-c27urtyjryzoyyqfms5m3ewi6vrtvt44/include/c++/11.2.0/bits/stl_map.h"
+            instantiation of "std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type &std::map<_Key, _Tp, _Compare, _Alloc>::operator[](const std::map<_Key, _Tp, _Compare, _Alloc>::key_type &) [with _Key=std::string, _Tp=nlohmann::json_abi_v3_11_2::basic_json<std::map, std::vector, std::string, bool, int64_t={long}, uint64_t={unsigned long}, double, std::allocator, nlohmann::json_abi_v3_11_2::adl_serializer, std::vector<uint8_t={unsigned char}, std::allocator<uint8_t={unsigned char}>>, void>,
+                      _Compare=std::less<void>, _Alloc=std::allocator<std::pair<const std::string, nlohmann::json_abi_v3_11_2::basic_json<std::map, std::vector, std::string, bool, int64_t={long}, uint64_t={unsigned long}, double, std::allocator, nlohmann::json_abi_v3_11_2::adl_serializer, std::vector<uint8_t={unsigned char}, std::allocator<uint8_t={unsigned char}>>, void>>>]" at line 7013 of "submodules/json/single_include/nlohmann/json.hpp"
+            instantiation of "bool nlohmann::json_abi_v3_11_2::detail::json_sax_dom_callback_parser<BasicJsonType>::key(nlohmann::json_abi_v3_11_2::detail::json_sax_dom_callback_parser<BasicJsonType>::string_t &) [with BasicJsonType=nlohmann::json_abi_v3_11_2::basic_json<std::map, std::vector, std::string, bool, int64_t={long}, uint64_t={unsigned long}, double, std::allocator, nlohmann::json_abi_v3_11_2::adl_serializer, std::vector<uint8_t={unsigned char}, std::allocator<uint8_t={unsigned
+                      char}>>, void>]" at line 12319 of "submodules/json/single_include/nlohmann/json.hpp"
+            instantiation of "bool nlohmann::json_abi_v3_11_2::detail::parser<BasicJsonType, InputAdapterType>::sax_parse_internal(SAX *) [with BasicJsonType=nlohmann::json_abi_v3_11_2::basic_json<std::map, std::vector, std::string, bool, int64_t={long}, uint64_t={unsigned long}, double, std::allocator, nlohmann::json_abi_v3_11_2::adl_serializer, std::vector<uint8_t={unsigned char}, std::allocator<uint8_t={unsigned char}>>, void>,
+                      InputAdapterType=nlohmann::json_abi_v3_11_2::detail::iterator_input_adapter<const char *>, SAX=nlohmann::json_abi_v3_11_2::detail::json_sax_dom_callback_parser<nlohmann::json_abi_v3_11_2::basic_json<std::map, std::vector, std::string, bool, int64_t={long}, uint64_t={unsigned long}, double, std::allocator, nlohmann::json_abi_v3_11_2::adl_serializer, std::vector<uint8_t={unsigned char}, std::allocator<uint8_t={unsigned char}>>, void>>]" at line 12198 of
+                      "submodules/json/single_include/nlohmann/json.hpp"
+            instantiation of "void nlohmann::json_abi_v3_11_2::detail::parser<BasicJsonType, InputAdapterType>::parse(bool, BasicJsonType &) [with BasicJsonType=nlohmann::json_abi_v3_11_2::basic_json<std::map, std::vector, std::string, bool, int64_t={long}, uint64_t={unsigned long}, double, std::allocator, nlohmann::json_abi_v3_11_2::adl_serializer, std::vector<uint8_t={unsigned char}, std::allocator<uint8_t={unsigned char}>>, void>,
+                      InputAdapterType=nlohmann::json_abi_v3_11_2::detail::iterator_input_adapter<const char *>]" at line 23262 of "submodules/json/single_include/nlohmann/json.hpp"
+            instantiation of "nlohmann::json_abi_v3_11_2::basic_json<ObjectType, ArrayType, StringType, BooleanType, NumberIntegerType, NumberUnsignedType, NumberFloatType, AllocatorType, JSONSerializer, BinaryType, CustomBaseClass> nlohmann::json_abi_v3_11_2::basic_json<ObjectType, ArrayType, StringType, BooleanType, NumberIntegerType, NumberUnsignedType, NumberFloatType, AllocatorType, JSONSerializer, BinaryType, CustomBaseClass>::parse(IteratorType, IteratorType,
+                      nlohmann::json_abi_v3_11_2::basic_json<ObjectType, ArrayType, StringType, BooleanType, NumberIntegerType, NumberUnsignedType, NumberFloatType, AllocatorType, JSONSerializer, BinaryType, CustomBaseClass>::parser_callback_t, bool, bool) [with ObjectType=std::map, ArrayType=std::vector, StringType=std::string, BooleanType=bool, NumberIntegerType=int64_t={long}, NumberUnsignedType=uint64_t={unsigned long}, NumberFloatType=double, AllocatorType=std::allocator,
+                      JSONSerializer=nlohmann::json_abi_v3_11_2::adl_serializer, BinaryType=std::vector<uint8_t={unsigned char}, std::allocator<uint8_t={unsigned char}>>, CustomBaseClass=void, IteratorType=const char *]" at line 24399 of "submodules/json/single_include/nlohmann/json.hpp"
+
+            compilation aborted for build/src/io/Csv/Csv.cpp (code 2)
+            scons: *** [build/src/io/Csv/Csv.o] Error 2
+            scons: building terminated because of errors.
+
+
+If we refrain from making any modifications, we can successfully build our project using the GNU compiler.
+
+To make a comparison between the two compilers, we will execute the simulation
+using the g++ compiler on the cluster, and then replicate the same settings with our Intel compiler on our home device.
+We will utilize the SConstruct without making any modifications.
+
 Run different scenarios using interactive and batch jobs
 .........................................................
 
@@ -363,6 +450,8 @@ We executed two scenarios, one for Tohoku and another for Chile, using the follo
    }
 
 
+
+We examined the output for both scenarios and found no discrepancies.
 
 
 Add a timer to your solver which allows you to measure the duration of the time stepping loop. 
