@@ -65,8 +65,8 @@ void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
   }
   setGhostOutflow(false);
   
- for(t_idx l_ey = 1; l_ey < m_yCells +1;l_ey++){ 
     for(t_idx l_ex = 1; l_ex < m_xCells +1;l_ex++){
+      for(t_idx l_ey = 1; l_ey < m_yCells +1;l_ey++){ 
       t_real l_netUpdates[2][2];
       t_idx l_ceL = getIndex(l_ex,l_ey);
       t_idx l_ceR = getIndex(l_ex+1,l_ey);
@@ -196,25 +196,5 @@ void tsunami_lab::patches::WavePropagation2d::setGhostOutflow(bool i_choiceBound
       l_b[getIndex(0,l_g)] = l_b[getIndex(1,l_g)];
       l_b[getIndex(m_xCells+1,l_g)] = l_b[getIndex(m_xCells,l_g)];
     }
-      // Ecken des Gitters aktualisieren
-
-      l_b[getIndex(0,0)] = l_b[getIndex(1,1)];
-      l_h[getIndex(0,0)] = l_h[getIndex(1,1)];
-      l_hu[getIndex(0,0)] = l_hu[getIndex(1,1)];
-      l_hv[getIndex(0,0)] = l_hv[getIndex(1,1)];
-
-      l_b[getIndex(m_xCells+1,0)] = l_b[getIndex(m_xCells,1)];
-      l_h[getIndex(m_xCells+1,0)] = l_h[getIndex(m_xCells,1)];
-      l_hu[getIndex(m_xCells+1,0)] = l_hu[getIndex(m_xCells,1)];
-      l_hv[getIndex(m_xCells+1,0)] = l_hv[getIndex(m_xCells,1)];
-      
-      l_b[getIndex(0,m_yCells+1)] = l_b[getIndex(1,m_yCells)];
-      l_h[getIndex(0,m_yCells+1)] = l_h[getIndex(1,m_yCells)];
-      l_hu[getIndex(0,m_yCells+1)] = l_hu[getIndex(1,m_yCells)];
-      l_hv[getIndex(0,m_yCells+1)] = l_hv[getIndex(1,m_yCells)];
-      
-      l_b[getIndex(m_xCells+1,m_yCells+1)] = l_b[getIndex(m_xCells,m_yCells)];
-      l_h[getIndex(m_xCells+1,m_yCells+1)] = l_h[getIndex(m_xCells,m_yCells)];
-      l_hu[getIndex(m_xCells+1,m_yCells+1)] = l_hu[getIndex(m_xCells,m_yCells)];
-      l_hv[getIndex(m_xCells+1,m_yCells+1)] = l_hv[getIndex(m_xCells,m_yCells)];
+    
 }

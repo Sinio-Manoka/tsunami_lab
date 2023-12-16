@@ -703,9 +703,6 @@ Mohamad Khaled Minawe's PC:
 
 .. image:: _static/chile_event_Khaled_pc.png
    :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
    :align: right
 
 
@@ -715,9 +712,6 @@ cluster:
 
 .. image:: _static/chile_event_cluster_node.png
    :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
    :align: right
 
 
@@ -727,9 +721,6 @@ Mohamad Khaled Minawe's PC:
 
 .. image:: _static/tohoku_event_Khaled_pc.png
    :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
    :align: right
 
 
@@ -739,9 +730,6 @@ cluster:
 
 .. image:: _static/tohoku_event_cluster_node.png
    :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
    :align: right
 
 
@@ -795,9 +783,6 @@ chile:
 
       .. image:: _static/intelCompiler.png
          :width: 700px
-         :height: 500px
-         :scale: 100 %
-         :alt: alternate text
          :align: right
 
 
@@ -805,9 +790,6 @@ chile:
 
        .. image:: _static/GNU.png
          :width: 700px
-         :height: 500px
-         :scale: 100 %
-         :alt: alternate text
          :align: right
 
 Tohoku:
@@ -817,9 +799,6 @@ Tohoku:
 
       .. image:: _static/intelCompiler1.png
          :width: 700px
-         :height: 500px
-         :scale: 100 %
-         :alt: alternate text
          :align: right
 
 
@@ -827,9 +806,6 @@ Tohoku:
 
        .. image:: _static/GNU1.png
          :width: 700px
-         :height: 500px
-         :scale: 100 %
-         :alt: alternate text
          :align: right
 
 
@@ -1199,9 +1175,6 @@ To initiate the process, let's begin by conducting a hotspot analysis:
 
 .. image:: _static/HotspotAnalsis.png
    :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
    :align: right
 
 
@@ -1213,9 +1186,6 @@ finally let's begin by conducting a Thread analysis:
 
 .. image:: _static/Thread_analysis.png
    :width: 700px
-   :height: 500px
-   :scale: 100 %
-   :alt: alternate text
    :align: right
 
 
