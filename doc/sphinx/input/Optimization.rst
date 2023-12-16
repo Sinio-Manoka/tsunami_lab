@@ -279,8 +279,6 @@ After discussing with Professor Alex, it appears that we misused os.environ. The
       print("the report is in the build folder")  
 
 
-
-
    # generate help message
    Help( vars.GenerateHelpText( env ) )
 
@@ -358,6 +356,7 @@ Following the modification, we encountered errors preventing the execution of bo
    collect2: error: ld returned 1 exit status
 
    CXX=icpc 
+
    /cluster/spack/opt/spack/linux-centos7-broadwell/gcc-10.2.0/gcc-11.2.0-c27urtyjryzoyyqfms5m3ewi6vrtvt44/include/c++/11.2.0/tuple(649): error: pack "_UElements" does not have the same number of elements as "_Elements"
             __and_<is_nothrow_constructible<_Elements, _UElements>...>::value;
                                                        ^
@@ -382,7 +381,6 @@ Following the modification, we encountered errors preventing the execution of bo
 
 
 If we refrain from making any modifications, we can successfully build our project using the GNU compiler.
-
 To make a comparison between the two compilers, we will execute the simulation
 using the g++ compiler on the cluster, and then replicate the same settings with our Intel compiler on our home device.
 We will utilize the SConstruct without making any modifications.
@@ -825,6 +823,7 @@ When utilizing the -O0 optimization flag with the Intel compiler, an error arise
 
 
 Let's now examine the distinctions between the GNU Compiler Collection (GCC) and the Intel C++ Compiler (ICPC) for the tohoku scenario.
+To perform a comparison for equality, we will compile both on our local machine.
 
 
 our Local machine has a cpu : Intel Core i7 13700KF 3.49-5.40GHz
@@ -836,9 +835,6 @@ our Local machine has a cpu : Intel Core i7 13700KF 3.49-5.40GHz
    * - Flags
      - GNU Compiler
      - Intel Compiler
-   * - -O0
-     - 3min,51sec,832millisecond,558microseconds,804nanoseconds
-     - error
    * - -O1
      - 0min,59sec,307millisecond,936microseconds,430nanoseconds
      - 2min,53sec,193millisecond,220microseconds,610nanoseconds
@@ -854,8 +850,7 @@ our Local machine has a cpu : Intel Core i7 13700KF 3.49-5.40GHz
 
 
 In this table, we conducted a comparison of loop execution times, excluding IO header and setup time. 
-It is evident that the Intel compiler outperforms the GNU compiler when utilizing specific flags. Unfortunately, a direct
-comparison without optimization flags was not possible due to encountered errors. The Intel Compiler (icc)
+It is evident that the Intel compiler outperforms the GNU compiler when utilizing specific flags. The Intel Compiler (icc)
 stands out as the preferred choice for performance-critical computations, especially on clusters with Intel CPUs.
 Using the ``-O1`` optimization flags, it may be observed that the GNU compiler tends to outperform the Intel compiler.
 
@@ -870,9 +865,6 @@ time per iteration:
    * - Flags
      - GNU Compiler
      - Intel Compiler
-   * - -O0
-     - 98 nanoseconds
-     - error
    * - -O1
      - 25 nanoseconds
      - 73 nanoseconds
@@ -897,9 +889,6 @@ time per cell:
    * - Flags
      - GNU Compiler
      - Intel Compiler
-   * - -O0
-     - 561 microseconds,337 nanoseconds
-     - error
    * - -O1
      - 143 microseconds,602 nanoseconds
      - 419 microseconds, 354 nanoseconds
@@ -1198,11 +1187,14 @@ The low metric value in our analysis can be attributed to thread/process underut
 as indicated by the possibility of achieving a better utilization of resources.
 
 
-
-
-
 Think about how you could improve the performance of your code
-...............................................................
+................................................................
+
+
+
+
+
+
 
 
 Personal Contribution
