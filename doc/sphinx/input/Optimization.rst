@@ -1686,8 +1686,9 @@ Now we do only have half assignemnts in each call!
 Finally, our wavepropagation should be faster than the previous one because we have reduced the amount of memory we allocate and we have reduced the amount of assignments we do in each call.
 
 .. warning::
-   We have compared the code with the previous one, but it turned out that the old one was faster than the optimized code.
-   From our perspective, however, the new code should be more performant and it could be that the optimization flags lead to the non-optimized code being more optimizable than the code we optimized but this is just a guess...
+   We have compared the code with the previous one, but it turned out that the old one was a bit faster than the optimized code.
+   From our perspective, however, the new code should be more performant.
+   (GUESS: It could be that the optimization flags lead to the non-optimized code being more optimizable than the code we optimized but this is just a guess...)
 
 
 Personal Contribution
