@@ -18,7 +18,7 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                     
     int l_ncId,l_err;
     l_err = nc_open(filename,NC_WRITE, &l_ncId);
-
+    
     std::vector<t_real> l_coordinateX(i_nx / i_k);
     std::vector<t_real> l_coordinateY(i_ny / i_k);
     

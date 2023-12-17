@@ -39,13 +39,16 @@ tsunami_lab::patches::WavePropagation2d::~WavePropagation2d()
 
 void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
 {
-  setGhostCollumn();
-  // es werrden die alten werte in die neuen geschrieben
+  
+  t_real * l_temp_h = m_h_uv[0];
+  t_real * l_temp_huv = m_h_uv[1];
+
   for (t_idx l_ce = 1; l_ce < ((m_xCells + 2) * (m_yCells + 2)); l_ce++)
-  {
-    m_h_uv[0][l_ce] = m_h[l_ce];
-    m_h_uv[1][l_ce] = m_hu[l_ce];
+  { // zuerst hu
+    l_temp_h[l_ce] = m_h[l_ce];
+    l_temp_huv[l_ce] = m_hu[l_ce];
   }
+  setGhostCollumn();
 
   for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
   {
@@ -56,20 +59,20 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
       t_idx l_ceR = getIndex(l_ex + 1, l_ey);
 
       if (m_choice)
-      { // die netupdates werden mit old gemacht und in hnew gespeichert
-        solvers::Roe::netUpdates(m_h_uv[0][l_ceL],
-                                 m_h_uv[0][l_ceR],
-                                 m_h_uv[1][l_ceL],
-                                 m_h_uv[1][l_ceR],
+      { 
+        solvers::Roe::netUpdates(l_temp_h[l_ceL],
+                                 l_temp_h[l_ceR],
+                                 l_temp_huv[l_ceL],
+                                 l_temp_huv[l_ceR],
                                  l_netUpdates[0],
                                  l_netUpdates[1]);
       }
       else
       {
-        solvers::fwave::netUpdates(m_h_uv[0][l_ceL],
-                                   m_h_uv[0][l_ceR],
-                                   m_h_uv[1][l_ceL],
-                                   m_h_uv[1][l_ceR],
+        solvers::fwave::netUpdates(l_temp_h[l_ceL],
+                                   l_temp_h[l_ceR],
+                                   l_temp_huv[l_ceL],
+                                   l_temp_huv[l_ceR],
                                    m_b[l_ceL],
                                    m_b[l_ceR],
                                    l_netUpdates[0],
@@ -80,17 +83,15 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
       m_h[l_ceR] -= i_scaling * l_netUpdates[1][0];
       m_hu[l_ceR] -= i_scaling * l_netUpdates[1][1];
 
-    } // das neuste ist in new
+    } 
   }
-  
 
-  setGhostRow();
-  // l_hNew bekommt die neuen werte kopiert aus l_hOld (welche die neuen werte enthält)
   for (t_idx l_ce = 0; l_ce < ((m_xCells + 2) * (m_yCells + 2)); l_ce++)
-  {
-    m_h_uv[0][l_ce] = m_h[l_ce];
-    m_h_uv[1][l_ce] = m_hv[l_ce];
-  } // beide haben nun die gleichen werte
+  { //jetzt
+    l_temp_h[l_ce] = m_h[l_ce];
+    l_temp_huv[l_ce] = m_hv[l_ce];
+  } 
+  setGhostRow();
 
   for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
   {
@@ -102,21 +103,20 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
       t_idx l_ceR = getIndex(l_ex, l_ey + 1);
 
       if (m_choice)
-      { // der kopiervorgang wird gebraucht da hnew auch die neuen werte braucht um auf ihnen
-        // die aktuellen änderungne zu speichern damit hnew wieder aktuell ist
-        solvers::Roe::netUpdates(m_h_uv[0][l_ceL],
-                                 m_h_uv[0][l_ceR],
-                                 m_h_uv[1][l_ceL],
-                                 m_h_uv[1][l_ceR],
+      {
+        solvers::Roe::netUpdates(l_temp_h[l_ceL],
+                                 l_temp_h[l_ceR],
+                                 l_temp_huv[l_ceL],
+                                 l_temp_huv[l_ceR],
                                  l_netUpdates[0],
                                  l_netUpdates[1]);
       }
       else
       {
-        solvers::fwave::netUpdates(m_h_uv[0][l_ceL],
-                                   m_h_uv[0][l_ceR],
-                                   m_h_uv[1][l_ceL],
-                                   m_h_uv[1][l_ceR],
+        solvers::fwave::netUpdates(l_temp_h[l_ceL],
+                                   l_temp_h[l_ceR],
+                                   l_temp_huv[l_ceL],
+                                   l_temp_huv[l_ceR],
                                    m_b[l_ceL],
                                    m_b[l_ceR],
                                    l_netUpdates[0],
@@ -126,7 +126,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
       m_hv[l_ceL] -= i_scaling * l_netUpdates[0][1];
       m_h[l_ceR] -= i_scaling * l_netUpdates[1][0];
       m_hv[l_ceR] -= i_scaling * l_netUpdates[1][1];
-    } // die berechnungen werden in l_New geschrieben und l_old zeigt auf die alten werte
+    } 
   }
 }
 
