@@ -10,10 +10,10 @@
 
 tsunami_lab::patches::WavePropagation2d::WavePropagation2d(t_idx i_xCells, t_idx i_yCells, bool i_choice, bool i_choiceBoundary)
 {
-  m_choice = i_choice; // solver choice
+  m_choice = i_choice;                // solver choice
   m_choiceBoundry = i_choiceBoundary; // Ghostzellverwaltung
-  m_xCells = i_xCells; // anzahl der spalten
-  m_yCells = i_yCells; // anzahl der zeilen
+  m_xCells = i_xCells;                // anzahl der spalten
+  m_yCells = i_yCells;                // anzahl der zeilen
 
   // allocate memory including a single ghost cell on each side
 
@@ -21,34 +21,30 @@ tsunami_lab::patches::WavePropagation2d::WavePropagation2d(t_idx i_xCells, t_idx
   m_hu = new t_real[(m_xCells + 2) * (m_yCells + 2)]{};
   m_hv = new t_real[(m_xCells + 2) * (m_yCells + 2)]{};
   m_b = new t_real[(m_xCells + 2) * (m_yCells + 2)]{};
-  // again first pointer for height and second for momentum
-  m_h_uv[0] = new t_real[(m_xCells + 2) * (m_yCells + 2)]{};
-  m_h_uv[1] = new t_real[(m_xCells + 2) * (m_yCells + 2)]{};
+  m_h_temp = new t_real[(m_xCells + 2) * (m_yCells + 2)]{};
+  m_momentum_temp = new t_real[(m_xCells + 2) * (m_yCells + 2)]{};
 }
 // free memory
 tsunami_lab::patches::WavePropagation2d::~WavePropagation2d()
 {
 
-  delete[] m_b;
-  delete[] m_hv;
   delete[] m_h;
   delete[] m_hu;
-  delete[] m_h_uv[0];
-  delete[] m_h_uv[1];
+  delete[] m_hv;
+  delete[] m_b;
+  delete[] m_h_temp;
+  delete[] m_momentum_temp;
 }
 
 void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
 {
-  
-  t_real * l_temp_h = m_h_uv[0];
-  t_real * l_temp_huv = m_h_uv[1];
 
+  //setGhostCollumn();
   for (t_idx l_ce = 1; l_ce < ((m_xCells + 2) * (m_yCells + 2)); l_ce++)
   { // zuerst hu
-    l_temp_h[l_ce] = m_h[l_ce];
-    l_temp_huv[l_ce] = m_hu[l_ce];
+    m_h_temp[l_ce] = m_h[l_ce];
+    m_momentum_temp[l_ce] = m_hu[l_ce];
   }
-  setGhostCollumn();
 
   for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
   {
@@ -59,20 +55,20 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
       t_idx l_ceR = getIndex(l_ex + 1, l_ey);
 
       if (m_choice)
-      { 
-        solvers::Roe::netUpdates(l_temp_h[l_ceL],
-                                 l_temp_h[l_ceR],
-                                 l_temp_huv[l_ceL],
-                                 l_temp_huv[l_ceR],
+      {
+        solvers::Roe::netUpdates(m_h_temp[l_ceL],
+                                 m_h_temp[l_ceR],
+                                 m_momentum_temp[l_ceL],
+                                 m_momentum_temp[l_ceR],
                                  l_netUpdates[0],
                                  l_netUpdates[1]);
       }
       else
       {
-        solvers::fwave::netUpdates(l_temp_h[l_ceL],
-                                   l_temp_h[l_ceR],
-                                   l_temp_huv[l_ceL],
-                                   l_temp_huv[l_ceR],
+        solvers::fwave::netUpdates(m_h_temp[l_ceL],
+                                   m_h_temp[l_ceR],
+                                   m_momentum_temp[l_ceL],
+                                   m_momentum_temp[l_ceR],
                                    m_b[l_ceL],
                                    m_b[l_ceR],
                                    l_netUpdates[0],
@@ -82,16 +78,15 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
       m_hu[l_ceL] -= i_scaling * l_netUpdates[0][1];
       m_h[l_ceR] -= i_scaling * l_netUpdates[1][0];
       m_hu[l_ceR] -= i_scaling * l_netUpdates[1][1];
-
-    } 
+    }
   }
-
+  setGhostCollumn();
+  //setGhostRow();
   for (t_idx l_ce = 0; l_ce < ((m_xCells + 2) * (m_yCells + 2)); l_ce++)
-  { //jetzt
-    l_temp_h[l_ce] = m_h[l_ce];
-    l_temp_huv[l_ce] = m_hv[l_ce];
-  } 
-  setGhostRow();
+  { // jetzt
+    m_h_temp[l_ce] = m_h[l_ce];
+    m_momentum_temp[l_ce] = m_hv[l_ce];
+  }
 
   for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
   {
@@ -104,19 +99,19 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
 
       if (m_choice)
       {
-        solvers::Roe::netUpdates(l_temp_h[l_ceL],
-                                 l_temp_h[l_ceR],
-                                 l_temp_huv[l_ceL],
-                                 l_temp_huv[l_ceR],
+        solvers::Roe::netUpdates(m_h_temp[l_ceL],
+                                 m_h_temp[l_ceR],
+                                 m_momentum_temp[l_ceL],
+                                 m_momentum_temp[l_ceR],
                                  l_netUpdates[0],
                                  l_netUpdates[1]);
       }
       else
       {
-        solvers::fwave::netUpdates(l_temp_h[l_ceL],
-                                   l_temp_h[l_ceR],
-                                   l_temp_huv[l_ceL],
-                                   l_temp_huv[l_ceR],
+        solvers::fwave::netUpdates(m_h_temp[l_ceL],
+                                   m_h_temp[l_ceR],
+                                   m_momentum_temp[l_ceL],
+                                   m_momentum_temp[l_ceR],
                                    m_b[l_ceL],
                                    m_b[l_ceR],
                                    l_netUpdates[0],
@@ -126,8 +121,9 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
       m_hv[l_ceL] -= i_scaling * l_netUpdates[0][1];
       m_h[l_ceR] -= i_scaling * l_netUpdates[1][0];
       m_hv[l_ceR] -= i_scaling * l_netUpdates[1][1];
-    } 
+    }
   }
+   setGhostRow();
 }
 
 void tsunami_lab::patches::WavePropagation2d::setGhostRow()
@@ -151,8 +147,8 @@ void tsunami_lab::patches::WavePropagation2d::setGhostRow()
     {
       m_h[l_g] = m_h[getIndex(l_g, 1)];
       m_h[getIndex(l_g, m_yCells + 1)] = m_h[getIndex(l_g, m_yCells)];
-      m_hv[l_g] = -m_hv[getIndex(l_g, 1)];
-      m_hv[getIndex(l_g, m_yCells + 1)] = -m_hv[getIndex(l_g, m_yCells)];
+      m_hv[l_g] = m_hv[getIndex(l_g, 1)];
+      m_hv[getIndex(l_g, m_yCells + 1)] = m_hv[getIndex(l_g, m_yCells)];
       m_b[l_g] = m_b[getIndex(l_g, 1)];
       m_b[getIndex(l_g, m_yCells + 1)] = m_b[getIndex(l_g, m_yCells)];
     }

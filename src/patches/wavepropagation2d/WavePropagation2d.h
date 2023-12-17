@@ -32,7 +32,8 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     t_real * m_hu = nullptr;
     t_real * m_hv = nullptr;
     //the first nullptr is for the height and the second one for the momentum
-    t_real * m_h_uv[2] = {nullptr,nullptr};
+    t_real * m_h_temp = nullptr;
+    t_real * m_momentum_temp = nullptr;
 
     /**
      * @param i_ix id of the cell in x-direction.
@@ -62,12 +63,15 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      **/
     void timeStep( t_real i_scaling_x);
    
-    /**
-     * @brief Sets the values of the ghost cells according to outflow boundary conditions.
-     * @param m_choiceBoundry true : reflecting boundary, false : outflow conditions.
-     **/
-    void setGhostCollumn();
+ 
 
+    /**
+    *  @brief sets the ghostcells for the two collumns
+    */
+    void setGhostCollumn();
+     /**
+    *  @brief sets the ghostcells for the two Rows
+    */
     void setGhostRow();
 
     /**
