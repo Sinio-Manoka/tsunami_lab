@@ -20,6 +20,7 @@ Overview
    Large_Data_Input_and_Output.rst
    Tsunami_Simulations.rst
    Checkpointing_and_Coarse_Output.rst
+   Optimization.rst
    
 .. include:: overview.rst
 

@@ -28,7 +28,7 @@ TEST_CASE( "Test the 1d wave propagation solver.", "[WaveProp1d]" ) {
   // construct solver and setup a dambreak problem
 
 
-  tsunami_lab::patches::WavePropagation1d m_waveProp( 100 , true );
+  tsunami_lab::patches::WavePropagation1d m_waveProp( 100 , true, false );
 
   for( std::size_t l_ce = 0; l_ce < 50; l_ce++ ) {
     m_waveProp.setHeight( l_ce,
@@ -48,7 +48,7 @@ TEST_CASE( "Test the 1d wave propagation solver.", "[WaveProp1d]" ) {
   }
 
   // set outflow boundary condition
-  m_waveProp.setGhostOutflow(false);
+  m_waveProp.setGhostCollumn();
 
   // perform a time step
   m_waveProp.timeStep( 0.1 );
@@ -74,7 +74,7 @@ TEST_CASE( "Test the 1d wave propagation solver.", "[WaveProp1d]" ) {
 
 
 //test steady state from middle stat_stsates.csv
-tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
+tsunami_lab::patches::WavePropagation1d middle_states1(100, true, false);
 
   for (std::size_t l_ce = 0; l_ce < 50; l_ce++)
   {
@@ -97,7 +97,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
 
   for (int i = 0; i < 17; i++)
   {
-    middle_states1.setGhostOutflow(false);
+    middle_states1.setGhostCollumn();
     middle_states1.timeStep(0.001);
   }
 
@@ -107,7 +107,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
   REQUIRE(middle_states1.getHeight()[50] == Approx(8899.74));
 
 // calculated bei geogebra
-  tsunami_lab::patches::WavePropagation1d middle_states2(100, true);
+  tsunami_lab::patches::WavePropagation1d middle_states2(100, true, false);
 
   for (std::size_t l_ce = 0; l_ce < 50; l_ce++)
   {
@@ -130,7 +130,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
 
   for (int i = 0; i < 17; i++)
   {
-    middle_states1.setGhostOutflow(false);
+    middle_states1.setGhostCollumn();
     middle_states1.timeStep(0.001);
   }
 
@@ -143,7 +143,7 @@ tsunami_lab::patches::WavePropagation1d middle_states1(100, true);
 
 
 // calculated bei geogebra
-tsunami_lab::patches::WavePropagation1d middle_states3(100, false);
+tsunami_lab::patches::WavePropagation1d middle_states3(100, false, false);
 
   for (std::size_t l_ce = 0; l_ce < 50; l_ce++)
   {
@@ -166,7 +166,7 @@ tsunami_lab::patches::WavePropagation1d middle_states3(100, false);
 
   for (int i = 0; i < 40; i++)
   {
-    middle_states1.setGhostOutflow(false);
+    middle_states1.setGhostCollumn();
     middle_states1.timeStep(0.001);
   }
 

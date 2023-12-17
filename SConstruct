@@ -5,6 +5,8 @@
 # Entry-point for builds.
 ##
 import SCons
+import os
+import SCons.Script
 
 print( '####################################' )
 print( '### Tsunami Lab                  ###' )
@@ -14,15 +16,25 @@ print( '####################################' )
 print()
 print('runnning build script')
 
+
 # configuration
 vars = Variables()
 
 vars.AddVariables(
-  EnumVariable( 'mode',
-                'compile modes, option \'san\' enables address and undefined behavior sanitizers',
-                'release',
-                allowed_values=('release', 'debug', 'release+san', 'debug+san' )
-              )
+    EnumVariable('mode',
+                 'compile modes, option \'san\' enables address and undefined behavior sanitizers',
+                 'release',
+                 allowed_values=('release', 'debug', 'release+san', 'debug+san')
+                 ),
+    BoolVariable('use_report',
+                 'Enable compiler optimization report',
+                 False  # Set the default value to False; adjust as needed
+                 ),
+    PathVariable('custom_cxx',
+                 'Path to a custom C++ compiler',
+                 os.environ.get('CXX', ''),
+                 PathVariable.PathAccept
+                 )
 )
 
 # exit in the case of unknown variables
@@ -33,22 +45,45 @@ if vars.UnknownVariables():
 # create environment
 env = Environment( variables = vars )
 
+if env['custom_cxx']:
+    env.Replace(CXX=env['custom_cxx'])
+    print("Selected Compiler: Custom Compiler")
+
+compiler_path = env['CXX']     
+compiler_name = os.path.basename(compiler_path)
+
+if env['use_report']:
+  if not (compiler_name == 'icpc'):
+    print("Warning: Cannot generate report because you are running the code on the GNU Compiler.")
+  else:
+    env.Append(CXXFLAGS=['-qopt-report=5'])
+    print("the report is in the build folder")  
+
+
+
+
 # generate help message
 Help( vars.GenerateHelpText( env ) )
 
 # add default flags
-env.Append( CXXFLAGS = [ '-std=c++17',
+if (compiler_name == 'icpc'):
+   env.Append( CXXFLAGS = [ '-std=c++17',
                          '-Wall',
                          '-Wextra',
-                         '-Wpedantic',
                          '-Werror' ] )
+else:    
+  env.Append( CXXFLAGS = [ '-std=c++17',
+                          '-Wall',
+                          '-Wextra',
+                          '-Wpedantic',
+                          '-Werror' ] )
 
 # set optimization mode
 if 'debug' in env['mode']:
   env.Append( CXXFLAGS = [ '-g',
-                           '-O0' ] )
+                           '-O2' ] )
 else:
-  env.Append( CXXFLAGS = [ '-O2' ] )
+  env.Append( CXXFLAGS = [ '-O3' ] )
 
 # add sanitizers
 if 'san' in  env['mode']:
@@ -61,6 +96,10 @@ if 'san' in  env['mode']:
   env.Append( LINKFLAGS = [ '-g',
                             '-fsanitize=address',
                             '-fsanitize=undefined' ] )
+  
+
+ 
+
 
 
 env.Append(LIBS=['netcdf'])
@@ -79,6 +118,7 @@ env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
 
 # add nlohmann json 
 env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
+
 
 env.Append(LIBPATH=['/home/winter/tools/netcdf/include'])
 

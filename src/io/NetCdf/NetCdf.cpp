@@ -1,10 +1,9 @@
 #include "NetCdf.h"
 #include <netcdf.h>
 #include <iostream>
-#include <list>
-#include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <vector>
 
 
 void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
@@ -19,30 +18,25 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
                                     
     int l_ncId,l_err;
     l_err = nc_open(filename,NC_WRITE, &l_ncId);
-
-    t_idx result_x = i_nx / i_k;
-    t_idx result_y = i_ny / i_k;
-
-    t_real *l_coordinateX = new t_real[result_x];
-    t_real *l_coordinateY = new t_real[result_y];
     
-    for( t_idx l_iy = 0; l_iy < result_y; l_iy++ )
+    std::vector<t_real> l_coordinateX(i_nx / i_k);
+    std::vector<t_real> l_coordinateY(i_ny / i_k);
+    
+    for( t_idx l_iy = 0; l_iy < (i_ny / i_k); l_iy++ )
     {
         l_coordinateY[l_iy] = ((l_iy + 0.5) * i_dxy * i_k)+ i_domainstart_y;
     }
     // put y coordinates
-    l_err = nc_put_var_float(l_ncId, m_varIdY, l_coordinateY);
+    l_err = nc_put_var_float(l_ncId, m_varIdY, l_coordinateY.data());
     checkNcErr(l_err,__FILE__, __LINE__);
 
-    delete[] l_coordinateY;
-    for(t_idx l_ix = 0; l_ix < result_x; l_ix++) 
+    for(t_idx l_ix = 0; l_ix < (i_nx / i_k); l_ix++) 
     {
         l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dxy * i_k)+ i_domainstart_x;
     }
     // put x coordinates
-    l_err = nc_put_var_float(l_ncId, m_varIdX, l_coordinateX);
+    l_err = nc_put_var_float(l_ncId, m_varIdX, l_coordinateX.data());
     checkNcErr(l_err,__FILE__, __LINE__);
-    delete[] l_coordinateX;
 
     // put bathymetry values
     makeLowerResGrid(i_b, i_nx, i_ny, i_k, i_stride,1,true, m_varIdBathymetry, l_ncId);
@@ -141,45 +135,71 @@ void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
                                                 bool twoDimensionsOnly,
                                                 int m_varId,
                                                 int l_ncId) {
-
-    t_idx result_x = i_nx / i_k;
-    t_idx result_y = i_ny / i_k;
-    std::vector<t_real> grid(result_x * result_y);
-
-    for (t_idx l_iy = 0; l_iy < result_y; l_iy++) // für y wert neues feld
+    if(i_k != 1)
     {
-        for (t_idx l_ix = 0; l_ix < result_x; l_ix++) // für x wert neues feld
+        t_idx result_x = i_nx / i_k;
+        t_idx result_y = i_ny / i_k;
+        std::vector<t_real> grid(result_x * result_y);
+
+        for (t_idx l_iy = 0; l_iy < result_y; l_iy++) // für y wert neues feld
         {
-            for (t_idx l_jy = 0; l_jy < i_k; l_jy++) // iterator von 0 bis k um von l_iy and zu zählen
+            for (t_idx l_ix = 0; l_ix < result_x; l_ix++) // für x wert neues feld
             {
-                for (t_idx l_jx = 0; l_jx < i_k; l_jx++) // iterator von 0 bis k um von l_ix and zu zählen
-                {  
-                    
-                    //std::cout <<"index : ["<<(l_iy * i_k + l_jy+1)<<" | "<< (l_ix * i_k + l_jx+1)<<"]     Wert vom oldgrid:  "<<oldgrid[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)]<<std::endl;
-                    grid[l_iy * result_x + l_ix] += oldgrid[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)];
+                for (t_idx l_jy = 0; l_jy < i_k; l_jy++) // iterator von 0 bis k um von l_iy and zu zählen
+                {
+                    for (t_idx l_jx = 0; l_jx < i_k; l_jx++) // iterator von 0 bis k um von l_ix and zu zählen
+                    {  
+                        grid[l_iy * result_x + l_ix] += oldgrid[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)];
+                    }
                 }
+                grid[l_iy * result_x + l_ix] /= (i_k * i_k);
             }
-            grid[l_iy * result_x + l_ix] /= (i_k * i_k);
         }
-    }
 
-    //std::cout << i_time_step <<" "<< twoDimensionsOnly <<" "<< m_varId<<" "<<l_ncId<< std::endl;
-    std::vector<size_t> l_startp;
-    std::vector<size_t> l_endp;
-    std::vector<ptrdiff_t> l_stridep;
-    if(twoDimensionsOnly)
-    {
-        l_startp     = {0,0};
-        l_endp      = {result_y,result_x};
-        l_stridep = {1,1};
-    } else {
-        l_startp     = {i_time_step,0,0};
-        l_endp      = {1,result_y,result_x};
-        l_stridep = {1,1,1}; 
+        std::vector<size_t> l_startp;
+        std::vector<size_t> l_endp;
+        std::vector<ptrdiff_t> l_stridep;
+        if(twoDimensionsOnly)
+        {
+            l_startp     = {0,0};
+            l_endp      = {result_y,result_x};
+            l_stridep = {1,1};
+        } else {
+            l_startp     = {i_time_step,0,0};
+            l_endp      = {1,result_y,result_x};
+            l_stridep = {1,1,1}; 
+        }
+        int l_err;
+        l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), grid.data());
+        checkNcErr(l_err,__FILE__, __LINE__);
     }
-    int l_err;
-    l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), grid.data());
-    checkNcErr(l_err,__FILE__, __LINE__);
+    else // if k == 1 then just put the old grid
+    {
+        std::vector<t_real> grid(i_nx * i_ny);
+        for(t_idx l_iy = 0; l_iy < i_ny; l_iy++)
+        {
+            for(t_idx l_ix = 0; l_ix < i_nx; l_ix++)
+            {
+                grid[l_iy * i_nx + l_ix] = oldgrid[(l_iy+1) * i_stride + (l_ix+1)];
+            }
+        }
+        std::vector<size_t> l_startp;
+        std::vector<size_t> l_endp;
+        std::vector<ptrdiff_t> l_stridep;
+        if(twoDimensionsOnly)
+        {
+            l_startp     = {0,0};
+            l_endp      = {i_ny,i_nx};
+            l_stridep = {1,1};
+        } else {
+            l_startp     = {i_time_step,0,0};
+            l_endp      = {1,i_ny,i_nx};
+            l_stridep = {1,1,1};
+        }
+        int l_err;
+        l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), grid.data());
+        checkNcErr(l_err,__FILE__, __LINE__);
+    }
 }
 
 tsunami_lab::io::NetCdf::NetCdf(t_real l_nx,t_real l_ny,t_idx l_k,const char*  filename) {

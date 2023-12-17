@@ -40,7 +40,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
      * @param i_choice which solver to choice from (true means Roe and false means our Fwave).
      * @param i_nCells number of cells.
      **/
-    WavePropagation1d( t_idx i_nCells, bool i_choice );
+    WavePropagation1d( t_idx i_nCells, bool i_choice, bool i_choiceBoundry );
 
     /**
      * @brief Destructor which frees all allocated memory.
@@ -57,7 +57,7 @@ class tsunami_lab::patches::WavePropagation1d: public WavePropagation {
     /**
      * @brief Sets the values of the ghost cells according to outflow boundary conditions.
      **/
-    void setGhostOutflow(bool m_choiceBoundry);
+    void setGhostCollumn();
 
     /**
      * @brief Gets the stride in y-direction. x-direction is stride-1.
