@@ -47,9 +47,7 @@ void tsunami_lab::solvers::fwave::flux( t_real i_hL,
     t_real gPowHR = m_g * i_hR*i_hR;
     t_real totalR = pow2HuR + 0.5 * gPowHR;
     t_real fqr[2] = {i_huR, totalR};
-
     //compute Δf
-
     o_fdelta[0] = fqr[0] - fql[0];
     o_fdelta[1] = fqr[1] - fql[1];
 }
@@ -80,8 +78,7 @@ void tsunami_lab::solvers::fwave::decompose(t_real i_alphas[2],
     }else{
         o_plus_A_deltaQ[0] = o_plus_A_deltaQ[0] + (i_alphas[1]);
         o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]) ;
-    } 
-
+    }
  }
 
     

@@ -1167,8 +1167,8 @@ To initiate the process, let's begin by conducting a hotspot analysis:
    :align: right
 
 
-The function that proved to be the most time-consuming was ``Netupdate``, along with ``timestep`` and ``decompose``. While it was anticipated that NetUpdate operations and the timestep would be resource-intensive in our code, what caught me by surprise 
-was that the decompose function also turned out to be a significant time-consuming component.
+The function that proved to be the most time-consuming was ``Netupdate``, along with ``timestep`` and ``decompose``. While it was anticipated that NetUpdate operations and the timestep would be resource-intensive in our code, what caught us by surprise 
+was that the decompose function also turned out to be a significant time-consuming component. The reason for that is probably the two if statements in the decompose function, which are executed in each iteration.
 Finally, it's worth noting that the role of ``getBathymetryNetcdf`` in the TsunamiEvent2d had a relatively minor impact on resource consumption. This outcome was unexpected, as I had anticipated that the operation of reading bathymetry data would be more resource-intensive compared to the ``getBathymetryNetcdf`` .
 
 finally let's begin by conducting a Thread analysis:
@@ -1187,10 +1187,299 @@ The low metric value in our analysis can be attributed to thread/process underut
 as indicated by the possibility of achieving a better utilization of resources.
 
 
+
 Think about how you could improve the performance of your code
 ................................................................
 
+In this task, a few tips were given on how we could improve our code.
 
+- inlining or templates
+- algorithmic features, e.g., the reuse of calculated values
+- avoidance of unnecessary square roots or divisions!
+
+
+1. we first found out what "inline" means and when to use it.
+
+"C++ provides inline functions to reduce the function call overhead.
+An inline function is a function that is expanded in line when it is called"
+(Source : https://www.geeksforgeeks.org/inline-functions-cpp/)
+
+But we found out that:
+"It is also possible to define the inline function inside the class.
+In fact, all the functions defined inside the class are implicitly inline."
+(Source : https://www.geeksforgeeks.org/inline-functions-cpp/)
+
+That means that we don't need to use the keyword ``inline`` in our code because
+we already defined all the functions inside the class.
+
+2. For "avoidance of unnecessary square roots or divisions!" we have rewritten our MakeLowerResGrid function in our netcdf.cpp so that if k = 1 we do not go through the four for loops.
+
+.. code-block:: cpp
+   :emphasize-lines: 48-73
+
+         void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
+                                                   t_idx i_nx,
+                                                   t_idx i_ny,
+                                                   t_idx i_k,
+                                                   t_idx i_stride,
+                                                   t_idx i_time_step,
+                                                   bool twoDimensionsOnly,
+                                                   int m_varId,
+                                                   int l_ncId) {
+      if(i_k != 1)
+      {
+         t_idx result_x = i_nx / i_k;
+         t_idx result_y = i_ny / i_k;
+         std::vector<t_real> grid(result_x * result_y);
+
+         for (t_idx l_iy = 0; l_iy < result_y; l_iy++) // für y wert neues feld
+         {
+               for (t_idx l_ix = 0; l_ix < result_x; l_ix++) // für x wert neues feld
+               {
+                  for (t_idx l_jy = 0; l_jy < i_k; l_jy++) // iterator von 0 bis k um von l_iy and zu zählen
+                  {
+                     for (t_idx l_jx = 0; l_jx < i_k; l_jx++) // iterator von 0 bis k um von l_ix and zu zählen
+                     {  
+                           grid[l_iy * result_x + l_ix] += oldgrid[(l_iy * i_k + l_jy+1) * i_stride + (l_ix * i_k + l_jx+1)];
+                     }
+                  }
+                  grid[l_iy * result_x + l_ix] /= (i_k * i_k);
+               }
+         }
+
+         std::vector<size_t> l_startp;
+         std::vector<size_t> l_endp;
+         std::vector<ptrdiff_t> l_stridep;
+         if(twoDimensionsOnly)
+         {
+               l_startp     = {0,0};
+               l_endp      = {result_y,result_x};
+               l_stridep = {1,1};
+         } else {
+               l_startp     = {i_time_step,0,0};
+               l_endp      = {1,result_y,result_x};
+               l_stridep = {1,1,1}; 
+         }
+         int l_err;
+         l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), grid.data());
+         checkNcErr(l_err,__FILE__, __LINE__);
+      }
+      else // if k == 1 then just put the old grid
+      {
+         std::vector<t_real> grid(i_nx * i_ny);
+         for(t_idx l_iy = 0; l_iy < i_ny; l_iy++)
+         {
+               for(t_idx l_ix = 0; l_ix < i_nx; l_ix++)
+               {
+                  grid[l_iy * i_nx + l_ix] = oldgrid[(l_iy+1) * i_stride + (l_ix+1)];
+               }
+         }
+         std::vector<size_t> l_startp;
+         std::vector<size_t> l_endp;
+         std::vector<ptrdiff_t> l_stridep;
+         if(twoDimensionsOnly)
+         {
+               l_startp     = {0,0};
+               l_endp      = {i_ny,i_nx};
+               l_stridep = {1,1};
+         } else {
+               l_startp     = {i_time_step,0,0};
+               l_endp      = {1,i_ny,i_nx};
+               l_stridep = {1,1,1};
+         }
+         int l_err;
+         l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), grid.data());
+         checkNcErr(l_err,__FILE__, __LINE__);
+      }
+   }
+
+
+3. In our Netcdf.cpp we changed l_coordianteX and l_coordianteY to a vector to avoid allocations.
+   
+.. code-block:: c++
+   :emphasize-lines: 1,2
+
+      std::vector<t_real> l_coordinateX(i_nx / i_k);
+      std::vector<t_real> l_coordinateY(i_ny / i_k);
+      
+      for( t_idx l_iy = 0; l_iy < (i_ny / i_k); l_iy++ )
+      {
+         l_coordinateY[l_iy] = ((l_iy + 0.5) * i_dxy * i_k)+ i_domainstart_y;
+      }
+      // put y coordinates
+      l_err = nc_put_var_float(l_ncId, m_varIdY, l_coordinateY.data());
+      checkNcErr(l_err,__FILE__, __LINE__);
+
+      for(t_idx l_ix = 0; l_ix < (i_nx / i_k); l_ix++) 
+      {
+         l_coordinateX[l_ix] = ((l_ix + 0.5) * i_dxy * i_k)+ i_domainstart_x;
+      }
+      // put x coordinates
+      l_err = nc_put_var_float(l_ncId, m_varIdX, l_coordinateX.data());
+      checkNcErr(l_err,__FILE__, __LINE__);
+
+
+4. Now to the compute-intensive parts: ``WavePropagation2D``
+    
+As already indicated by the many comments in the last submission,
+we have removed the indexes for m_step in the class wavepropagation2d.cpp as this actually always produces the same pattern and you can hardcode the 0 and the 1 instead of computing it.
+
+
+.. code-block:: c++
+   :emphasize-lines: 39,40,41,46,47,48,89,90,91,93,94,95
+
+   tsunami_lab::patches::WavePropagation2d::WavePropagation2d( t_idx i_xCells,t_idx i_yCells, bool i_choice ) {
+   
+      m_choice = i_choice;
+      m_xCells = i_xCells; // anzahl der spalten
+      m_yCells = i_yCells; // anzahl der zeilen
+
+      // allocate memory including a single ghost cell on each side
+      for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
+         m_h[l_st]  = new t_real[ (m_xCells+2) * (m_yCells+2) ]{};
+         m_hu[l_st] = new t_real[ (m_xCells+2) * (m_yCells+2) ]{};
+         m_hv[l_st] = new t_real[ (m_xCells+2) * (m_yCells+2) ]{};
+      }
+      m_b = new t_real[(m_xCells+2) * (m_yCells+2)]{};
+
+      // init to zero
+      for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
+         for( t_idx l_ce = 0; l_ce <  (m_xCells+2) * (m_yCells+2) ; l_ce++ ) {
+            m_h[l_st][l_ce] = 0;
+            m_hu[l_st][l_ce] = 0;
+            m_hv[l_st][l_ce] = 0;
+            if(l_st==0){
+            m_b[l_ce] = 0;
+            }
+         }
+      }
+      }
+      //free memory
+      tsunami_lab::patches::WavePropagation2d::~WavePropagation2d() {
+      delete[] m_b;
+      for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
+         delete[] m_hv[l_st];
+         delete[] m_h[l_st];
+         delete[] m_hu[l_st];
+      }
+      }
+
+      void tsunami_lab::patches::WavePropagation2d::timeStep( t_real i_scaling) {
+      // pointers to old and new data
+      t_real * l_hOld  = m_h[0]; //0
+      t_real * l_huOld = m_hu[0]; // alte werte 0
+      t_real * l_hvOld = m_hv[0]; // SECOND ITERATION : l_hold zeigt nun auf 
+                                                         //die neuen werte aus der letzten rehcnung
+
+      t_real * l_b  = m_b; 
+      //m_step = (m_step+1) % 2;
+      t_real * l_hNew =  m_h[1]; // neue werte 1
+      t_real * l_huNew = m_hu[1]; //SECOND ITERATION : l_hNew zeigt nun auf die alten werte
+      t_real * l_hvNew = m_hv[1];
+
+      //es werrden die alten werte in die neuen geschrieben 
+      for( t_idx l_ce = 1; l_ce < ((m_xCells+2) * (m_yCells+2)); l_ce++ ) {
+         l_hNew[l_ce]  = l_hOld[l_ce];
+         l_huNew[l_ce] = l_huOld[l_ce];
+         l_hvNew[l_ce] = l_hvOld[l_ce];
+      }
+      setGhostOutflow(false);
+      
+         for(t_idx l_ex = 1; l_ex < m_xCells +1;l_ex++){
+            for(t_idx l_ey = 1; l_ey < m_yCells +1;l_ey++){ 
+            t_real l_netUpdates[2][2];
+            t_idx l_ceL = getIndex(l_ex,l_ey);
+            t_idx l_ceR = getIndex(l_ex+1,l_ey);
+
+            if(m_choice){ // die netupdates werden mit old gemacht und in hnew gespeichert
+            solvers::Roe::netUpdates(l_hOld[l_ceL],
+                                    l_hOld[l_ceR],
+                                    l_huOld[l_ceL],
+                                    l_huOld[l_ceR],
+                                    l_netUpdates[0],
+                                    l_netUpdates[1]);
+            }else{
+            solvers::fwave::netUpdates( l_hOld[l_ceL],
+                                          l_hOld[l_ceR],
+                                          l_huOld[l_ceL],
+                                          l_huOld[l_ceR],
+                                          l_b[l_ceL],
+                                          l_b[l_ceR],
+                                          l_netUpdates[0],
+                                          l_netUpdates[1]);
+            }
+            l_hNew[l_ceL]  -= i_scaling * l_netUpdates[0][0];
+            l_huNew[l_ceL] -= i_scaling * l_netUpdates[0][1];
+            l_hNew[l_ceR]  -= i_scaling * l_netUpdates[1][0];
+            l_huNew[l_ceR] -= i_scaling * l_netUpdates[1][1];
+            
+         } // das neuste ist in new 
+
+      }
+      l_hOld  = m_h[1]; //der pointer l_hOld zeigt nun auf die neuen werte
+      l_huOld = m_hu[1];
+      l_hvOld = m_hv[1];
+      //m_step = (m_step+1) % 2;
+      l_hNew =  m_h[0];
+      l_huNew = m_hu[0]; //l_huNew zeigt nun auf die alten werte
+      l_hvNew = m_hv[0];
+
+      //l_hNew bekommt die neuen werte kopiert aus l_hOld (welche die neuen werte enthält)
+      for( t_idx l_ce = 0; l_ce < ((m_xCells+2) * (m_yCells+2)); l_ce++ ) {
+         l_hNew[l_ce]  = l_hOld[l_ce];
+         l_huNew[l_ce] = l_huOld[l_ce];
+         l_hvNew[l_ce] = l_hvOld[l_ce];
+      } // beide haben nun die gleichen werte
+      setGhostOutflow(false);
+
+      for(t_idx l_ex = 1; l_ex < m_xCells +1;l_ex++){
+         for(t_idx l_ey = 1; l_ey < m_yCells +1;l_ey++){
+            t_real l_netUpdates[2][2];
+
+            t_idx l_ceL = getIndex(l_ex,l_ey);
+            t_idx l_ceR = getIndex(l_ex,l_ey+1);
+            
+            if(m_choice){ // der kopiervorgang wird gebraucht da hnew auch die neuen werte braucht um auf ihnen 
+                        // die aktuellen änderungne zu speichern damit hnew wieder aktuell ist
+            solvers::Roe::netUpdates( l_hOld[l_ceL],
+                                       l_hOld[l_ceR],
+                                       l_hvOld[l_ceL],
+                                       l_hvOld[l_ceR],
+                                       l_netUpdates[0],
+                                       l_netUpdates[1]);
+            }else{
+            solvers::fwave::netUpdates( l_hOld[l_ceL],
+                                          l_hOld[l_ceR],
+                                          l_hvOld[l_ceL],
+                                          l_hvOld[l_ceR],
+                                          l_b[l_ceL],
+                                          l_b[l_ceR],
+                                          l_netUpdates[0],
+                                          l_netUpdates[1]);
+            }
+            l_hNew[l_ceL]  -= i_scaling * l_netUpdates[0][0];
+            l_hvNew[l_ceL] -= i_scaling * l_netUpdates[0][1];
+            l_hNew[l_ceR]  -= i_scaling * l_netUpdates[1][0];
+            l_hvNew[l_ceR] -= i_scaling * l_netUpdates[1][1];
+         }//die berechnungen werden in l_New geschrieben und l_old zeigt auf die alten werte
+      }
+   }
+
+In fact we can reduce the amount of memory we allocate because we never use m_hu and m_hv at the same time. So we can allocate only one of them and then switch between them.
+
+
+
+
+
+
+.. warning:: 
+   warning
+
+.. tip:: 
+   tip
+
+.. important:: 
+   important
 
 
 

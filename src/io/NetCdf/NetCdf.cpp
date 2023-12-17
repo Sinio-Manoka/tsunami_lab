@@ -175,6 +175,14 @@ void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
     }
     else // if k == 1 then just put the old grid
     {
+        std::vector<t_real> grid(i_nx * i_ny);
+        for(t_idx l_iy = 0; l_iy < i_ny; l_iy++)
+        {
+            for(t_idx l_ix = 0; l_ix < i_nx; l_ix++)
+            {
+                grid[l_iy * i_nx + l_ix] = oldgrid[(l_iy+1) * i_stride + (l_ix+1)];
+            }
+        }
         std::vector<size_t> l_startp;
         std::vector<size_t> l_endp;
         std::vector<ptrdiff_t> l_stridep;
@@ -186,10 +194,10 @@ void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
         } else {
             l_startp     = {i_time_step,0,0};
             l_endp      = {1,i_ny,i_nx};
-            l_stridep = {1,1,1}; 
+            l_stridep = {1,1,1};
         }
         int l_err;
-        l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), oldgrid);
+        l_err = nc_put_vars_float(l_ncId, m_varId, l_startp.data(), l_endp.data(), l_stridep.data(), grid.data());
         checkNcErr(l_err,__FILE__, __LINE__);
     }
 }

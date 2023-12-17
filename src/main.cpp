@@ -294,7 +294,7 @@ int main() {
   //Determine which setup and which wavepropagation to use--------------------------------START
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   if(l_temp_waveprop == "2d"){
-    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx, l_ny, l_solver);
+    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx, l_ny, l_solver, false);
     std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be chosen \033[0m" << std::endl;
     if(l_temp_setup == "artificialtsunami2D")
     {
@@ -315,7 +315,7 @@ int main() {
   }else if(l_temp_waveprop == "1d")
   {
       std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be chosen \033[0m" << std::endl;
-      l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver);
+      l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver, false);
       if(l_temp_setup == "tsunamievent1d"){
         std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::TsunamiEvent1d();
@@ -501,7 +501,6 @@ int main() {
   }
 
   while( l_simTime < l_temp_endtime ){
-    l_waveProp->setGhostOutflow(false);
     if( l_timeStep % 25 == 0 ) {
 
       auto l_startWriting = std::chrono::high_resolution_clock::now();

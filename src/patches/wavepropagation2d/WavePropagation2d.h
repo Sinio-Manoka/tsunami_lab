@@ -17,7 +17,6 @@ namespace tsunami_lab {
 class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
   private:
     //! current step which indicates the active values in the arrays below
-    unsigned short m_step = 0;
 
     //! boolean to which solver will be used
     bool m_choice = true;
@@ -27,20 +26,20 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     //! number of cells discretizing the computational domain
     t_idx m_xCells = 0;
     t_idx m_yCells = 0;
-    t_real * m_b = nullptr;
-    //! water heights for the current and next time step for all cells
-    t_real * m_h[2] = { nullptr, nullptr };
 
-    //! momenta for the current and next time step for all cells
-    t_real * m_hu[2] = { nullptr, nullptr };
-    t_real * m_hv[2] = { nullptr, nullptr };
+    t_real * m_b = nullptr;
+    t_real * m_h = nullptr;
+    t_real * m_hu = nullptr;
+    t_real * m_hv = nullptr;
+    //the first nullptr is for the height and the second one for the momentum
+    t_real * m_h_uv[2] = {nullptr,nullptr};
 
     /**
      * @param i_ix id of the cell in x-direction.
      * @param i_ix id of the cell in x-direction.
      * @return Gets the Index of the cell.
      */
-    tsunami_lab::t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
+    t_idx getIndex(tsunami_lab::t_idx  i_ix,tsunami_lab::t_idx  i_iy){
       return (m_xCells+2) * i_iy +i_ix;
     }
   public:
@@ -49,7 +48,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @param i_choice which solver to choice from (true means Roe and false means our Fwave).
      * @param i_nCells number of cells.
      **/
-    WavePropagation2d( t_idx i_xCells, t_idx i_yCells, bool i_choice );
+    WavePropagation2d( t_idx i_xCells, t_idx i_yCells, bool i_choice, bool i_choiceBoundary );
 
     /**
      * @brief Destructor which frees all allocated memory.
@@ -67,7 +66,9 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @brief Sets the values of the ghost cells according to outflow boundary conditions.
      * @param m_choiceBoundry true : reflecting boundary, false : outflow conditions.
      **/
-    void setGhostOutflow(bool m_choiceBoundry);
+    void setGhostCollumn();
+
+    void setGhostRow();
 
     /**
      * @return amount of cells in one column/row.
@@ -93,7 +94,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return Water heights.
      */
     t_real const * getHeight(){
-      return m_h[m_step];
+      return m_h;
     }
 
     /**
@@ -109,7 +110,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return momenta in x-direction.
      **/
     t_real const * getMomentumX(){
-      return m_hu[m_step];
+      return m_hu;
     }
 
      /**
@@ -117,7 +118,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
      * @return momenta in y-direction.
      **/
     t_real const * getMomentumY(){
-      return m_hv[m_step];
+      return m_hv;
     }
 
     /**
@@ -129,7 +130,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setHeight( t_idx  i_ix,
                     t_idx  i_iy,
                     t_real i_h ) {
-      m_h[m_step][getIndex(i_ix+1,i_iy+1)] = i_h;
+      m_h[getIndex(i_ix+1,i_iy+1)] = i_h;
     }
 
 
@@ -154,7 +155,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setMomentumX( t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_hu ) {
-      m_hu[m_step][getIndex(i_ix+1,i_iy+1)] = i_hu;
+      m_hu[getIndex(i_ix+1,i_iy+1)] = i_hu;
     }
 
    /**
@@ -166,7 +167,7 @@ class tsunami_lab::patches::WavePropagation2d: public WavePropagation {
     void setMomentumY( t_idx  i_ix,
                        t_idx  i_iy,
                        t_real i_hv) {
-      m_hv[m_step][getIndex(i_ix+1,i_iy+1)] = i_hv;
+      m_hv[getIndex(i_ix+1,i_iy+1)] = i_hv;
     }
     
 

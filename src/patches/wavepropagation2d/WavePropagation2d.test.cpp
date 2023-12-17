@@ -7,7 +7,7 @@
 #include "WavePropagation2d.h"
 TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
   
-  tsunami_lab::patches::WavePropagation2d m_waveProp( 100 ,100 , true );
+  tsunami_lab::patches::WavePropagation2d m_waveProp( 100 ,100 , true, true);
 
   for( std::size_t l_ce = 0; l_ce < 100+1; l_ce++ ) {
     for( std::size_t l_cy = 0; l_cy < 100+1; l_cy++ ){
@@ -22,9 +22,8 @@ TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
     m_waveProp.setMomentumY( l_ce,
                              l_cy,
                              0 );
-
-     m_waveProp.setGhostOutflow(true);                         
-  
+    m_waveProp.setGhostCollumn();
+    m_waveProp.setGhostRow();                        
     }
   }
 
@@ -32,7 +31,8 @@ TEST_CASE( "Test the 2d wave propagation solver.", "[WaveProp2d]" ) {
 
   // perform a time step
  
-    m_waveProp.setGhostOutflow(true);
+    m_waveProp.setGhostCollumn();
+    m_waveProp.setGhostRow();    
     m_waveProp.timeStep(0.1);
   
 
