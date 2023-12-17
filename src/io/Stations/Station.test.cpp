@@ -29,7 +29,8 @@ TEST_CASE( "Test the Station IO", "[Station]" ) {
                                     l_water_height,
                                     l_water_hu,
                                     l_water_hv,
-                                    l_csv_path);
+                                    l_csv_path,
+                                    "2d");
     std::ifstream inputFile(l_csv_path);
     std::stringstream csvStream;
     std::string line;
