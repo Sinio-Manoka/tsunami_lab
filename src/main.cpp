@@ -40,35 +40,31 @@ void updateProgressBar(double current, double total, int width) {
 }
 
 
+void printDuration(double duration) {
+  int hours = static_cast<int>(duration / 3600);
+  duration -= hours * 3600;
 
-void printDuration(std::chrono::nanoseconds duration) {
-auto hours = std::chrono::duration_cast<std::chrono::hours>(duration);
-    duration -= hours;
+  int minutes = static_cast<int>(duration / 60);
+  duration -= minutes * 60;
 
-    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration);
-    duration -= minutes;
+  int seconds = static_cast<int>(duration);
+  duration -= seconds;
 
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
-    duration -= seconds;
+  int milliseconds = static_cast<int>(duration * 1000);
+  duration -= milliseconds / 1000.0;
 
-    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-    duration -= milliseconds;
+  int microseconds = static_cast<int>(duration * 1000000);
+  duration -= microseconds / 1000000.0;
 
-    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration);
-    duration -= microseconds;
+  int nanoseconds = static_cast<int>(duration * 1000000000);
 
-    auto nanoseconds = duration;
-
-    std::cout << "Duration: " << hours.count() << " hours, "
-              << minutes.count() << " minutes, "
-              << seconds.count() << " seconds, "
-              << milliseconds.count() << " milliseconds, "
-              << microseconds.count() << " microseconds, "
-              << nanoseconds.count() << " nanoseconds" << std::endl;
+  std::cout << "Duration: " << hours << " hours, "
+        << minutes << " minutes, "
+        << seconds << " seconds, "
+        << milliseconds << " milliseconds, "
+        << microseconds << " microseconds, "
+        << nanoseconds << " nanoseconds" << std::endl;
 }
-
-
-
 
 void checkAndDeleteMismatchedFiles() {
 
@@ -192,10 +188,10 @@ int main() {
   tsunami_lab::t_idx  l_timeStep = 0,l_k = 0;
   tsunami_lab::t_real l_simTime = 0,l_dt = 0,l_last_simTime_time = 0;
   tsunami_lab::t_idx l_time_step_index = 0;
-  std::chrono::nanoseconds l_durationWriting = std::chrono::nanoseconds::zero();
-  std::chrono::nanoseconds l_durationWritingStation = std::chrono::nanoseconds::zero();
-  std::chrono::nanoseconds l_durationWritingCheckpoint = std::chrono::nanoseconds::zero();
-  std::chrono::nanoseconds l_durationWritingConstat = std::chrono::nanoseconds::zero();
+  double l_durationWriting = 0;
+  double l_durationWritingStation = 0;
+  double l_durationWritingCheckpoint = 0;
+  double l_durationWritingConstant = 0;
   
 
   tsunami_lab::t_real *l_cp_b = nullptr;
@@ -488,11 +484,11 @@ int main() {
   tsunami_lab::io::NetCdf* l_netCdf = nullptr ;
 
 
-  auto l_loopTimer = std::chrono::high_resolution_clock::now();
+  double l_loopTimer = omp_get_wtime();
   
   if(l_temp_writer == "netcdf"){
     l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_k,l_outputFile);
-    auto l_startWritingCostant = std::chrono::high_resolution_clock::now();
+    double l_startWritingCostant = omp_get_wtime();
     l_netCdf->fillConstants(l_nx,
                             l_ny,
                             l_k,
@@ -502,14 +498,14 @@ int main() {
                             l_domain_start_y,
                             l_waveProp->getBathymetry(),
                             l_outputFile);
-    auto l_endWritingCostant = std::chrono::high_resolution_clock::now();
-    l_durationWritingConstat =  l_endWritingCostant  - l_startWritingCostant ;         
+    double l_endWritingCostant = omp_get_wtime();
+    l_durationWritingConstant =  l_endWritingCostant  - l_startWritingCostant ;         
   }
 
   while( l_simTime < l_temp_endtime ){
     if( l_timeStep % 25 == 0 ) {
 
-      auto l_startWriting = std::chrono::high_resolution_clock::now();
+      double l_startWriting = omp_get_wtime();
 
       if(l_temp_writer == "csv"){
         std::string l_path = "outputs/solution_" + std::to_string(l_time_step_index) + ".csv";
@@ -527,7 +523,7 @@ int main() {
                                     l_waveProp->getMomentumY(),
                                     l_waveProp->getBathymetry(),
                                     l_file);
-        auto l_endWriting = std::chrono::high_resolution_clock::now();
+        double l_endWriting = omp_get_wtime();
         l_durationWriting += l_endWriting - l_startWriting;
 
         l_file.close();
@@ -542,7 +538,7 @@ int main() {
                               l_waveProp->getMomentumX(),
                               l_waveProp->getMomentumY(),
                               l_outputFile);
-        auto l_endWriting = std::chrono::high_resolution_clock::now();
+        double l_endWriting = omp_get_wtime();
         //duration of the writing method
         l_durationWriting += l_endWriting - l_startWriting;
       }
@@ -550,7 +546,7 @@ int main() {
       
     if(l_temp_waveprop == "2d"){  
       if(l_time_step_index%7000 == 0 ){
-         auto l_startWritingCheckpoint = std::chrono::high_resolution_clock::now();
+         double l_startWritingCheckpoint = omp_get_wtime();
         std::cout << "\n\033[1;34m" << "Started writing a new Checkpoint ."<< "\033[0m" << std::endl;
         l_netCdf->createCheckPoint(l_temp_solver,
                                     l_domain_start_x,
@@ -577,7 +573,7 @@ int main() {
                                     l_temp_disFile,
                                     l_temp_bathFile);
 
-           auto l_endWritingCheckpoint = std::chrono::high_resolution_clock::now();
+          double l_endWritingCheckpoint = omp_get_wtime();
           l_durationWritingCheckpoint += l_endWritingCheckpoint - l_startWritingCheckpoint ;
 
         std::cout << "\033[1;32m\u2713 " << "Done writing the Checkpoint ."<< "\033[0m"<< std::endl;
@@ -588,7 +584,7 @@ int main() {
     
     //STATIONS_---------------------------------------------START 
     if(l_current_frequency_time <= l_simTime){
-      auto l_startWritingStation = std::chrono::high_resolution_clock::now();
+      double l_startWritingStation = omp_get_wtime();
       for (const auto& station : l_stations) {
         std::string l_foldername = "stations/"+station.i_name;
         if (!std::filesystem::exists(l_foldername)){
@@ -627,7 +623,7 @@ int main() {
       }
       l_last_simTime_time = l_simTime;
       l_current_frequency_time = l_current_frequency_time + l_frequency;
-      auto l_endWritingStation = std::chrono::high_resolution_clock::now();
+      double l_endWritingStation = omp_get_wtime();
       l_durationWritingStation += l_endWritingStation - l_startWritingStation ;
 
 
@@ -642,25 +638,23 @@ int main() {
   }
     //duration of the programm
    double l_endTimer = omp_get_wtime();
-   auto l_EndTimer = std::chrono::high_resolution_clock::now();
    auto duration = l_endTimer - l_startTimer;
-   auto l_duration = l_endTimer - l_startTimer;
-   auto l_durationLoop = l_EndTimer - l_loopTimer;
+   auto l_durationLoop = l_endTimer - l_loopTimer;
 
   std::cout << std::endl;
   std::cout << "total duration: " << std::endl;
   std::cout << "duration: "<<duration << std::endl;
   //printDuration(duration);
   std::cout << "loop duration: " << std::endl;
-  printDuration(l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstat);
+  printDuration(l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstant);
   std::cout << "Station: " << std::endl;
   printDuration(l_durationWritingStation);
   std::cout << "Checkpoint: " << std::endl;
   printDuration(l_durationWritingCheckpoint);
   std::cout << "time per cell: " << std::endl;
-  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstat)/(l_nx * l_ny));
+  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstant)/(l_nx * l_ny));
   std::cout << "time per iteration: " << std::endl;
-  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstat)/(l_timeStep * l_nx * l_ny));
+  printDuration((l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstant)/(l_timeStep * l_nx * l_ny));
 
 
 

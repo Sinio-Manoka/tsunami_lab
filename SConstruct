@@ -77,9 +77,9 @@ else:
                           '-Wall',
                           '-Wextra',
                           '-Wpedantic',
-                          '-Werror'] )
-                          #,'-fopenmp' 
-#env.Append( LINKFLAGS = [ '-fopenmp' ] )
+                          '-Werror',
+                          '-fopenmp' ] )
+env.Append( LINKFLAGS = [ '-fopenmp' ] )
 
 # set optimization mode
 if 'debug' in env['mode']:
@@ -98,8 +98,9 @@ if 'san' in  env['mode']:
                             '-fno-omit-frame-pointer' ] )
   env.Append( LINKFLAGS = [ '-g',
                             '-fsanitize=address',
-                            '-fsanitize=undefined' ] )
-                            #,'-fopenmp' 
+                            '-fsanitize=undefined','-fopenmp'
+                            ] )
+                            
                              
 
  
