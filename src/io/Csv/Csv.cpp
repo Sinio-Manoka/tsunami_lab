@@ -6,7 +6,7 @@
  **/
 #include "Csv.h"
 #include "../JsReader/Configuration.h"
-
+#include <omp.h>
 void tsunami_lab::io::Csv::write( t_real               i_dxy,                     
                                   t_idx                i_nx,
                                   t_idx                i_ny,
@@ -28,6 +28,7 @@ void tsunami_lab::io::Csv::write( t_real               i_dxy,
   io_stream << "\n";
   
   if(i_dem_wavepropagation == "2d" ){
+
     for( t_idx l_iy = 1; l_iy < i_ny+1; l_iy++ ) {
       for( t_idx l_ix = 1; l_ix < i_nx+1; l_ix++ ) {
       // derive coordinates

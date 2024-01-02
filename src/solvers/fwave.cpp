@@ -60,24 +60,21 @@ void tsunami_lab::solvers::fwave::decompose(t_real i_alphas[2],
  
     //Negative speed of wave propagation                                    
     if( i_eigens[0] < 0){
-        o_minus_A_deltaQ[0] =  i_alphas[0];
-        o_minus_A_deltaQ[1] = (i_alphas[0] * i_eigens[0]);
-        o_plus_A_deltaQ[0] = 0;
-        o_plus_A_deltaQ[1] = 0;
-    }else{
-        o_plus_A_deltaQ[0] =   i_alphas[0];
-        o_plus_A_deltaQ[1] =  (i_alphas[0] * i_eigens[0]);
-        o_minus_A_deltaQ[0] = 0;
-        o_minus_A_deltaQ[1] = 0;
+        o_minus_A_deltaQ[0] +=  i_alphas[0];
+        o_minus_A_deltaQ[1] += (i_alphas[0] * i_eigens[0]);
+    }else
+    {
+        o_plus_A_deltaQ[0] +=   i_alphas[0];
+        o_plus_A_deltaQ[1] +=  (i_alphas[0] * i_eigens[0]);
     }
     //Positive speed of wave propagation
     if(i_eigens[1] < 0){
-        o_minus_A_deltaQ[0] = o_minus_A_deltaQ[0] + (i_alphas[1]);
-        o_minus_A_deltaQ[1] = o_minus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
+        o_minus_A_deltaQ[0] += o_minus_A_deltaQ[0] + (i_alphas[1]);
+        o_minus_A_deltaQ[1] += o_minus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]);
         
     }else{
-        o_plus_A_deltaQ[0] = o_plus_A_deltaQ[0] + (i_alphas[1]);
-        o_plus_A_deltaQ[1] = o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]) ;
+        o_plus_A_deltaQ[0] += o_plus_A_deltaQ[0] + (i_alphas[1]);
+        o_plus_A_deltaQ[1] += o_plus_A_deltaQ[1] + (i_alphas[1] * i_eigens[1]) ;
     }
  }
 
@@ -86,13 +83,13 @@ void tsunami_lab::solvers::fwave::inverseMatrix(t_real i_eigen1,
                                                 t_real i_eigen2,
                                                 t_real o_inverse[4]){
     //Compute the determinant of a 2x2 matrix 
-    t_real det = i_eigen2 - i_eigen1;
+    t_real det = 1 / (i_eigen2 - i_eigen1);
 
     //Compute the inverses of specific 2x2 matrices. (first row contains only ones)
-    o_inverse[0] = i_eigen2 / det;
-    o_inverse[1] = -1 / det;
-    o_inverse[2] = -i_eigen1 / det;
-    o_inverse[3] = 1 / det;
+    o_inverse[0] = i_eigen2 * det;
+    o_inverse[1] = -1 * det;
+    o_inverse[2] = -i_eigen1 * det;
+    o_inverse[3] = 1 * det;
     
 }
 
@@ -115,36 +112,30 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
                                              t_real   i_bL,
                                              t_real   i_bR,
                                              t_real   o_minus_A_deltaQ[2],
-                                             t_real   o_plus_A_deltaQ[2]){  
-    bool l_updateR = true;
-    bool l_updateL = true;
+                                             t_real   o_plus_A_deltaQ[2]){
 
     //two dry cells next to each other you cant divide by zero
-    if(i_hL == 0 && i_hR == 0 ){
         o_minus_A_deltaQ[1] = 0;
         o_minus_A_deltaQ[0] = 0;
         o_plus_A_deltaQ[1] = 0;
         o_plus_A_deltaQ[0] = 0;
+        t_real temp[2] = {};
+    if(i_hL <= 0){
 
-        return;
-    
-    }
-    //left cell is a dry cell
-    else if(i_hL == 0){
-
+        if(i_hR <= 0){
+            return;
+        }
         i_hL = i_hR;
         i_huL = -i_huR;
         i_bL = i_bR;
-        l_updateL = false;
-        
+        o_minus_A_deltaQ = temp;
     }
-    //right cell is a dry cell
-    else if(i_hR == 0){
-
+    //left cell is a dry cell
+    else if(i_hR <= 0){
         i_hR = i_hL;
         i_huR = -i_huL;
         i_bR = i_bL;
-        l_updateR = false;
+        o_plus_A_deltaQ = temp;
     }
 
 
@@ -163,7 +154,7 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
 
     inverseMatrix(l_sL, l_sR, l_inverse);
 
-    t_real l_fdelta[2];
+    t_real l_fdelta[2] = {0,0};
     flux(i_hL,i_hR,i_huL,i_huR,l_fdelta);
     
     t_real l_bathymetry = (-m_g) * (i_bR-i_bL) *((i_hL+i_hR)/2);
@@ -174,18 +165,5 @@ void tsunami_lab::solvers::fwave::netUpdates(t_real   i_hL,
    
     t_real l_eigens[2] = {l_sL,l_sR};
     decompose(l_eigencoefficients,l_eigens,o_minus_A_deltaQ,o_plus_A_deltaQ);
-    
-
-    //if left cell is dry its A-∆Q is zero
-    if(!l_updateL){
-        o_minus_A_deltaQ[1] = 0;
-        o_minus_A_deltaQ[0] = 0;
-    //if left cell is dry its A+∆Q is zero 
-    }if(!l_updateR){
-        o_plus_A_deltaQ[1] = 0;
-        o_plus_A_deltaQ[0] = 0;
-    }
-
-    
 
 }

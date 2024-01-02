@@ -21,6 +21,7 @@ Overview
    Tsunami_Simulations.rst
    Checkpointing_and_Coarse_Output.rst
    Optimization.rst
+   Parallelization.rst
    
 .. include:: overview.rst
 

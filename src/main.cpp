@@ -23,6 +23,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <omp.h>
 
 
 
@@ -38,8 +39,7 @@ void updateProgressBar(double current, double total, int width) {
   std::cout.flush();
 }
 
-#include <iostream>
-#include <chrono>
+
 
 void printDuration(std::chrono::nanoseconds duration) {
 auto hours = std::chrono::duration_cast<std::chrono::hours>(duration);
@@ -133,7 +133,8 @@ std::string generateNewName( std::string name,  std::string filePath) {
 
 int main() {
 
-  auto l_startTimer = std::chrono::high_resolution_clock::now(); 
+  auto l_startTimer = omp_get_wtime();
+  
 
   tsunami_lab::t_idx l_nx = 0;
   tsunami_lab::t_idx l_ny = 1;
@@ -294,7 +295,7 @@ int main() {
   //Determine which setup and which wavepropagation to use--------------------------------START
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   if(l_temp_waveprop == "2d"){
-    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx, l_ny, l_solver, false);
+    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx, l_ny, l_solver, true);
     std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be chosen \033[0m" << std::endl;
     if(l_temp_setup == "artificialtsunami2D")
     {
@@ -364,9 +365,12 @@ int main() {
     l_ny = 1;
   }
   if(!l_use_cp){
+
+    #pragma omp parallel for collapse(2) reduction(max:l_hMax) default(none) shared(l_setup,l_waveProp,l_nx,l_ny,l_dxy,l_domain_start_x,l_domain_start_y)
+    //every variable is private when first delcared in the loop
     for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ){
-      tsunami_lab::t_real l_y = l_cy * l_dxy + l_domain_start_y;
       for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ){
+        tsunami_lab::t_real l_y = l_cy * l_dxy + l_domain_start_y;
         tsunami_lab::t_real l_x = l_cx * l_dxy + l_domain_start_x;
 
         // get initial values of the setup
@@ -399,9 +403,10 @@ int main() {
     tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
     l_dt = 0.50 * l_dxy / l_speedMax;
   }else{
+    #pragma omp parallel for collapse(2) default(none) shared(l_waveProp,l_nx,l_ny,l_cp_h,l_cp_hu,l_cp_hv,l_cp_b)
     for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ){
 
-      for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ){ 
+      for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ){
 
         l_waveProp->setHeight(l_cx,
                               l_cy,
@@ -416,19 +421,19 @@ int main() {
                                   l_cy,
                                   l_cp_b[l_cx+l_cy*l_nx]);
       }
-    }    
+    }
   }
   
   // derive scaling for a time step
   tsunami_lab::t_real l_scaling = l_dt/l_dxy;
   
-  std::cout << "\033[1;34mTime step: " << l_dt << "\033[0m" << std::endl;
+  std::cout << "\033[1;34mTime step: " << l_dt << " seconds\033[0m" << std::endl;
 
   tsunami_lab::t_real amount_time_steps = ceil(l_temp_endtime/l_dt);
   std::cout << "\033[1;34mAmount of Time steps: " << amount_time_steps << "\033[0m" << std::endl;
 
   // set up time and print control
-  std::cout << "\033[1;34mGentering time loop" << "\033[0m\n" << std::endl;
+  std::cout << "\033[1;34mGenerate time loop" << "\033[0m\n" << std::endl;
   
 
   // Checking if the "y" of each Station is set 0, else delete it from the vector.
@@ -447,6 +452,7 @@ int main() {
   //removing out of boundary stations
   std::string l_stations_string;
   if(l_temp_waveprop == "2d"){
+    //parallisable but not worth it -> overhead to big
     l_stations.erase(
     std::remove_if(l_stations.begin(), l_stations.end(), [&](const auto& station) {
     if (station.i_x < l_domain_start_x || station.i_x >= l_temp_dimension_x + l_domain_start_x ||
@@ -497,7 +503,7 @@ int main() {
                             l_waveProp->getBathymetry(),
                             l_outputFile);
     auto l_endWritingCostant = std::chrono::high_resolution_clock::now();
-    l_durationWritingConstat =  l_endWritingCostant  - l_startWritingCostant ;            
+    l_durationWritingConstat =  l_endWritingCostant  - l_startWritingCostant ;         
   }
 
   while( l_simTime < l_temp_endtime ){
@@ -526,7 +532,6 @@ int main() {
 
         l_file.close();
       }else{
-       
         l_netCdf->updateFile( l_nx,
                               l_ny,
                               l_waveProp->getStride(),
@@ -539,14 +544,12 @@ int main() {
                               l_outputFile);
         auto l_endWriting = std::chrono::high_resolution_clock::now();
         //duration of the writing method
-        l_durationWriting += l_endWriting - l_startWriting ;
-
-                              
+        l_durationWriting += l_endWriting - l_startWriting;
       }
       l_time_step_index++;
       
     if(l_temp_waveprop == "2d"){  
-      if(l_time_step_index%7 == 0 ){
+      if(l_time_step_index%7000 == 0 ){
          auto l_startWritingCheckpoint = std::chrono::high_resolution_clock::now();
         std::cout << "\n\033[1;34m" << "Started writing a new Checkpoint ."<< "\033[0m" << std::endl;
         l_netCdf->createCheckPoint(l_temp_solver,
@@ -580,6 +583,7 @@ int main() {
         std::cout << "\033[1;32m\u2713 " << "Done writing the Checkpoint ."<< "\033[0m"<< std::endl;
       }
       }
+      
     }
     
     //STATIONS_---------------------------------------------START 
@@ -637,13 +641,16 @@ int main() {
 
   }
     //duration of the programm
-   auto l_endTimer = std::chrono::high_resolution_clock::now();
+   double l_endTimer = omp_get_wtime();
+   auto l_EndTimer = std::chrono::high_resolution_clock::now();
+   auto duration = l_endTimer - l_startTimer;
    auto l_duration = l_endTimer - l_startTimer;
-   auto l_durationLoop = l_endTimer - l_loopTimer;
+   auto l_durationLoop = l_EndTimer - l_loopTimer;
 
   std::cout << std::endl;
   std::cout << "total duration: " << std::endl;
-  printDuration(l_duration);
+  std::cout << "duration: "<<duration << std::endl;
+  //printDuration(duration);
   std::cout << "loop duration: " << std::endl;
   printDuration(l_durationLoop - l_durationWritingStation - l_durationWritingCheckpoint - l_durationWriting- l_durationWritingConstat);
   std::cout << "Station: " << std::endl;
@@ -657,7 +664,7 @@ int main() {
 
 
 
-   
+
 
   std::cout << "\n\n\033[1;32m\u2713 All solutions have been written to the Folder : 'outputs' " << std::endl;
   // free memory

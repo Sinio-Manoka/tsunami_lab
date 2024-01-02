@@ -1,0 +1,27 @@
+GitHub Copilot
+Die guided Scheduling-Strategie in OpenMP beginnt, indem sie die Iterationen einer parallelen Schleife in relativ große Blöcke aufteilt und diese Blöcke den Threads zuweist. Wenn ein Thread mit seinem Block fertig ist, erhält er einen neuen Block von Iterationen zur Ausführung. Der Clou an der guided Strategie ist, dass die Größe dieser Blöcke mit der Zeit abnimmt.
+
+Zum Beispiel, wenn Sie eine Schleife mit 1000 Iterationen haben und 4 Threads zur Verfügung haben, könnte OpenMP mit guided Scheduling zunächst die Iterationen in Blöcke von 250 aufteilen. Wenn ein Thread mit seinem Block von 250 Iterationen fertig ist, könnte er einen neuen Block von 125 Iterationen erhalten, dann 62, dann 31, und so weiter.
+
+Dieser Ansatz kann effizient sein, wenn die Kosten für die Aufteilung der Iterationen hoch sind (wie es oft bei großen Datenmengen der Fall ist), da größere Blöcke weniger häufig aufgeteilt werden müssen. Gleichzeitig kann die guided Strategie besser mit ungleichmäßigen Arbeitslasten umgehen als die static Strategie, da sie in der Lage ist, die Arbeit dynamisch auf die Threads zu verteilen.
+
+derDan1el
+soll das heißen wenn ich eine schleife habe und ich mache es statisch dann bekommt jeder thread ein eigenes gleich großes paket wie die anderen threads. das paket bleibt sozusagen bei allen gleich bis alle fertig sind. bei guided bekommen alle threads auch ein gleich großes paket aber es wird nicht die ganze arbeit auf alle threads sofort losgelassen sondern erstmal ein teil und wenn der arbeitsaufwand bei einem nicht so groß war wie bei anderen bekommt er wieder arbeit zugewiesen. aber was passiert wenn ein thread eine aufgabe bekommt die überdurchschnittlich lange und bis zu ende also dieser thread ist der letzte thread der fertig wird eine solche abreit bekommt wird dann gesagt : deine arbeit dauert zu lange wir nehmen deine und teilen diese nochmal unter den anderen auf oder ist es dann schon zu spät wenn man es einmal zugewiesen hat
+
+GitHub Copilot
+Ihre Beschreibung ist korrekt. Bei der static Scheduling-Strategie wird die Arbeit gleichmäßig auf alle Threads aufgeteilt und bleibt während der gesamten Ausführung konstant. Bei der guided Scheduling-Strategie wird die Arbeit in zunächst großen, dann immer kleiner werdenden Blöcken auf die Threads verteilt.
+
+Zu Ihrer Frage: Sobald eine Arbeitseinheit (ein Block von Iterationen) einem Thread zugewiesen wurde, bleibt sie in der Regel bei diesem Thread, bis sie abgeschlossen ist. Es gibt keine eingebaute Möglichkeit in OpenMP, eine laufende Arbeitseinheit von einem Thread zu nehmen und sie auf andere Threads aufzuteilen. Wenn ein Thread eine besonders lange Aufgabe erhält, muss er sie zu Ende bringen, auch wenn andere Threads in der Zwischenzeit fertig werden und untätig sind.
+
+Dies ist einer der Gründe, warum die guided Scheduling-Strategie nützlich sein kann: Indem sie die Arbeit in immer kleinere Blöcke aufteilt, minimiert sie das Risiko, dass ein Thread gegen Ende der Ausführung mit einer besonders großen Aufgabe "stecken bleibt", während andere Threads untätig sind.
+
+derDan1el
+und bei static wird die ganze arbeit am anfang auf die einzelnen festgelegt und dann nicht nochmal zur laufzeit richtig ?
+
+GitHub Copilot
+Ja, das ist korrekt. Bei der static Scheduling-Strategie in OpenMP wird die gesamte Arbeit am Anfang auf die Threads aufgeteilt. Jeder Thread erhält einen festen Block von Iterationen, den er ausführen soll, und diese Aufteilung ändert sich während der Laufzeit nicht.
+
+Das bedeutet, dass bei static Scheduling alle Threads von Anfang an wissen, welche Iterationen sie ausführen sollen, und es gibt keinen Overhead für die dynamische Zuweisung von Arbeit während der Laufzeit. Allerdings kann dies dazu führen, dass einige Threads früher fertig sind als andere, wenn die Arbeitslast zwischen den Iterationen variiert.
+
+
+----------------------------------------------

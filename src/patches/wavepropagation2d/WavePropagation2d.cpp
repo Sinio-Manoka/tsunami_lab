@@ -7,6 +7,7 @@
 #include "../../solvers/Roe.h"
 #include "../../solvers/fwave.h"
 #include <iostream>
+#include <omp.h>
 
 tsunami_lab::patches::WavePropagation2d::WavePropagation2d(t_idx i_xCells, t_idx i_yCells, bool i_choice, bool i_choiceBoundary)
 {
@@ -45,7 +46,8 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
     m_h_temp[l_ce] = m_h[l_ce];
     m_momentum_temp[l_ce] = m_hu[l_ce];
   }
-
+  //TODO: nicht sicher wegen m_choiceBoundry ob man das jetzt auch angeben muss oder nicht
+  #pragma omp parallel for collapse(2) default(none) shared(m_h, m_hu, m_b, m_h_temp, m_momentum_temp, i_scaling, m_xCells, m_yCells, m_choice, m_choiceBoundry)
   for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
   {
     for (t_idx l_ey = 1; l_ey < m_yCells + 1; l_ey++)
@@ -74,7 +76,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
                                    l_netUpdates[0],
                                    l_netUpdates[1]);
       }
-      m_h[l_ceL] -= i_scaling * l_netUpdates[0][0];
+      m_h[l_ceL] -= i_scaling * l_netUpdates[0][0]; 
       m_hu[l_ceL] -= i_scaling * l_netUpdates[0][1];
       m_h[l_ceR] -= i_scaling * l_netUpdates[1][0];
       m_hu[l_ceR] -= i_scaling * l_netUpdates[1][1];
@@ -87,7 +89,8 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
     m_h_temp[l_ce] = m_h[l_ce];
     m_momentum_temp[l_ce] = m_hv[l_ce];
   }
-
+  //TODO: nicht sicher wegen m_choiceBoundry ob man das jetzt auch angeben muss oder nicht
+  #pragma omp parallel for collapse(2) default(none) shared(m_h, m_hv, m_b, m_h_temp, m_momentum_temp, i_scaling, m_xCells, m_yCells, m_choice, m_choiceBoundry)
   for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
   {
     for (t_idx l_ey = 1; l_ey < m_yCells + 1; l_ey++)

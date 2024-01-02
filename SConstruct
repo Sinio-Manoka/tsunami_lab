@@ -70,13 +70,16 @@ if (compiler_name == 'icpc'):
    env.Append( CXXFLAGS = [ '-std=c++17',
                          '-Wall',
                          '-Wextra',
-                         '-Werror' ] )
+                         '-Werror',
+                         '-qopenmp' ] )
 else:    
   env.Append( CXXFLAGS = [ '-std=c++17',
                           '-Wall',
                           '-Wextra',
                           '-Wpedantic',
-                          '-Werror' ] )
+                          '-Werror'] )
+                          #,'-fopenmp' 
+#env.Append( LINKFLAGS = [ '-fopenmp' ] )
 
 # set optimization mode
 if 'debug' in env['mode']:
@@ -96,7 +99,8 @@ if 'san' in  env['mode']:
   env.Append( LINKFLAGS = [ '-g',
                             '-fsanitize=address',
                             '-fsanitize=undefined' ] )
-  
+                            #,'-fopenmp' 
+                             
 
  
 
@@ -120,7 +124,7 @@ env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
 env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
 
 
-env.Append(LIBPATH=['/home/winter/tools/netcdf/include'])
+env.Append(LIBPATH=['/home/daniel/tools/netcdf/include'])
 
 # get source files
 VariantDir( variant_dir = 'build/src',
