@@ -23,6 +23,7 @@ void tsunami_lab::io::NetCdf::fillConstants(t_idx                   i_nx,
     std::vector<t_real> l_coordinateX(i_nx / i_k);
     std::vector<t_real> l_coordinateY(i_ny / i_k);
     
+
     for( t_idx l_iy = 0; l_iy < (i_ny / i_k); l_iy++ )
     {
         l_coordinateY[l_iy] = ((l_iy + 0.5) * i_dxy * i_k)+ i_domainstart_y;
@@ -142,7 +143,7 @@ void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
         t_idx result_y = i_ny / i_k;
         std::vector<t_real> grid(result_x * result_y, 0.0f);
 
-        #pragma omp parallel for collapse(2) default(none) shared(grid,oldgrid,i_k,i_stride,result_x,result_y)
+        #pragma omp parallel for collapse(2) default(none) shared(grid,oldgrid) firstprivate(result_x,result_y,i_stride,i_k)
         for (t_idx l_iy = 0; l_iy < result_y; l_iy++) // für y wert neues feld
         {
             for (t_idx l_ix = 0; l_ix < result_x; l_ix++) // für x wert neues feld
@@ -178,7 +179,7 @@ void tsunami_lab::io::NetCdf::makeLowerResGrid( t_real const* oldgrid,
     else // if k == 1 then just put the old grid
     {
         std::vector<t_real> grid(i_nx * i_ny);
-        #pragma omp parallel for collapse(2) default(none) shared(grid,oldgrid,i_stride,i_nx,i_ny)
+        #pragma omp parallel for collapse(2) default(none) shared(grid,oldgrid) firstprivate(i_stride,i_nx,i_ny)
         for(t_idx l_iy = 0; l_iy < i_ny; l_iy++)
         {
             for(t_idx l_ix = 0; l_ix < i_nx; l_ix++)

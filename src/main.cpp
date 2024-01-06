@@ -362,7 +362,7 @@ int main() {
   }
   if(!l_use_cp){
 
-    #pragma omp parallel for collapse(2) reduction(max:l_hMax) default(none) shared(l_setup,l_waveProp,l_nx,l_ny,l_dxy,l_domain_start_x,l_domain_start_y)
+    #pragma omp parallel for reduction(max:l_hMax) default(none) shared(l_setup,l_waveProp,l_nx,l_ny,l_dxy,l_domain_start_x,l_domain_start_y)
     //every variable is private when first delcared in the loop
     for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ){
       for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ){

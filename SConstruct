@@ -107,16 +107,9 @@ if 'san' in  env['mode']:
 
 
 
-env.Append(LIBS=['netcdf'])
-
-env.Append(LIBS=['z'])
-
-env.Append(LIBS=['hdf5_serial'])
-
-if 'LD_LIBRARY_PATH' not in env['ENV']:
-    env['ENV']['LD_LIBRARY_PATH'] = ''
-
-env['ENV']['LD_LIBRARY_PATH'] = '/usr/lib/x86_64-linux-gnu' + env['ENV']['LD_LIBRARY_PATH']
+conf = Configure(env)
+if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
+  exit(1)
 
 # add Catch2
 env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])

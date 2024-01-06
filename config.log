@@ -1,0 +1,26 @@
+file /beegfs/go87vew/tsunami_lab/SConstruct,line 110:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for C++ library netcdf... 
+scons: Configure: ".sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0.cpp" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0.cpp <-
+  |  |
+  |  |
+  |  |#include "netcdf.h"
+  |  |
+  |  |int main(void) {
+  |  |  
+  |  |return 0;
+  |  |}
+  |  |
+  |
+scons: Configure: ".sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0.o" is up to date.
+scons: Configure: The original builder output was:
+  |/cluster/spack/opt/spack/linux-centos7-broadwell/gcc-10.2.0/gcc-11.2.0-c27urtyjryzoyyqfms5m3ewi6vrtvt44/bin/g++ -o .sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0.o -c -std=c++17 -Wall -Wextra -Wpedantic -Werror -fopenmp -O3 .sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0.cpp
+  |
+scons: Configure: ".sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0_2551e236135ab99284691062a67fcb80" is up to date.
+scons: Configure: The original builder output was:
+  |/cluster/spack/opt/spack/linux-centos7-broadwell/gcc-10.2.0/gcc-11.2.0-c27urtyjryzoyyqfms5m3ewi6vrtvt44/bin/g++ -o .sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0_2551e236135ab99284691062a67fcb80 -fopenmp .sconf_temp/conftest_1ddd6b9627e69bc88093239e56660785_0.o -lnetcdf
+  |
+scons: Configure: (cached) yes
+
