@@ -14,7 +14,7 @@
     "domain_start_x" : -199875,
     "domain_start_y" : -749875,
     "wavepropagation" : "2d",
-    "endtime" : 7200,
+    "endtime" : 4500,
     "writer" : "netcdf",
     "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
     "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc",

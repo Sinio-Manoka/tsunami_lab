@@ -306,25 +306,96 @@ To obtain more accurate values this time on how much time a cell takes on averag
 For this test, we have reserved 3 hours each for static, dynamic and guided and these 3 simulations must be completed in this time.
 
 +------------------------+----------------------------+----------------------------+--------------------------------------------+
+|                        |                            |                            |                                            |
 | OMP_NUM_THREADS        | schedule(static)           | schedule(dynamic)          | schedule(guided)                           |
+|                        |                            |                            |                                            |
 +========================+============================+============================+============================================+
 | 32                     |                            |                            |                                            |
-|                        | 3ns                        |   did not complete at all  |                                            |
-|                        |                            |   55% in 180 min           |                                            |
-|                        |                            | (not even one simulation)  |                                            |
+|                        |       3ns                  |   did not complete within  |                    4ns                     |
+|                        |                            |    180 min , 55% completed |                                            |
+|                        |                            |                            |                                            |
 |                        |                            |                            |                                            |
 +------------------------+----------------------------+----------------------------+--------------------------------------------+
 | 34                     |                            |                            |                                            |
-|                        | 3ns                        |            /               |                                            |
+|                        | 3ns                        |            /               |                  3ns                       |
 |                        |                            |                            |                                            |
 +------------------------+----------------------------+----------------------------+--------------------------------------------+
 | 36                     |                            |                            |                                            |
-|                        | 3ns                        |            /               |                                            |
+|                        | 3ns                        |            /               |                    4ns                     |
 |                        |                            |                            |                                            |
 +------------------------+----------------------------+----------------------------+--------------------------------------------+
 
+
 the static scheduler was the fastest, and because of NUMA aware initializations and a longer duration of the simulation (more precise average), the average time per cell is now 3ns.
-The dynamic scheduler did not complete the simulation in 3 hours, so we can't say anything about the average time per cell but we know that this scheduler is slower than the static scheduler.
+The dynamic scheduler did not complete the first simulation within 3 hours, so we can't say anything about the average time per cell but we know that this scheduler is slower than the static scheduler.
+The guided scheduler was almost as fast as the static scheduler with 4ns per cell.
+
+
+.. admonition:: Pinning strategies
+
+    The pinning strategy is a strategy that determines which thread is assigned to which core.
+    The default strategy is to assign the threads to the cores in a round-robin fashion.
+
+    .. code-block:: c++
+    
+        {
+        "solver" : "fwave",
+        "dimension_x" : 2699750,
+        "dimension_y" : 1499750,
+        "setup" :  "tsunamievent2d",
+        "nx" : 5400,
+        "ny" : 3000,
+        "k"  : 5,
+        "hu" : 0,
+        "location" : 0,
+        "hv":0.0,
+        "hr": 55,
+        "hl": 25,
+        "domain_start_x" : -199875,
+        "domain_start_y" : -749875,
+        "wavepropagation" : "2d",
+        "endtime" : 4500,
+        "writer" : "netcdf",
+        "bathfile" : "data/output/tohoku_gebco20_ucsb3_250m_bath.nc",
+        "disfile" : "data/output/tohoku_gebco20_ucsb3_250m_displ.nc",
+        "outputfilename": "simulation.nc",
+        "usecheckpoint" : false
+        }
+
+    we tried different pinning strategies seen in the table below.
+        
+We splitted the cores into 4 groups and used ``close``, ``spread`` and ``MASTER`` to assign the threads to the cores.
++------------------------+----------------------------+----------------------------+--------------------------------------------+
+| OMP_NUM_THREADS        |                            |                            |                                            |
+|                        |  OMP_PROC_BIND=close       |                            |  OMP_PLACES="{0:9},{9:9},{18:9},{27:9}"    |
+|                        |  OMP_PLACES="{0:9},{9:9},  |  OMP_PLACES="{0:9},{9:9},  |           OMP_PROC_BIND=MASTER             |
+|                        |  {18:9},{27:9}"            |  {18:9},{27:9}"            |                                            |                    
+|                        |                            |  OMP_PROC_BIND=spread      |                                            |
+|                        |                            |                            |                                            |
++========================+============================+============================+============================================+
+| 34                     |                            |                            |                                            |
+|                        | 3ns                        |      3ns                   |                  20ns                      |
+|                        |                            |                            |                                            |
+|                        |                            |                            |                                            |
+|                        |                            |                            |                                            |
++------------------------+----------------------------+----------------------------+--------------------------------------------+
+
+OMP_PROC_BIND=spread  and OMP_PROC_BIND=close took the same time ``5 minutes, 10 seconds`` and OMP_PROC_BIND=MASTER took ``31 minutes, 5seconds`` with an average time of 20ns for a cell. 
+Probably because that regardless of the definition of the places in OMP_PLACES,
+all threads will be executed on the same core where the master thread is running.
+This can lead to overloading of that core and impact performance.
+
+
+We also tried it without  OMP_PLACES and ``spread```and ``bind`` took 20 seconds longer in total, but the average time per cell remained the same.
+
+
+
+
+
+
+
+
+
 
 
 
