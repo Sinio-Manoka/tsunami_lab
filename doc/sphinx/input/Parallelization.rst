@@ -381,14 +381,49 @@ We splitted the cores into 4 groups and used ``close``, ``spread`` and ``MASTER`
 +------------------------+----------------------------+----------------------------+--------------------------------------------+
 
 OMP_PROC_BIND=spread  and OMP_PROC_BIND=close took the same time ``5 minutes, 10 seconds`` and OMP_PROC_BIND=MASTER took ``31 minutes, 5seconds`` with an average time of 20ns for a cell. 
-Probably because that regardless of the definition of the places in OMP_PLACES,
-all threads will be executed on the same core where the master thread is running.
-This can lead to overloading of that core and impact performance.
+It doesn't make sense to create different places if all cores are supposed to orient themselves to the master thread therefore, this long duration probably occurred.
+
+We found that without using OMP_PLACES, both spread and bind took 20 seconds longer.
+However, MASTER was the fastest overall, but only by a few seconds.
+
+To compare the unparallelized code with the fully parallelized code, we simulated Tohoku for 4500 seconds (500m cell width) again, both with and without parallelization.
+
+without parallelization:
+.. code-block:: bash
+
+    total duration: 
+    duration: 7635.31 seconds = 127,26 minutes
+    loop duration: 
+    Duration: 2 hours, 1 minutes, 59 seconds, 112 milliseconds, 463 microseconds, 470 nanoseconds
+    Station: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 102 microseconds, 717 nanoseconds
+    Checkpoint: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 0 microseconds, 0 nanoseconds
+    time per cell: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 451 microseconds, 797 nanoseconds
+    time per iteration: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 0 microseconds, 81 nanoseconds
 
 
-We also tried it without  OMP_PLACES and ``spread```and ``bind`` took 20 seconds longer in total, but the average time per cell remained the same.
+with parallelization:
+
+.. code-block:: bash
+
+    total duration: 
+    duration: 342.581 seconds = 5,70968 minutes
+    loop duration: 
+    Duration: 0 hours, 5 minutes, 5 seconds, 373 milliseconds, 30 microseconds, 342 nanoseconds
+    Station: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 56 microseconds, 147 nanoseconds
+    Checkpoint: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 0 microseconds, 0 nanoseconds
+    time per cell: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 18 microseconds, 850 nanoseconds
+    time per iteration: 
+    Duration: 0 hours, 0 minutes, 0 seconds, 0 milliseconds, 0 microseconds, 3 nanoseconds
 
 
+The parallelized code is 22.29 times faster and the time per iteration is 27 times faster than the unparallelized code.
 
 
 
