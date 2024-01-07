@@ -365,6 +365,7 @@ The guided scheduler was almost as fast as the static scheduler with 4ns per cel
     we tried different pinning strategies seen in the table below.
         
 We splitted the cores into 4 groups and used ``close``, ``spread`` and ``MASTER`` to assign the threads to the cores.
+
 +------------------------+----------------------------+----------------------------+--------------------------------------------+
 | OMP_NUM_THREADS        |                            |                            |                                            |
 |                        |  OMP_PROC_BIND=close       |                            |  OMP_PLACES="{0:9},{9:9},{18:9},{27:9}"    |
@@ -389,6 +390,7 @@ However, MASTER was the fastest overall, but only by a few seconds.
 To compare the unparallelized code with the fully parallelized code, we simulated Tohoku for 4500 seconds (500m cell width) again, both with and without parallelization.
 
 without parallelization:
+
 .. code-block:: bash
 
     total duration: 
