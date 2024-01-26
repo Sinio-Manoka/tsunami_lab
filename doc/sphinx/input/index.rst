@@ -22,6 +22,7 @@ Overview
    Checkpointing_and_Coarse_Output.rst
    Optimization.rst
    Parallelization.rst
+   IndividualPhase.rst
    
 .. include:: overview.rst
 

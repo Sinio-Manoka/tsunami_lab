@@ -373,6 +373,7 @@ int main() {
         tsunami_lab::t_real l_h = l_setup->getHeight( l_x,
                                                       l_y );
         l_hMax = std::max( l_h, l_hMax );
+        
         tsunami_lab::t_real l_hu = l_setup->getMomentumX( l_x,
                                                           l_y );
         tsunami_lab::t_real l_hv = l_setup->getMomentumY( l_x,
@@ -545,7 +546,7 @@ int main() {
       l_time_step_index++;
       
     if(l_temp_waveprop == "2d"){  
-      if(l_time_step_index%7000 == 0 ){
+      if(l_time_step_index%25 == 0 ){
          double l_startWritingCheckpoint = omp_get_wtime();
         std::cout << "\n\033[1;34m" << "Started writing a new Checkpoint ."<< "\033[0m" << std::endl;
         l_netCdf->createCheckPoint(l_temp_solver,
