@@ -254,13 +254,97 @@ First week and second week
         
         .. warning:: 
 
-           the setup implementation in c# can be found on the following githup repositry TODO
+           the setup implementation in c# can be found on the following githup repositry 
+           https://github.com/imissoldgaren/C_sharp_Tsunami.git
            
             
     Unity Project
     ..............
 
-     Ward Todo..
+        implemented Gui:
+
+        .. image:: _static/GuiScetch1 .png
+            :width: 700px
+            :align: right
+
+        .. image:: _static/GuiScetch2.png
+            :width: 700px
+            :align: right
+
+
+
+
+    
+        Upon integrating the solver, 1D wave propagation, and 2D wave propagation in C#, 
+        we seamlessly embedded them into our Unity project. The graphical user interface (GUI) and Unity
+        simulation are now accessible within our program.
+
+        Currently, the simulation operates solely in real-time and has the capability to generate CSV files containing the
+        data. However, it's worth noting that our project is currently encountering an issue, as it does not function as 
+        expected for tsunamiEvent2D and ArtificialTsunami2d.
+
+    
+    
+    Issue faced.
+    ............
+
+     
+    During the integration of our solver into C#, we encountered numerous data-related errors. Specifically, issues arose when updating indices in the entity update process, resulting in the generation of NaN values
+    .Additionally, calculations related to attributes such as height were found to be incorrect.
+
+        .. image:: _static/error1.png
+            :width: 700px
+            :align: right
+
+        .. image:: _static/error2.png
+            :width: 700px
+            :align: right
+
+
+
+third week and forth week
+--------------------------
+
+    hdf5 : Hierarchical Data Format
+    ................................
+
+        HDF5 is a high performance data software library and file format to manage, process, and store your heterogeneous data.
+        HDF5 is built for fast I/O processing and storage. 
+
+        link: https://www.hdfgroup.org/solutions/hdf5/
+
+    3.week
+    ......
+
+        During the third week, we explored alternatives to replicate NetCDF functionality in C# and Unity. We discovered that HDF5 can be used
+        in C#, but it's a bit more intricate than NetCDF as it's geared towards high-performance computing. Nonetheless, it offers greater power and capabilities 
+
+        Link: https://www.unidata.ucar.edu/software/netcdf/workshops/2012/overview/Alternatives.html
+
+        Unfortunately, we couldn't finish implementing it in Unity because HDF5 turned out
+        to be too complex, especially given the limited example we had on the internet.
+
+        Documentation : https://docs.hdfgroup.org/hdf5/develop/_h5_d__u_g.html#subsubsec_dataset_program_create
+
+        and we got stuck with some bugs while integrating the ui and wavepropagation2d to the unity project so we wokred on fixing them.
+
+    4.week
+    ......
+
+
+        After realizing our time constraints, we shifted our focus away from other tasks and concentrated solely on optimizing the code we had in Unity as efficiently as possible and fixing some bugs.
+
+
+
+
+alle members contriubted equally in Individual Phase.
+
+
+
+
+
+
+    
 
 
 
@@ -268,7 +352,7 @@ First week and second week
 
     
     
-
++
     
 
     

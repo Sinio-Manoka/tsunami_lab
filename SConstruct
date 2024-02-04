@@ -84,7 +84,7 @@ env.Append( LINKFLAGS = [ '-fopenmp' ] )
 # set optimization mode
 if 'debug' in env['mode']:
   env.Append( CXXFLAGS = [ '-g',
-                           '-O2' ] )
+                           '-O0' ] )
 else:
   env.Append( CXXFLAGS = [ '-O3' ] )
 
@@ -107,10 +107,16 @@ if 'san' in  env['mode']:
 
 
 
-conf = Configure(env)
-if not conf.CheckLibWithHeader('netcdf','netcdf.h','c++'):
-  exit(1)
+env.Append(LIBS=['netcdf'])
 
+env.Append(LIBS=['z'])
+
+env.Append(LIBS=['hdf5_serial'])
+
+if 'LD_LIBRARY_PATH' not in env['ENV']:
+    env['ENV']['LD_LIBRARY_PATH'] = ''
+
+env['ENV']['LD_LIBRARY_PATH'] = '/usr/lib/x86_64-linux-gnu' + env['ENV']['LD_LIBRARY_PATH']
 # add Catch2
 env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
 
@@ -118,7 +124,7 @@ env.Append(CXXFLAGS = [ '-isystem', 'submodules/Catch2/single_include'])
 env.Append(CXXFLAGS = ['-isystem', 'submodules/json/single_include'])
 
 
-env.Append(LIBPATH=['/home/daniel/tools/netcdf/include'])
+env.Append(LIBPATH=['/home/imissoldgaren/tools/netcdf/include'])
 
 # get source files
 VariantDir( variant_dir = 'build/src',
