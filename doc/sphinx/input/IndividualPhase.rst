@@ -62,9 +62,8 @@ vs-code :
 
 to run the unitTest: navigate to the programmtest folder 
                      in terminal : dotnet test
+
 .. warning:: 
-
-
 
     The input parameters are specified in the
     "main.cs" file. We opted not to utilize a JSON file for input configuration, as the main class serves the sole purpose of testing.
@@ -75,8 +74,6 @@ to run the unitTest: navigate to the programmtest folder
 First week and second week
 --------------------------
 
-    C#_Project
-    ...........
 
         After discovering the capabilities of C# and recognizing the distinctions between C# in Unity and the standard version, we started incorporating our solver and setup into C# Unity. Simultaneously, we worked on developing a user interface for our program. In the initial week, we divided the tasks among group members,
         with two focusing on implementing the solver , wavepropagation and setup in C#,
@@ -258,12 +255,11 @@ First week and second week
            https://github.com/imissoldgaren/C_sharp_Tsunami.git
            
             
-    Unity Project
-    ..............
+    **Unity Project**
 
         implemented Gui:
 
-        .. image:: _static/GuiScetch1 .png
+        .. image:: _static/GuiScetch1.png
             :width: 700px
             :align: right
 
@@ -285,8 +281,7 @@ First week and second week
 
     
     
-    Issue faced.
-    ............
+    **Problem**
 
      
     During the integration of our solver into C#, we encountered numerous data-related errors. Specifically, issues arose when updating indices in the entity update process, resulting in the generation of NaN values
@@ -305,16 +300,15 @@ First week and second week
 third week and forth week
 --------------------------
 
-    hdf5 : Hierarchical Data Format
-    ................................
+    **hdf5 : Hierarchical Data Format**
+    
 
         HDF5 is a high performance data software library and file format to manage, process, and store your heterogeneous data.
         HDF5 is built for fast I/O processing and storage. 
 
         link: https://www.hdfgroup.org/solutions/hdf5/
 
-    3.week
-    ......
+    **3.week**
 
         During the third week, we explored alternatives to replicate NetCDF functionality in C# and Unity. We discovered that HDF5 can be used
         in C#, but it's a bit more intricate than NetCDF as it's geared towards high-performance computing. Nonetheless, it offers greater power and capabilities 
@@ -328,8 +322,7 @@ third week and forth week
 
         and we got stuck with some bugs while integrating the ui and wavepropagation2d to the unity project so we wokred on fixing them.
 
-    4.week
-    ......
+    **4.week**
 
 
         After realizing our time constraints, we shifted our focus away from other tasks and concentrated solely on optimizing the code we had in Unity as efficiently as possible and fixing some bugs.

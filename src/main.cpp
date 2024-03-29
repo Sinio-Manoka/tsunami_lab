@@ -134,7 +134,7 @@ int main() {
 
   tsunami_lab::t_idx l_nx = 0;
   tsunami_lab::t_idx l_ny = 1;
-  tsunami_lab::t_real l_dxy = 25;
+  tsunami_lab::t_real l_dxy = 440500.0 / l_nx;
 
   
   std::cout << "\033[1;33m"<< "####################################" << std::endl;
@@ -155,7 +155,7 @@ int main() {
     return EXIT_FAILURE;
   }
   //2. Are all the needed Keys there??
-  std::vector<std::string> keysToCheck = {"solver","dimension_x","dimension_y", "setup",
+  std::vector<std::string> keysToCheck = {"reflecting_boundary","solver","dimension_x","dimension_y", "setup",
                                           "nx","k","hu","location","hl","ny","domain_start_x",
                                           "domain_start_y","wavepropagation","endtime","writer","bathfile","disfile","outputfilename","usecheckpoint"};
   std::vector<std::string> missingKeys = tsunami_lab::io::Configuration::checkMissingKeys(keysToCheck);
@@ -192,6 +192,7 @@ int main() {
   double l_durationWritingStation = 0;
   double l_durationWritingCheckpoint = 0;
   double l_durationWritingConstant = 0;
+  bool reflecting_boundary;
   
 
   tsunami_lab::t_real *l_cp_b = nullptr;
@@ -200,6 +201,8 @@ int main() {
   tsunami_lab::t_real *l_cp_hv = nullptr;
   
   std::vector<tsunami_lab::Station> l_stations;
+
+  //checkpointing ist ein Feature für 2D nicht 1D!
   if(l_use_cp){
     if (!std::filesystem::exists(l_temp_outputfile)) {
 
@@ -236,7 +239,8 @@ int main() {
                                             &l_temp_setup,
                                             &l_stations_json_file,
                                             &l_temp_disFile,
-                                            &l_temp_bathFile);
+                                            &l_temp_bathFile,
+                                            &reflecting_boundary);
     tsunami_lab::io::Configuration::readStationsFromString(l_stations_json_file,l_stations);
     for (const auto& station : l_stations) {
       std::string l_station_path = "stations/" + station.i_name + "/" + station.i_name + ".csv";
@@ -260,6 +264,7 @@ int main() {
     l_temp_writer = tsunami_lab::io::Configuration::readFromConfigString("writer");
     l_temp_bathFile = tsunami_lab::io::Configuration::readFromConfigString("bathfile");
     l_temp_disFile = tsunami_lab::io::Configuration::readFromConfigString("disfile");
+    reflecting_boundary = tsunami_lab::io::Configuration::readFromConfigBoolean("reflecting_boundary");
   }
 
   tsunami_lab::t_real l_temp_hr=  tsunami_lab::io::Configuration::readFromConfigReal("hr");
@@ -291,7 +296,7 @@ int main() {
   //Determine which setup and which wavepropagation to use--------------------------------START
   tsunami_lab::patches::WavePropagation *l_waveProp = nullptr;
   if(l_temp_waveprop == "2d"){
-    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx, l_ny, l_solver, true);
+    l_waveProp = new tsunami_lab::patches::WavePropagation2d( l_nx, l_ny, l_solver, reflecting_boundary);
     std::cout << "\033[1;32m\u2713 WavePropagation : 2d will be chosen \033[0m" << std::endl;
     if(l_temp_setup == "artificialtsunami2D")
     {
@@ -312,7 +317,7 @@ int main() {
   }else if(l_temp_waveprop == "1d")
   {
       std::cout << "\033[1;32m\u2713 WavePropagation : 1d will be chosen \033[0m" << std::endl;
-      l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver, false);
+      l_waveProp = new tsunami_lab::patches::WavePropagation1d( l_nx , l_solver, reflecting_boundary);
       if(l_temp_setup == "tsunamievent1d"){
         std::cout << "\033[1;32m\u2713 Setup : TsunamiEvent1d \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::TsunamiEvent1d();
@@ -345,6 +350,7 @@ int main() {
         std::cout << "\033[1;32m\u2713 Setup : dambreak2d \033[0m" << std::endl;
         l_setup = new tsunami_lab::setups::DamBreak2d();
       }
+    l_ny = 1;
   }
     //Determine which setup and which wavepropagation to use--------------------------------END
   std::cout << "\n\033[1;34m" << "runtime configuration" << std::endl;
@@ -356,10 +362,7 @@ int main() {
   tsunami_lab::t_real l_hMax = std::numeric_limits< tsunami_lab::t_real >::lowest();
   // set up solver
 
-  if(l_temp_waveprop == "1d")
-  {
-    l_ny = 1;
-  }
+
   if(!l_use_cp){
 
     #pragma omp parallel for reduction(max:l_hMax) default(none) shared(l_setup,l_waveProp,l_nx,l_ny,l_dxy,l_domain_start_x,l_domain_start_y)
@@ -400,7 +403,7 @@ int main() {
     tsunami_lab::t_real l_speedMax = std::sqrt( 9.81 * l_hMax );
     l_dt = 0.50 * l_dxy / l_speedMax;
   }else{
-    #pragma omp parallel for collapse(2) default(none) shared(l_waveProp,l_nx,l_ny,l_cp_h,l_cp_hu,l_cp_hv,l_cp_b)
+    #pragma omp parallel for default(none) shared(l_waveProp,l_nx,l_ny,l_cp_h,l_cp_hu,l_cp_hv,l_cp_b)
     for( tsunami_lab::t_idx l_cy = 0; l_cy < l_ny; l_cy++ ){
 
       for( tsunami_lab::t_idx l_cx = 0; l_cx < l_nx; l_cx++ ){
@@ -489,7 +492,7 @@ int main() {
   
   if(l_temp_writer == "netcdf"){
     l_netCdf = new tsunami_lab::io::NetCdf(l_nx,l_ny,l_k,l_outputFile);
-    double l_startWritingCostant = omp_get_wtime();
+    double l_startWritingConstant = omp_get_wtime();
     l_netCdf->fillConstants(l_nx,
                             l_ny,
                             l_k,
@@ -499,8 +502,8 @@ int main() {
                             l_domain_start_y,
                             l_waveProp->getBathymetry(),
                             l_outputFile);
-    double l_endWritingCostant = omp_get_wtime();
-    l_durationWritingConstant =  l_endWritingCostant  - l_startWritingCostant ;         
+    double l_endWritingConstant = omp_get_wtime();
+    l_durationWritingConstant =  l_endWritingConstant  - l_startWritingConstant ;         
   }
 
   while( l_simTime < l_temp_endtime ){
@@ -572,7 +575,8 @@ int main() {
                                     tsunami_lab::io::Station::Stringify(),
                                     l_checkPointName,
                                     l_temp_disFile,
-                                    l_temp_bathFile);
+                                    l_temp_bathFile,
+                                    reflecting_boundary);
 
           double l_endWritingCheckpoint = omp_get_wtime();
           l_durationWritingCheckpoint += l_endWritingCheckpoint - l_startWritingCheckpoint ;
@@ -625,7 +629,7 @@ int main() {
       l_last_simTime_time = l_simTime;
       l_current_frequency_time = l_current_frequency_time + l_frequency;
       double l_endWritingStation = omp_get_wtime();
-      l_durationWritingStation += l_endWritingStation - l_startWritingStation ;
+      l_durationWritingStation += l_endWritingStation - l_startWritingStation;
 
 
     }

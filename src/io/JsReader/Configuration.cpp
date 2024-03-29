@@ -26,6 +26,7 @@ bool tsunami_lab::io::Configuration::readFromConfigBoolean(std::string  i_config
     std::ifstream f("configs/config.json");
     json data = json::parse(f); 
     return data[i_configVariable];
+    std::cout<<data[i_configVariable]<<std::endl;
 }
 
 std::vector<std::string> tsunami_lab::io::Configuration::checkMissingKeys(std::vector<std::string> i_keys) {

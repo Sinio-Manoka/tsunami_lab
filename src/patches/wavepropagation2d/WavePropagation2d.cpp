@@ -42,16 +42,16 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
 
 
   #pragma omp parallel for schedule(static) default(none) shared(m_h, m_hu, m_hv, m_b) firstprivate(m_xCells, m_yCells)
-  for (t_idx l_ce = 1; l_ce < ((m_xCells + 2) * (m_yCells + 2)); l_ce++)
+  for (t_idx l_ce = 0; l_ce < ((m_xCells + 2) * (m_yCells + 2)); l_ce++)
   {
     m_h_temp[l_ce] = m_h[l_ce];
     m_momentum_temp[l_ce] = m_hu[l_ce];
   }
   
   #pragma omp parallel for schedule(static) default(none) shared(m_h, m_hv, m_b, m_h_temp, m_momentum_temp) firstprivate(i_scaling, m_xCells, m_yCells, m_choice)
-  for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
+  for (t_idx l_ex = 0; l_ex < m_xCells + 1; l_ex++)
   {
-    for (t_idx l_ey = 1; l_ey < m_yCells + 1; l_ey++)
+    for (t_idx l_ey = 0; l_ey < m_yCells + 1; l_ey++)
     {
       t_real l_netUpdates[2][2];
       t_idx l_ceL = getIndex(l_ex, l_ey);
@@ -77,7 +77,7 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
                                    l_netUpdates[0],
                                    l_netUpdates[1]);
       }
-      m_h[l_ceL] -= i_scaling * l_netUpdates[0][0]; 
+      m_h[l_ceL] -= i_scaling * l_netUpdates[0][0];
       m_hu[l_ceL] -= i_scaling * l_netUpdates[0][1];
       m_h[l_ceR] -= i_scaling * l_netUpdates[1][0];
       m_hu[l_ceR] -= i_scaling * l_netUpdates[1][1];
@@ -93,9 +93,9 @@ void tsunami_lab::patches::WavePropagation2d::timeStep(t_real i_scaling)
   }
 
   #pragma omp parallel for schedule(static) default(none) shared(m_h, m_hv, m_b, m_h_temp, m_momentum_temp) firstprivate(i_scaling, m_xCells, m_yCells, m_choice) 
-  for (t_idx l_ex = 1; l_ex < m_xCells + 1; l_ex++)
+  for (t_idx l_ex = 0; l_ex < m_xCells + 1; l_ex++)
   {
-    for (t_idx l_ey = 1; l_ey < m_yCells + 1; l_ey++)
+    for (t_idx l_ey = 0; l_ey < m_yCells + 1; l_ey++)
     {
       t_real l_netUpdates[2][2];
 

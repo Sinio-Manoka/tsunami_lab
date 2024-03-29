@@ -176,8 +176,8 @@ class tsunami_lab::io::NetCdf {
                           std::string i_stations_string,
                           std::string i_name_cp,
                           std::string i_disfile,
-                          std::string i_batfile
-                          );
+                          std::string i_batfile,
+                          bool i_reflecting_boundary);
 
   /**
      * @brief Parsing the checkpoint NC file.
@@ -226,7 +226,8 @@ class tsunami_lab::io::NetCdf {
                         std::string * o_setup,
                         std::string * o_stations_string,
                         std::string * o_disfile,
-                        std::string * o_batfile);                   
+                        std::string * o_batfile,
+                        bool * o_reflecting_boundary);                   
 };
 
 #endif

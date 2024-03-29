@@ -228,7 +228,9 @@ TEST_CASE("Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]")
     if (!std::filesystem::exists(l_check_point_path))
         std::filesystem::create_directory(l_check_point_path);
 
-    l_netCdf->createCheckPoint("fwave", 1, 2, 3, 4, 5, 6, 7, 10, 3, l_b, l_h, l_hu, l_hv, 1, 4, 2, 2, 1, "test2", "test3", "CheckpointsTest.nc", "test5", "test6");
+    
+
+    l_netCdf->createCheckPoint("fwave", 1, 2, 3, 4, 5, 6, 7, 10, 3, l_b, l_h, l_hu, l_hv, 1, 4, 2, 2, 1, "test2", "test3", "CheckpointsTest.nc", "test5", "test6",true);
     REQUIRE(std::filesystem::exists("outputs/cp/CheckpointsTest.nc"));
     std::string solver;
     tsunami_lab::t_real o_domain_start_x;
@@ -252,6 +254,7 @@ TEST_CASE("Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]")
     std::string o_stations_string;
     std::string o_disfile;
     std::string o_batfile;
+    bool o_reflecting_boundary;
 
     tsunami_lab::io::NetCdf::readCheckPoint("outputs/cp/CheckpointsTest.nc",
                                             &solver,
@@ -275,7 +278,8 @@ TEST_CASE("Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]")
                                             &o_setup,
                                             &o_stations_string,
                                             &o_disfile,
-                                            &o_batfile);
+                                            &o_batfile,
+                                            &o_reflecting_boundary);
 
     REQUIRE(solver == "fwave");
     REQUIRE(o_domain_start_x == 1.0);
@@ -296,6 +300,7 @@ TEST_CASE("Test the NetCdf-CheckPoint ", "[NetCdfCheckpoint]")
     REQUIRE(o_stations_string == "test3");
     REQUIRE(o_disfile == "test6");
     REQUIRE(o_batfile == "test5");
+    REQUIRE(o_reflecting_boundary == true);
 
     for (tsunami_lab::t_idx l_i = 0; l_i < 4; l_i++)
     {

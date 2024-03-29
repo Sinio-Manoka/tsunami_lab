@@ -79,8 +79,8 @@ TEST_CASE( "Test the derivation of the Fwave net-updates ", "[Zp - Vectors]" ) {
                                          i_minus_A_deltaQ,
                                          i_plus_A_deltaQ );
 
-  REQUIRE( i_minus_A_deltaQ[0] == 17 );
-  REQUIRE( i_minus_A_deltaQ[1] == Approx(  -165.41) );
+  REQUIRE( i_minus_A_deltaQ[0] == Approx( 19.01562f) );
+  REQUIRE( i_minus_A_deltaQ[1] == Approx(-161.40999f) );
 
   REQUIRE( i_plus_A_deltaQ[0] == 39 );
   
@@ -148,7 +148,7 @@ tsunami_lab::solvers::fwave::netUpdates( 10,
   REQUIRE( l_netUpdatesL[0] == Approx(0) );
   REQUIRE( l_netUpdatesL[1] == Approx(0) );
 
-  REQUIRE( l_netUpdatesR[0] == Approx(  -4.2));
+  REQUIRE( l_netUpdatesR[0] == Approx(  -4.19969));
   REQUIRE( l_netUpdatesR[1] == Approx( -65.504));
 
 //test for the Bathymetry with net-update

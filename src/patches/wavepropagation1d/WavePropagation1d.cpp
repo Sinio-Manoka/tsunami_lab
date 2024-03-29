@@ -24,7 +24,7 @@ tsunami_lab::patches::WavePropagation1d::WavePropagation1d( t_idx i_nCells, bool
 
   // init to zero
   for( unsigned short l_st = 0; l_st < 2; l_st++ ) {
-    for( t_idx l_ce = 0; l_ce < m_nCells; l_ce++ ) {
+    for( t_idx l_ce = 0; l_ce < m_nCells+2; l_ce++ ) {
       m_h[l_st][l_ce] = 0;
       m_hu[l_st][l_ce] = 0;
       m_b[l_ce] = 0;
@@ -94,16 +94,15 @@ void tsunami_lab::patches::WavePropagation1d::timeStep( t_real i_scaling) {
     
     // update the cells' quantities
     l_hNew[l_ceL]  -= i_scaling * l_netUpdates[0][0];
-    l_huNew[l_ceL] -= i_scaling * l_netUpdates[0][1] ;
+    l_huNew[l_ceL] -= i_scaling * l_netUpdates[0][1];
 
 
     l_hNew[l_ceR]  -= i_scaling * l_netUpdates[1][0];
-    l_huNew[l_ceR] -= i_scaling * l_netUpdates[1][1] ;
-    
-  
+    l_huNew[l_ceR] -= i_scaling * l_netUpdates[1][1];
     
   }
-}
+  setGhostCollumn();
+} 
 
 void tsunami_lab::patches::WavePropagation1d::setGhostCollumn() {
   t_real * l_h = m_h[m_step];
@@ -112,7 +111,6 @@ void tsunami_lab::patches::WavePropagation1d::setGhostCollumn() {
 
   // set left boundary
   l_h[0] = l_h[1];
-  l_hu[0] = l_hu[1];
   l_b[0] = l_b[1];
 
     // set right boundary
@@ -121,11 +119,13 @@ void tsunami_lab::patches::WavePropagation1d::setGhostCollumn() {
 
 
   if(m_choiceBoundry){
-    //reflecting boundary :same values except that the reflecting cell receives the paricel velocity with opposite sign
+    //reflecting boundary :same values except that the reflecting cell receives the particel velocity with opposite sign
     l_hu[m_nCells+ 1] = -(l_hu[m_nCells ]);
+    l_hu[0] = -l_hu[1];
   }
   else
   {
     l_hu[m_nCells+1] = l_hu[m_nCells];
+    l_hu[0] = l_hu[1];
   }
 }
