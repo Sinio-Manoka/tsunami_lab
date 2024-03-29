@@ -55,59 +55,66 @@ void tsunami_lab::io::NetCdf::read(const char *i_filename,
                                    t_real **o_xdata,
                                    t_real **o_ydata)
 {
-    if (!std::filesystem::exists(i_filename)) {
-        if (std::getenv("GITHUB_ACTIONS") == nullptr) {
-            throw std::runtime_error(std::string("File does not exist: ") + i_filename);
-        } else {
-            std::cerr << "Warning: File does not exist: " << i_filename << '\n';
+    if (std::filesystem::exists(i_filename))
+    {
+
+        int l_ncId, l_err = 0;
+        int l_varidz, l_varidy, l_varidx, l_dimX, l_dimY;
+
+        l_err = nc_open(i_filename, NC_NOWRITE, &l_ncId);
+        checkNcErr(l_err, __FILE__, __LINE__);
+
+        l_err = nc_inq_dimid(l_ncId, "x", &l_dimX);
+        checkNcErr(l_err, __FILE__, __LINE__);
+
+        l_err = nc_inq_dimlen(l_ncId, l_dimX, &i_nx);
+        checkNcErr(l_err, __FILE__, __LINE__);
+
+        l_err = nc_inq_dimid(l_ncId, "y", &l_dimY);
+        checkNcErr(l_err, __FILE__, __LINE__);
+
+        l_err = nc_inq_dimlen(l_ncId, l_dimY, &i_ny);
+        checkNcErr(l_err, __FILE__, __LINE__);
+
+        if (o_xdata != nullptr)
+        {
+            nc_inq_varid(l_ncId, "x", &l_varidx);
+            *o_xdata = new t_real[i_nx];
+            l_err = nc_get_var_float(l_ncId, l_varidx, *o_xdata);
+            checkNcErr(l_err, __FILE__, __LINE__);
+        }
+
+        if (o_ydata != nullptr)
+        {
+            nc_inq_varid(l_ncId, "y", &l_varidy);
+            *o_ydata = new t_real[i_ny];
+            l_err = nc_get_var_float(l_ncId, l_varidy, *o_ydata);
+            checkNcErr(l_err, __FILE__, __LINE__);
+        }
+
+        if (o_zdata != nullptr)
+        {
+            nc_inq_varid(l_ncId, i_varname, &l_varidz);
+            *o_zdata = new t_real[i_ny * i_nx];
+            l_err = nc_get_var_float(l_ncId, l_varidz, *o_zdata);
+            checkNcErr(l_err, __FILE__, __LINE__);
+        }
+
+        if (nc_close(l_ncId) != NC_NOERR)
+        {
+            std::cerr << "Error closing NetCDF file: " << i_filename << std::endl;
         }
     }
-
-    int l_ncId, l_err = 0;
-    int l_varidz, l_varidy, l_varidx, l_dimX, l_dimY;
-
-    l_err = nc_open(i_filename, NC_NOWRITE, &l_ncId);
-    checkNcErr(l_err, __FILE__, __LINE__);
-
-    l_err = nc_inq_dimid(l_ncId, "x", &l_dimX);
-    checkNcErr(l_err, __FILE__, __LINE__);
-
-    l_err = nc_inq_dimlen(l_ncId, l_dimX, &i_nx);
-    checkNcErr(l_err, __FILE__, __LINE__);
-
-    l_err = nc_inq_dimid(l_ncId, "y", &l_dimY);
-    checkNcErr(l_err, __FILE__, __LINE__);
-
-    l_err = nc_inq_dimlen(l_ncId, l_dimY, &i_ny);
-    checkNcErr(l_err, __FILE__, __LINE__);
-
-    if (o_xdata != nullptr)
+    else
     {
-        nc_inq_varid(l_ncId, "x", &l_varidx);
-        *o_xdata = new t_real[i_nx];
-        l_err = nc_get_var_float(l_ncId, l_varidx, *o_xdata);
-        checkNcErr(l_err, __FILE__, __LINE__);
-    }
-
-    if (o_ydata != nullptr)
-    {
-        nc_inq_varid(l_ncId, "y", &l_varidy);
-        *o_ydata = new t_real[i_ny];
-        l_err = nc_get_var_float(l_ncId, l_varidy, *o_ydata);
-        checkNcErr(l_err, __FILE__, __LINE__);
-    }
-
-    if (o_zdata != nullptr)
-    {
-        nc_inq_varid(l_ncId, i_varname, &l_varidz);
-        *o_zdata = new t_real[i_ny * i_nx];
-        l_err = nc_get_var_float(l_ncId, l_varidz, *o_zdata);
-        checkNcErr(l_err, __FILE__, __LINE__);
-    }
-
-    if (nc_close(l_ncId) != NC_NOERR)
-    {
-        std::cerr << "Error closing NetCDF file: " << i_filename << std::endl;
+        if (std::getenv("GITHUB_ACTIONS") == nullptr)
+        {
+            throw std::runtime_error(std::string("File does not exist: ") + i_filename);
+        }
+        else
+        {
+            std::cerr << "Warning: File does not exist: " << i_filename << '\n';
+        }
     }
 }
 
