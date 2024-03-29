@@ -55,6 +55,9 @@ void tsunami_lab::io::NetCdf::read(const char *i_filename,
                                    t_real **o_xdata,
                                    t_real **o_ydata)
 {
+    if (!std::filesystem::exists(i_filename)) {
+        throw std::runtime_error(std::string("File does not exist: ") + i_filename);
+    }
 
     int l_ncId, l_err = 0;
     int l_varidz, l_varidy, l_varidx, l_dimX, l_dimY;

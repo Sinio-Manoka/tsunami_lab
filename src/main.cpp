@@ -132,9 +132,10 @@ int main() {
   auto l_startTimer = omp_get_wtime();
   
 
-  tsunami_lab::t_idx l_nx = 0;
+  tsunami_lab::t_idx l_nx = 1;
   tsunami_lab::t_idx l_ny = 1;
-  tsunami_lab::t_real l_dxy = 440500.0 / l_nx;
+  tsunami_lab::t_real l_dxy = 0;
+  //data_end = 440500.0
 
   
   std::cout << "\033[1;33m"<< "####################################" << std::endl;
