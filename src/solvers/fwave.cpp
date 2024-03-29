@@ -1,6 +1,5 @@
 #include "fwave.h"
 #include <cmath>
-#include <iostream>
 
 void tsunami_lab::solvers::fwave::eigenvalues( t_real   i_hL,
                                 t_real   i_hR,

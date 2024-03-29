@@ -22,11 +22,14 @@ tsunami_lab::t_idx tsunami_lab::io::Configuration::readFromConfigIndex(std::stri
 }
 
 bool tsunami_lab::io::Configuration::readFromConfigBoolean(std::string  i_configVariable){
-    
-    std::ifstream f("configs/config.json");
-    json data = json::parse(f); 
-    return data[i_configVariable];
-    std::cout<<data[i_configVariable]<<std::endl;
+    try {
+        std::ifstream f("configs/config.json");
+        json data = json::parse(f); 
+        return data[i_configVariable];
+    } catch (const std::exception& e) {
+        std::cerr << "Exception caught: " << e.what() << '\n';
+        return false;
+    }
 }
 
 std::vector<std::string> tsunami_lab::io::Configuration::checkMissingKeys(std::vector<std::string> i_keys) {
